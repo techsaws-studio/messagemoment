@@ -1,0 +1,740 @@
+.about-hero {
+  margin-top: 136px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  p {
+    max-width: 586px;
+    width: 72.2%;
+    color: var(--blue);
+    margin-top: 30px;
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 24px;
+    text-align: center;
+  }
+  h2 {
+    text-align: center;
+  }
+}
+
+// team
+
+.team {
+  position: relative;
+  top: 171px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  // flex-wrap: wrap;
+  &:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    opacity: 0.1;
+    background: linear-gradient(180deg, #494af8 0%, rgba(73, 74, 248, 0) 100%);
+    bottom: 0;
+    z-index: -1;
+  }
+
+  .team-desc {
+    margin-top: 171px;
+    width: 100%;
+    max-width: 908px;
+    text-align: center;
+    font-size: 17px;
+    line-height: 22.44px;
+    color: var(--dark);
+  }
+  .team-imgs {
+    top: -122px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    align-self: center;
+    gap: 20px;
+    position: absolute;
+  }
+}
+
+// about team section
+
+.about-team {
+  width: 100%;
+  max-width: 100rem;
+  height: 500px;
+  position: relative;
+  margin-top: 131px;
+  padding: 117px 0px;
+  border-radius: 20px;
+  background-color: var(--blue);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .message-icon {
+    position: absolute;
+    top: -61px;
+  }
+
+  h3 {
+    width: 78.4%;
+    max-width: 1000px;
+    color: var(--white);
+    text-align: center;
+    height: 156px;
+  }
+  h6 {
+    margin-top: 20px;
+    color: var(--white);
+    width: 100%;
+    max-width: 792px;
+    line-height: 22.44px;
+    text-align: center;
+    font-size: 17px;
+    font-weight: 500;
+  }
+}
+
+.team-platform {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 625px;
+  .team-feature-img {
+    position: relative;
+    top: 54px;
+    width: 76.3%;
+  }
+  .platformd-desc {
+    position: relative;
+    margin-top: 124px;
+    width: 964px;
+    height: 110px;
+    text-align: center;
+    font-size: 17px;
+    line-height: 22.44px;
+    color: var(--dark);
+    margin-bottom: 30px;
+  }
+  .platform-footer {
+    margin-bottom: 600px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .platform-btn {
+    padding-bottom: 70px;
+  }
+}
+
+// user privacy component
+.user-privacy {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+  height: 600px;
+  &:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    opacity: 0.1;
+    background: linear-gradient(180deg, #494af8 0%, rgba(73, 74, 248, 0) 100%);
+    bottom: 0;
+    z-index: -1;
+  }
+  .column2 {
+    max-width: 538px;
+    width: 86%;
+    p {
+      font-size: 17px;
+      line-height: 22.44px;
+      margin-top: 20px;
+      color: var(--dark);
+    }
+  }
+}
+
+// solution search section
+
+.solution-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+  height: 600px;
+  &:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    opacity: 0.1;
+    background: linear-gradient(180deg, #494af8 0%, rgba(73, 74, 248, 0) 100%);
+    bottom: 0;
+    z-index: -1;
+  }
+  .column2 {
+    max-width: 538px;
+    width: 86%;
+    h2 {
+      width: 65.7%;
+      max-width: 500px;
+    }
+    p {
+      font-size: 17px;
+      line-height: 22.44px;
+      margin-top: 20px;
+      color: var(--dark);
+    }
+  }
+}
+
+// about service
+
+.about-service-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-direction: column;
+  align-items: center;
+
+  .service-footer {
+    margin-bottom: 90px;
+    color: #777777;
+    max-width: 883px;
+    width: 61.3%;
+    text-align: center;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 17.16px;
+  }
+}
+.about-service {
+  margin-top: 54px;
+  width: 100%;
+  position: relative;
+  height: 550px;
+  margin-bottom: 182px;
+  border-radius: 20px;
+  background-color: var(--dark);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  h3 {
+    margin-top: 140px;
+    width: 100%;
+    max-width: 829px;
+    height: 156px;
+    text-align: center;
+    color: white;
+    line-height: 52.08px;
+  }
+  .about-qa {
+    margin-top: 20px;
+    color: white;
+    width: 100%;
+    max-width: 689px;
+    height: 44px;
+    text-align: center;
+    font-size: 17px;
+    line-height: 22.44px;
+  }
+
+  .insight-img {
+    position: absolute;
+    top: -60px;
+    margin: auto;
+  }
+  .feature-img {
+    margin-top: 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    justify-items: center;
+    gap: 20px;
+    .feature-img-middle {
+      // max-width:43.75rem;
+      object-fit: cover;
+      border-radius: 20px;
+    }
+  }
+}
+
+@media screen and (max-width: 1380px) {
+  // team
+  .team {
+    .team-imgs {
+      img {
+        width: 14.25rem;
+        height: 13.125rem;
+      }
+    }
+  }
+  // about team section
+  .about-team {
+    padding: 90px 0px;
+    h3 {
+      width: 91%;
+    }
+    h6 {
+      width: 60%;
+      margin-top: 30px;
+    }
+  }
+  // team platform
+  .team-platform {
+    .platformd-desc {
+      width: 90%;
+      max-width: 60.25rem;
+    }
+  }
+  // user privacy component
+  .user-privacy {
+    img {
+      width: 34.7%;
+      object-fit: cover;
+      overflow: hidden;
+      border-radius: 20px;
+    }
+  }
+  // solution-search
+  .solution-search {
+    img {
+      width: 34.7%;
+      object-fit: cover;
+      overflow: hidden;
+      border-radius: 20px;
+    }
+  }
+  // about-service
+  .about-service {
+    .feature-img {
+      .feature-img-middle {
+        width: 40%;
+      }
+    }
+  }
+}
+
+// mobile responsive
+@media screen and (max-width: 1000px) {
+  .about-hero {
+    &:after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      opacity: 0.1;
+      background: linear-gradient(
+        180deg,
+        #494af8 0%,
+        rgba(73, 74, 248, 0) 100%
+      );
+      bottom: 0;
+      z-index: -1;
+    }
+  }
+  // team
+  .team {
+    top: 170px;
+    .team-imgs {
+      position: relative;
+      justify-content: center;
+      width: 480px;
+      flex-wrap: wrap;
+      height: auto;
+      gap: 10px;
+    }
+    .team-desc {
+      margin-top: -8%;
+    }
+  }
+
+  // about team section
+
+  .about-team {
+    margin-top: 100px;
+    h3 {
+      font-size: 34px;
+    }
+  }
+
+  // user privacy component
+  .user-privacy {
+    flex-direction: column;
+    padding-top: 87px;
+    height: auto;
+    padding-bottom: 50px;
+    img {
+      width: 86%;
+      max-width: 500px;
+      height: 300px;
+    }
+  }
+
+  .solution-search {
+    flex-direction: column-reverse;
+    padding-top: 87px;
+    height: auto;
+    padding-bottom: 50px;
+    img {
+      width: 86%;
+      max-width: 500px;
+      height: 300px;
+    }
+  }
+
+  // about-service
+  .about-service {
+    h3 {
+      width: 600px;
+      line-height: 31.25px;
+      font-size: 34px;
+      line-height: 34px;
+    }
+
+    .about-qa {
+      font-size: 13px;
+      font-weight: 500;
+      width: 72.4%;
+    }
+
+    .feature-img {
+      width: 100vw;
+      position: absolute;
+      scroll-behavior: smooth;
+      overflow-x: scroll;
+      top: 70%;
+      scrollbar-width: none;
+    }
+    .feature-img::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  // team-platform
+  .team-platform {
+    .platform-footer {
+      gap: 50px;
+    }
+    .platformd-desc {
+      width: 75%;
+    }
+    .platform-btn {
+      padding-bottom: 0px;
+      .btn-primary {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 800px) {
+  // team
+  .team {
+    top: 110px;
+    .team-imgs {
+      top: -80px;
+      width: 100%;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      img {
+        width: 260px;
+        height: 240px;
+      }
+    }
+    .team-desc {
+      margin-top: -45px;
+    }
+  }
+
+  .about-team {
+    height: 480px;
+    .message-icon {
+      width: 100px;
+      height: 100px;
+    }
+    h3 {
+      height: auto;
+      text-align: center;
+    }
+    h6 {
+      height: auto;
+      font-size: 13px;
+      font-weight: 500;
+      max-width: 342px;
+      width: 90%;
+      margin-left: 28px;
+      margin-right: 28px;
+    }
+  }
+
+  .team-platform {
+    // height: auto;
+    .team-feature-img {
+      width: 86%;
+      height: 180px;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 10px;
+    }
+    .platformd-desc {
+      width: 90%;
+    }
+    .platform-btn {
+      padding-bottom: 0px;
+      .btn-primary {
+        font-size: 14px;
+      }
+    }
+  }
+
+  // user privacy component
+  .user-privacy {
+    margin-bottom: 97px;
+    padding-bottom: 0px;
+    width: 100%;
+    gap: 40px;
+
+    h2 {
+      width: 310px;
+      font-size: 34px;
+      line-height: 34px;
+    }
+  }
+
+  // solution
+  .solution-search {
+    margin-bottom: 97px;
+    gap: 40px;
+    padding-bottom: 0px;
+
+    .column2 {
+      h2 {
+        width: 100%;
+        max-width: 281px;
+        font-size: 34px;
+        line-height: 34px;
+        letter-spacing: -0.5px;
+      }
+    }
+  }
+
+  .about-service-wrapper {
+    height: auto;
+  }
+
+  .about-service {
+    height: 450px;
+    .insight-img {
+      width: 80px;
+      height: 80px;
+      top: -40px;
+      position: absolute;
+    }
+    h3 {
+      margin-top: 70px;
+      width: 540px;
+      line-height: 31.25px;
+      font-size: 24px !important;
+      text-align: center;
+      height: 120px;
+    }
+    .about-qa {
+      font-size: 13px;
+      font-weight: 500;
+      width: 72.4%;
+      height: auto;
+    }
+
+    .feature-img {
+      padding-left: 15px;
+      padding-right: 15px;
+      gap: 12px;
+      top: 68%;
+      .feature-img-middle {
+        width: 100% !important;
+        max-width: 334.7px;
+        height: 200px !important;
+        border-radius: 10px !important;
+      }
+      .feature-other-img {
+        width: 161.16px;
+        height: 200px;
+        border-radius: 10px;
+        object-fit: cover;
+      }
+      @-moz-document url-prefix() {
+        .feature-img-middle {
+          width: 334.7px !important;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .about-hero {
+    h2 {
+      font-size: 34px;
+      font-weight: 700;
+      width: 100%;
+      max-width: 325px;
+    }
+    p {
+      font-size: 14px;
+      font-weight: 500;
+      margin-top: 28px;
+      max-width: 309px;
+      width: 100%;
+      line-height: 18.23px;
+      text-align: center;
+    }
+  }
+  // team
+  .team {
+    .team-imgs {
+      img {
+        width: 42.1%;
+        height: 27.5%;
+      }
+    }
+  }
+
+  // about team section
+
+  .about-team {
+    h3 {
+      height: auto;
+      font-size: 24px;
+      max-width: 312px;
+      width: 90%;
+      text-align: center;
+      line-height: 31.25px;
+    }
+  }
+
+  // team-platform
+
+  .team-platform {
+    height: auto;
+    .team-feature-img {
+      width: 86%;
+      height: 180px;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 10px;
+    }
+    .platformd-desc {
+      margin-top: 100px;
+      height: auto;
+      font-size: 13px;
+      font-weight: 500;
+      width: 90%;
+      text-align: center;
+      line-height: 19px;
+    }
+    .platform-footer {
+      margin-bottom: 50px;
+      height: auto;
+      gap: 0px;
+    }
+    .platform-btn {
+      padding-bottom: 0px;
+      .btn-primary {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .about-service {
+    h3 {
+      width: 87.9%;
+      line-height: 31.25px;
+      font-size: 24px;
+      max-width: 350px;
+      height: 150px;
+    }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .team {
+    .team-desc {
+      max-width: 350px;
+      width: 100%;
+      margin-top: -45px;
+      font-size: 13px;
+      font-weight: 500;
+      text-align: center;
+      line-height: 19px;
+    }
+  }
+  .team-platform {
+    .platformd-desc {
+      max-width: 343px;
+    }
+  }
+  // user privacy component
+  .user-privacy {
+    h2 {
+      width: 100%;
+      max-width: 281px;
+      line-height: 34px;
+      letter-spacing: -0.5px;
+    }
+    p {
+      font-size: 13px !important;
+      font-weight: 500;
+      line-height: 19px !important;
+    }
+    img {
+      height: 200px;
+      max-width: 368px;
+      width: 90%;
+    }
+  }
+
+  .solution-search {
+    img {
+      height: 200px;
+      max-width: 368px;
+      width: 90%;
+    }
+    p {
+      font-size: 13px !important;
+      font-weight: 500;
+      line-height: 19px !important;
+    }
+  }
+  .about-service-wrapper {
+    .service-footer {
+      width: 90%;
+      font-size: 11px;
+      font-weight: 500;
+      max-width: 355px;
+    }
+  }
+}
+
+@media screen and (max-width: 380px) {
+  .about-service {
+    h3 {
+      font-size: 20px !important;
+    }
+  }
+  .about-hero {
+    h2 {
+      font-size: 28px;
+    }
+  }
+}

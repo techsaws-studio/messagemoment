@@ -1,0 +1,28 @@
+@import "./global";
+
+// base style
+@import "./base/_color.scss";
+@import "./base/_reset.scss";
+@import "./base/_typography.scss";
+
+// components
+@import "./components/_button.scss";
+@import "./components/cookieparser";
+@import "./components/_dropdown.scss";
+@import "./components/_header.scss";
+@import "./components/_footer.scss";
+@import "./components/session";
+@import "./components/chatheader";
+@import "./components/chatsidebar.scss";
+@import "./components/chatmessage.scss";
+@import "./components/chatleaveModal.scss";
+@import "./components/uploadfile.scss";
+@import "./components/reportfileModal.scss";
+
+// page
+@import "./page/_home.scss";
+@import "./page/about";
+@import "./page/terms";
+@import "./page/faq";
+@import "./page/contact";
+@import "./page/chat";

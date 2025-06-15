@@ -1,0 +1,199 @@
+header {
+  background-color: var(--white);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 99;
+  outline: rgba(0, 0, 0, 0.05);
+  outline-width: 1px;
+  outline-style: solid;
+  .bar {
+    height: 5px;
+    background: var(--blue);
+  }
+  .header-links {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .left {
+      img {
+        width: "196.5px";
+        height: "46px";
+        position: relative;
+        top: 1px;
+      }
+    }
+    a {
+      font-family: "DM Sans";
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 24px;
+      color: var(--black);
+    }
+    ul {
+      display: flex;
+      align-items: center;
+      &.left {
+        li {
+          &:nth-child(2) {
+            margin: 0 30px 0 50px;
+          }
+        }
+      }
+      &.right {
+        gap: 29.5px;
+        ul {
+          width: 155.5px;
+          height: 24px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          img {
+            position: relative;
+            top: 1px;
+          }
+        }
+      }
+    }
+    .menuIcon {
+      display: none;
+    }
+  }
+  .header-links a:hover {
+    color: #494af8;
+  }
+}
+
+// mobile header animation
+.mobile-menu {
+  background-color: #494af8;
+  height: 0vh;
+  transition: height 0.3s ease-in-out;
+  visibility: collapse;
+  .top-head {
+    display: flex;
+    justify-content: space-between;
+    height: 84px;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-left: 17px;
+    padding-right: 39px;
+  }
+  .body-links {
+    display: flex;
+    gap: 30px;
+    padding: 0px 20px 0px 17px;
+    justify-content: center;
+    align-items: center;
+    margin: 50px 0px;
+    a {
+      color: white;
+      // font-size: 14px;
+      font-size: 16px;
+      font-weight: 500;
+      font-family: "DM Sans";
+    }
+    li {
+      // margin-bottom: 11px;
+    }
+  }
+  .divider {
+    width: calc(100% - 40px);
+    height: 1px;
+    opacity: 0.1;
+    background-color: #fff;
+    margin: 0px 20px;
+  }
+  .m-header-btn {
+    margin-top: 40px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .btn-primary {
+    background-color: white;
+    max-width: 25rem;
+  }
+  .footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    height: 55%;
+    width: 100%;
+    .divider {
+      margin-bottom: 30px;
+    }
+    .social-links {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    p {
+      margin-top: 10px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+  }
+}
+.header-open {
+  height: 100vh !important;
+  overflow: hidden;
+  z-index: 999999;
+  background-color: #494af8;
+  visibility: visible;
+}
+.close {
+  height: 0vh;
+}
+
+// fix blue box styles for small desktop
+@media screen and (max-width: 1000px) {
+  header {
+    width: 100%;
+    .header-links {
+      .left {
+        width: 40%;
+        img {
+          width: 168.98px;
+          height: 40px;
+          position: relative;
+          top: 1px;
+        }
+        li {
+          a {
+          }
+        }
+      }
+      .right {
+        .right-social-links {
+          display: none;
+        }
+      }
+
+      padding-left: 20px;
+      a {
+        display: none;
+      }
+      .header-btn {
+        display: none;
+      }
+      .menuIcon {
+        display: block;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .mobile-menu {
+    .body-links {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+}

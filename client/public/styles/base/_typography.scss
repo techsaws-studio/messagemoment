@@ -1,0 +1,227 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
+
+h1 {
+  font-family: "DM Sans";
+  font-weight: 700;
+  font-size: 80px;
+  line-height: 80px;
+  letter-spacing: -2px;
+
+  @media (max-width: $Mobile_Size) {
+    font-size: 50px;
+    line-height: 50px;
+    letter-spacing: -1px;
+  }
+}
+
+h2 {
+  font-family: "DM Sans";
+  font-size: 60px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 70px;
+  color: var(--dark);
+  @media (max-width: $Mobile_Size) {
+    font-size: 34px;
+    line-height: 34px;
+  }
+}
+h3 {
+  font-family: "DM Sans";
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+
+  @media (max-width: $Mobile_Size) {
+    font-size: 34px;
+  }
+}
+h4 {
+  font-family: "DM Sans";
+  font-size: 26px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  @media (max-width: $Mobile_Size) {
+    font-size: 17px;
+  }
+}
+
+h5 {
+  font-family: "JetBrains Mono";
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  @media (max-width: $Mobile_Size) {
+    font-size: 15px;
+  }
+}
+
+h6 {
+  font-family: "JetBrains Mono";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  color: var(--dark);
+  @media (max-width: $Mobile_Size) {
+    font-size: 15px;
+  }
+  &.small {
+    font-size: 17px;
+    color: var(--dark);
+    @media (max-width: $Mobile_Size) {
+      font-size: 13px;
+    }
+  }
+}
+
+p {
+  font-family: "DM Sans";
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  @media (max-width: $Mobile_Size) {
+    font-size: 14px;
+  }
+  &.medium {
+    font-weight: 500;
+    @media (max-width: $Mobile_Size) {
+      font-size: 14px;
+    }
+  }
+}
+p.small {
+  font-family: "JetBrains Mono";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 23px;
+  @media (max-width: $Mobile_Size) {
+    font-size: 13px;
+  }
+}
+
+.chat-text {
+  font-family: "JetBrains Mono";
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 18.48px;
+  color: rgba(54, 60, 79, 1);
+}
+
+.chat-small-text {
+  font-family: "JetBrains Mono";
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: rgba(54, 60, 79, 1);
+}
+
+.note {
+  font-family: "DM Sans";
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  @media (max-width: $Mobile_Size) {
+    font-size: 11px;
+  }
+}
+.note-jet {
+  font-family: "JetBrains Mono";
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  @media (max-width: $Mobile_Size) {
+    font-size: 11px;
+  }
+}
+.step-no {
+  padding-left: 3px;
+}
+#px-2 {
+  padding-right: 1px;
+}
+
+.underline-link {
+  position: relative;
+  cursor: pointer;
+  text-wrap: nowrap;
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 1.5px;
+    width: 100%;
+    background-color: var(--white);
+    height: 0.5px;
+  }
+  a {
+    color: white;
+  }
+}
+.underline-blue {
+  @extend .underline-link;
+  &::before{
+    background-color: var(--blue);
+  }
+}
+.underline-grey {
+  @extend .underline-link;
+  color: #777777;
+  &::before{
+    background-color: #777777;
+  }
+}
+.text-black {
+  color: var(--black);
+}
+.text-white {
+  color: var(--white);
+}
+.text-dark {
+  color: var(--dark);
+}
+.text-blue {
+  color: var(--blue);
+  transition: color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  &:hover {
+    color: rgba(72, 72, 164, 1);
+  }
+  &.inactive{
+    cursor: default;
+    color: #CCCCCC;
+  }
+}
+.support-us-blue-text{
+  color:var(--blue); ;
+}
+.text-dark-gray {
+  color: var(--dark-gray);
+}
+.text-light-gray {
+  color: var(--light-gray);
+}
+
+@media (max-width: $Mobile_Size) {
+  p.small {
+    font-size: 13px;
+  }
+}
+@media screen and (max-width: 750px){ 
+  .chat-text{
+    font-size: 13px;
+    font-family: "JetBrains Mono";
+    font-weight: 400;
+    color: rgba(54, 60, 79, 1);
+  }
+  .chat-small-text{
+    font-size: 13px;
+  }
+}

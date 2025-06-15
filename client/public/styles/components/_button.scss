@@ -1,0 +1,227 @@
+button {
+  font-family: "JetBrains Mono";
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  cursor: pointer;
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  &.btn-primary {
+    border-radius: 6px;
+    background: var(--blue);
+  }
+  &:hover {
+    background-color: rgba(66, 67, 233, 1);
+  }
+  &.btn-leave {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 18.48px;
+    text-align: center;
+  }
+}
+
+.reject-button {
+  font-family: "JetBrains Mono";
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  cursor: pointer;
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  &.btn-secondary {
+    border-radius: 6px;
+    background: var(--mid-gray);
+    color: var(--dark);
+  }
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.25);
+  }
+}
+.reportfile-button {
+  font-family: "JetBrains Mono";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  cursor: pointer;
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  &.btn-secondary {
+    border-radius: 6px;
+    background: var(--mid-gray);
+    color: rgba(170, 170, 170, 1);
+  }
+  &.active {
+    color: var(--dark);
+  }
+}
+
+.send-button {
+  font-family: "JetBrains Mono";
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  cursor: default;
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  &.btn-secondary2 {
+    border-radius: 6px;
+    background: rgba(204, 204, 204, 1);
+    color: white;
+  }
+}
+.mt-28 {
+  margin-top: 28px;
+}
+
+// Disconnect Button
+
+.disconnect-btn {
+  background-color: white;
+  width: 150px;
+  height: 46px;
+  border-radius: 6px;
+  border: solid 1px #ccc;
+  &:hover {
+    background-color: rgba(235, 87, 87, 1);
+    p {
+      color: white;
+    }
+  }
+}
+.cancel-btn {
+  background-color: white;
+  width: 150px;
+  height: 46px;
+  border-radius: 6px;
+  border: solid 1px #ccc;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18.48px;
+  text-align: center;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.25);
+  }
+}
+
+.share-btn {
+  background-color: #494af8;
+  width: 150px;
+  height: 46px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 42.5px 0px 42px;
+  align-items: center;
+  margin: auto;
+  gap: 10.5;
+
+  p {
+    font-size: 14px;
+    color: white;
+  }
+  img {
+    position: relative;
+    bottom: 2px;
+  }
+}
+
+.support-btn {
+  background-color: white;
+  width: 164px;
+  height: 46px;
+  border-radius: 6px;
+  border: solid 1px #ccc;
+  font-family: "JetBrains Mono";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  text-align: center;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+
+  p {
+    color: var(--blue);
+  }
+  &:hover {
+    background-color: white;
+  }
+
+  &.primary-bg {
+    border: solid 1.5px #494af8;
+    background-color: white;
+  }
+  &.primary-bg {
+    border: solid 1.5px #494af8;
+  }
+  &.secondary-bg {
+    border: solid 1.5px #ffffff;
+    background-color: rgba(255, 255, 255, 0.1);
+    font-size: 13px;
+    p {
+      color: var(--white);
+    }
+  }
+}
+
+// responsive-button classs
+.responsive-button {
+  width: 236px;
+  height: 46px;
+
+  @media (max-width: 480px) {
+    width: 100%;
+    height: 46px;
+  }
+}
+
+.responsive-button-footer {
+  width: 164px;
+  height: 46px;
+
+  @media (max-width: 1000px) {
+    width: 100%;
+    height: 46px;
+  }
+}
+
+.responsive-button-team {
+  width: 315px;
+  height: 46px;
+
+  @media (max-width: 480px) {
+    width: 73.6vw;
+    height: 46px;
+  }
+}
+
+.responsive-button-contactus {
+  width: 236px;
+  height: 46px;
+
+  @media (max-width: 1000px) {
+    width: 100%;
+    height: 46px;
+  }
+}
+.responsive-button-faq {
+  width: 236px;
+  height: 46px;
+
+  @media (max-width: 480px) {
+    width: 79.5%;
+    height: 46px;
+  }
+}
+.responsive-button-sideCookie {
+  width: 180px;
+  height: 46px;
+
+  @media (max-width: 720px) {
+    width: 100%;
+    height: 46px;
+  }
+}

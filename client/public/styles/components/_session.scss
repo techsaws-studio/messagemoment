@@ -1,0 +1,373 @@
+.header-container {
+  height: 85px;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.session-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  &:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    opacity: 0.1;
+    background: linear-gradient(180deg, #494af8 0%, rgba(73, 74, 248, 0) 100%);
+    bottom: 0;
+    z-index: -1;
+  }
+
+  .blur-img {
+    position: absolute;
+    height: 90%;
+    z-index: -1;
+    top: 10%;
+    margin: auto;
+  }
+  .session-card {
+    position: relative;
+    z-index: 101;
+    width: 720px;
+    height: 400px;
+    margin: 61px 0 0;
+    border-radius: 10px;
+    border: solid 1px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 {
+      color: var(--blue);
+      font-size: 150px;
+      text-align: center;
+    }
+    .expired-content {
+      padding: 108px 125px 41px 125px;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .locked-content {
+      padding: 130px 125px 100px 125px;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .removedUser-content {
+      padding: 0px 125px 0px 125px;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 30px;
+      align-items: center;
+      h4 {
+        max-width: 340px;
+        margin-bottom: 30px;
+      }
+    }
+    .error-content {
+      padding: 90px 125px 40px 125px;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+
+      h4 {
+        width: 503px;
+        margin-top: 35px;
+      }
+    }
+    .verification-content {
+      padding: 120px 104px 41px 104px;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      h4 {
+        width: 522px;
+      }
+      .turnsite {
+        margin-top: 10px;
+      }
+    }
+    .full-session-content {
+      padding: 134px 125px 66px 125px;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+
+      .title {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 400px;
+        height: 68px;
+      }
+    }
+    h4 {
+      width: 470px;
+      height: 68px;
+      color: var(--blue);
+      font-size: 26px;
+      text-align: center;
+    }
+    p {
+      color: rgba(54, 60, 79, 1);
+      font-weight: 600;
+      font-size: 15px;
+      text-align: center;
+    }
+    .return-text {
+      width: 486px;
+      font-weight: 400;
+      font-size: 15px;
+      text-align: center;
+      color: rgba(54, 60, 79, 1);
+    }
+    .error-return-text {
+      width: 549px;
+      font-weight: 400;
+      font-size: 15px;
+      text-align: center;
+      color: rgba(54, 60, 79, 1);
+      margin-top: -38px;
+    }
+    .locked-return-text {
+      width: 540px;
+      font-weight: 400;
+      font-size: 15px;
+      text-align: center;
+      color: rgba(54, 60, 79, 1);
+      margin-top: -30px;
+    }
+    .full-return-text {
+      width: 540px;
+      font-weight: 400;
+      font-size: 15px;
+      text-align: center;
+      color: rgba(54, 60, 79, 1);
+    }
+    .maintenance-return-text {
+      width: 533px;
+      font-weight: 400;
+      font-size: 16px;
+      text-align: center;
+      color: rgba(54, 60, 79, 1);
+    }
+  }
+  .session-icon {
+    position: absolute;
+    top: -16%;
+  }
+  .footer-txt {
+    position: absolute;
+    bottom: 20px;
+  }
+}
+
+// ============= MOBILE STYLES =============
+
+@media only screen and (max-width: $Mobile_Size) {
+  .session-section {
+    height: 100%;
+    .blur-img {
+      width: 100vw;
+      height: 83%;
+      object-fit: cover;
+    }
+    .session-icon {
+      position: absolute;
+      top: -16%;
+      width: 100px;
+      height: 100px;
+    }
+
+    .session-card {
+      width: 91.1% !important;
+      height: 330px !important;
+      position: absolute;
+      top: 20%;
+
+      // expired page
+      .expired-content {
+        padding: 85px 33px 35px;
+        h4 {
+          font-size: 17px;
+          width: 324px;
+          height: 44px;
+        }
+        .return-text {
+          width: 246px;
+          font-size: 13px;
+          margin-top: -28px;
+          line-height: 17.16px;
+        }
+        .link {
+          width: 100%;
+          height: 46px;
+          overflow-wrap: break-word;
+        }
+        p {
+          font-size: 14px;
+        }
+      }
+
+      // full expired
+      .full-session-content {
+        padding: 101px 40px 52px;
+        .title {
+          width: 100%;
+          margin-bottom: 6.4%;
+          h4 {
+            font-size: 17px;
+            width: 324px;
+            height: 23px;
+          }
+        }
+        h4 {
+          font-size: 17px;
+          width: 324px;
+          height: 44px;
+        }
+        .full-return-text {
+          width: 246px;
+          height: 34px;
+          font-size: 13px;
+          line-height: 17.16px;
+          margin-top: -8px;
+        }
+        .maintenance-return-text {
+          width: 285px;
+          height: 85px;
+          font-size: 13px;
+          justify-content: center;
+          display: flex;
+          flex-direction: column;
+          line-height: 17.16px;
+        }
+      }
+
+      // verification
+      .verification-content {
+        padding: 103px 46px 82px 44px;
+        h4 {
+          font-size: 17px;
+          width: 256px;
+          height: 44px;
+        }
+        .turnsite {
+          margin-top: 36px;
+          width: 300px;
+        }
+      }
+
+      .leave-chat-session {
+        border: solid 1px red;
+        h4 {
+          padding-top: 54px;
+        }
+      }
+
+      // removed user
+      .removedUser-content {
+        padding: 0px 40px 0px 40px;
+        h4 {
+          max-width: 230px;
+          font-size: 17px;
+          width: 100%;
+          margin-bottom: 0px;
+        }
+        p {
+          max-width: 284px;
+          width: 100%;
+          font-size: 13px;
+
+        }
+      }
+
+      // lockes-session page
+      .locked-content {
+        padding: 111px 40px 65px;
+        h4 {
+          font-size: 17px;
+          width: 256px;
+          height: 44px;
+        }
+        .locked-return-text {
+          width: 285px;
+          font-size: 13px;
+          line-height: 17.16px;
+        }
+      }
+    }
+  }
+}
+// for error 404 page
+@media only screen and (max-width: $Mobile_Size) {
+  .error-404 {
+    .session-section {
+      .session-card {
+        width: 91.1% !important;
+        height: 370px !important;
+
+        // 404 page
+        .error-content {
+          padding: 89px 40px 34px;
+          h1 {
+            font-size: 80px;
+          }
+          h4 {
+            font-size: 17px;
+            width: 196px;
+            height: 44px;
+            margin-top: -10px;
+          }
+          .error-return-text {
+            width: 285px;
+            font-size: 13px;
+            margin-top: -8px;
+            line-height: 17.16px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// fixed multi line issue link on expired-session page
+@media only screen and (max-width: 416px) {
+  .session-section {
+    .session-card {
+      .expired-content {
+        .link {
+          margin-bottom: 30px;
+        }
+      }
+    }
+  }
+}

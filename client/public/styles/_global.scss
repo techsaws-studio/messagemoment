@@ -1,0 +1,370 @@
+body {
+  font-family: "Roboto", sans-serif;
+  background: var(--white);
+  max-width: 2560px;
+  margin: 0 auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+.container {
+  width: 100%;
+  padding: 0 60px 0 60px;
+  margin: 0 auto;
+}
+.headercontainer {
+  width: 100%;
+  padding: 0 60px 0 60px;
+  margin: 0 auto;
+}
+.container_chat {
+  width: 100%;
+  padding: 0 20px 0 24px;
+}
+
+.text-center {
+  text-align: center;
+}
+.invisible {
+  visibility: hidden;
+}
+
+.ant-tooltip-placement-top .ant-tooltip-arrow {
+  left: 50%;
+  transform: translateY(100%) translateX(-50%) rotate(180deg) !important;
+}
+.ant-tooltip-placement-top {
+  padding-bottom: 0 !important;
+}
+.ant-tooltip-inner {
+  text-align: center;
+  font-family: "JetBrains Mono" !important;
+  font-size: 14px !important;
+  font-style: normal !important;
+  font-weight: 500 !important;
+  line-height: normal !important;
+  min-width: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.qrcode-tooltip {
+  .ant-tooltip-inner {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding-bottom: 0 !important;
+    margin-bottom: -3px;
+    animation: slideInFromBottom 0.5s ease-in-out;
+  }
+  .qr-container {
+    position: relative;
+    .qr-code {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+      width: 210px;
+      height: 210px;
+    }
+  }
+}
+
+.qrcode-tooltip.ant-tooltip-hidden .ant-tooltip-inner {
+  animation: slideOutToBottom 0.5s ease-in-out;
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideOutToBottom {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+.qrcodeText-tooltp {
+  .ant-tooltip-inner {
+    width: 120px;
+    box-shadow: none !important;
+    padding-bottom: 0 !important;
+    display: flex;
+    align-items: baseline;
+  }
+}
+.regen-tooltip {
+  .ant-tooltip-inner {
+    width: 114px;
+    box-shadow: none !important;
+    padding-bottom: 0 !important;
+    display: flex;
+    align-items: baseline;
+  }
+}
+.copy-tooltip {
+  .ant-tooltip-inner {
+    padding: 6px 10px;
+    box-shadow: none !important;
+    padding-bottom: 0 !important;
+    display: flex;
+    align-items: baseline;
+  }
+}
+
+.copylink-tooltip {
+  .ant-tooltip-inner {
+    box-shadow: none !important;
+    padding-bottom: 0 !important;
+    bottom: 10px;
+    position: relative;
+  }
+  .ant-tooltip-arrow {
+    display: none;
+  }
+}
+
+#projectmode {
+  cursor: pointer;
+}
+.projectMode-tooltip {
+  .ant-tooltip-inner {
+    box-shadow: none !important;
+    padding-bottom: 0 !important;
+    bottom: -50px;
+    right: -20px;
+    position: relative;
+  }
+  .ant-tooltip-arrow {
+    display: none;
+  }
+  img {
+    cursor: pointer;
+  }
+}
+
+.copy-tooptip-wrapper {
+  position: relative;
+
+  .copy_tooltip {
+    background: rgba(0, 0, 0, 0.85);
+    position: absolute;
+    left: -50%;
+    transform: translateX(-50%);
+    top: -44px;
+    color: var(--White, #fff);
+    text-align: center;
+    font-family: "JetBrains Mono";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    line-break: unset;
+    height: 32px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    display: none;
+    text-wrap: nowrap;
+    &::after {
+      content: "";
+      width: 10px;
+      height: 10px;
+      background: rgba(0, 0, 0, 0.85);
+      position: absolute;
+      bottom: -3px;
+      transform: rotate(45deg);
+    }
+  }
+  &:hover {
+    .copy_tooltip {
+      display: flex;
+    }
+  }
+}
+.ant-tooltip .ant-tooltip-inner {
+  min-width: 30px !important;
+  background: transparent;
+}
+.ant-tooltip-placement-top .ant-tooltip-arrow {
+  bottom: 2.3px !important;
+  overflow: hidden !important;
+  z-index: -1 !important;
+  display: none;
+}
+
+.dummy-select {
+  width: 140px;
+  display: flex;
+  align-items: center;
+  padding-left: 13px;
+  p {
+    margin: 0 10px 0 8px;
+  }
+  .dummy-arrow {
+    position: relative;
+    right: 1px;
+  }
+}
+
+/* styles.css */
+.custom-dropdown .ant-select-arrow {
+  transition: transform 0.3s ease-in-out;
+}
+
+.custom-dropdown.ant-select-open .ant-select-arrow {
+  transform: translateY(0px); /* Move down */
+}
+
+.custom-dropdown.ant-select-closed .ant-select-arrow {
+  transform: translateY(-0px); /* Move up */
+}
+
+// ===============
+
+/* animations.css */
+.fade-in {
+  animation: fadeIn 0.5s forwards;
+}
+
+.fade-out {
+  animation: fadeOut 0.5s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@-moz-document url-prefix() {
+  html {
+    scrollbar-width: none;
+  }
+}
+
+// adjust header left right padding
+@media screen and (max-width: 1000px) {
+  .headercontainer{
+    padding: 0 20px 0 20px;
+  }
+  .container {
+    padding: 0 15px;
+  }
+  .container_chat {
+    padding: 0 24px 0 17px;
+  }
+}
+
+// Global Notification styles
+.notification-popup {
+  position: fixed;
+  top: 86px;
+  z-index: 199;
+  background-color: black;
+  border-radius: 10px;
+  height: 45px;
+  margin: 0 auto;
+  width: fit-content;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0px 50px;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  pointer-events: none;
+  &.showPopup {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+  p {
+    color: white;
+    font-size: 14px;
+  }
+  &.chatScreenPopup{
+    position: absolute !important;
+    top: -9px;
+  }
+
+}
+
+@media screen and (max-width: 1000px){
+  .notification-popup {
+    &.chatScreenPopup{
+      position: fixed !important;
+      top: 86px;
+    }
+  }
+}
+@media screen and (max-width: 500px) {
+  .notification-popup {
+    max-width: calc(100% - 30px);
+    width: fit-content;
+    height: fit-content;
+    min-height: 45px;
+    padding: 10px 30px;
+    p{
+      text-align: center;
+    }
+  }
+}
+
+
+
+// chat notification styles
+.chatNotification {
+  position: absolute;
+  bottom: 20px;
+  z-index: 9999;
+  width: 90%;
+  left: 0;
+  border-radius: 10px;
+  height: 45px;
+  right: 0;
+  margin: 0 auto;
+  width: fit-content;
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0px 50px;
+  p {
+    color: white;
+    text-align: center;
+    font-size: 14px;
+  }
+}

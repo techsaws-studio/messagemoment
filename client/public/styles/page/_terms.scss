@@ -1,0 +1,235 @@
+.term-section-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 140px;
+  &:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    opacity: 0.1;
+    background: linear-gradient(180deg, #494af8 0%, rgba(73, 74, 248, 0) 100%);
+    bottom: 0;
+    z-index: -1;
+  }
+}
+.privacy-section-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 93px;
+  &:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    opacity: 0.1;
+    background: linear-gradient(180deg, #494af8 0%, rgba(73, 74, 248, 0) 100%);
+    bottom: 0;
+    z-index: -1;
+  }
+}
+
+.term-section {
+  width: 1096px;
+  margin-top: 136px;
+  h3 {
+    color: var(--dark);
+    line-height: 52.08px;
+  }
+  .terms-date {
+    margin-top: 48px;
+    background-color: white;
+    width: 190px;
+    height: 46px;
+    flex-grow: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+  }
+  .date-text {
+    font-size: 15px;
+    text-align: center;
+    line-height: 23px;
+    color: var(--dark);
+  }
+
+  .terms-conditions {
+    margin-top: 30px;
+
+    hr {
+      position: relative;
+      top: -7px;
+      border: none;
+      height: 1px;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+    h4 {
+      color: var(--blue);
+      // text-align: justify;
+      line-height: 33.85px;
+      margin-bottom: 30px;
+    }
+    .sub-text {
+      font-size: 15px;
+      color: var(--dark);
+      text-align: justify;
+      line-height: 23px;
+      margin-bottom: 39px;
+
+      span a {
+        color: var(--blue);
+        cursor: pointer;
+      }
+      span a:hover {
+        border-bottom: 1px solid var(--blue);
+        color: var(--blue);
+      }
+    }
+
+    .custom-list {
+      list-style-type: none;
+      margin-top: -17.8px;
+      padding-bottom: 1px;
+      li {
+        position: relative;
+        padding-left: 22px;
+        margin-bottom: 4px;
+        font-family: "JetBrains Mono";
+        font-size: 15px;
+        font-weight: 400;
+        font-stretch: normal;
+        font-style: normal;
+        letter-spacing: normal;
+        text-align: justify;
+        color: var(--dark);
+
+        &::before {
+          content: "•";
+          font-size: 15px;
+          color: var(--dark);
+          position: absolute;
+          left: 6.5px;
+          top: 9.4px;
+          transform: translateY(-50%);
+        }
+      }
+    }
+    .reponsibility-section {
+      margin-top: 74px;
+    }
+    .gov-law-section {
+      margin-top: -5px;
+    }
+  }
+  .footer-heading {
+    margin-top: 27px;
+  }
+  .url {
+    color: var(--dark);
+    font-size: 15px;
+  }
+  .url-head {
+    color: rgba(153, 153, 153, 1);
+    font-weight: 400;
+    font-size: 15px;
+  }
+  .url-head2 {
+    color: rgba(153, 153, 153, 1);
+    font-weight: 400;
+    font-size: 15px;
+    margin-top: 5px;
+  }
+}
+
+@media screen and (max-width: 1212px) {
+  .term-section {
+    width: 100%;
+    padding-left: 60px;
+    padding-right: 60px;
+    .url {
+      word-wrap: break-word;
+      margin-bottom: 10px;
+    }
+  }
+}
+@media screen and (max-width: 1000px) {
+  .privacy-section-wrapper {
+    margin-bottom: 75px;
+  }
+  .term-section-wrapper {
+    margin-bottom: 65px;
+  }
+  hr {
+    top: 0px;
+  }
+  .term-section {
+    margin-top: 120px;
+    width: 100%;
+    padding-left: 28px;
+    padding-right: 28px;
+    .url {
+      word-wrap: break-word;
+      font-weight: 500;
+      font-size: 13px;
+    }
+    .url-head {
+      font-weight: 500;
+      font-size: 13px;
+    }
+    .url-head2 {
+      font-weight: 500;
+      font-size: 13px;
+    }
+    h3 {
+      font-size: 24px;
+      font-weight: 700;
+      max-width: 335px;
+      line-height: 31.25px;
+      width: 100%;
+    }
+
+    .terms-date {
+      margin-top: 20px;
+    }
+    .date-text {
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .terms-conditions {
+      hr {
+        top: 5px;
+      }
+      h4 {
+        margin-bottom: 18px;
+      }
+      .sub-text {
+        font-size: 13px;
+        line-height: 17.16px;
+        font-weight: 500;
+        margin-bottom: 15px;
+        text-align: left;
+      }
+      .custom-list {
+        margin-top: 30px;
+        li {
+          font-size: 13px;
+          font-weight: 500;
+          line-height: 17.16px;
+          text-align: left;
+        }
+      }
+      .reponsibility-section {
+        margin-top: 15px;
+      }
+    }
+    .footer-heading {
+      margin-top: 20px;
+      margin-bottom: 15px !important;
+    }
+  }
+}
