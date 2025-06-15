@@ -62,8 +62,7 @@ const ChatGPTMessageEvent = (io: Server, socket: Socket): void => {
 
       // Configuration
       const USE_SIMULATION = false;
-      const CHATGPT_API_URL =
-        "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent";
+      const API_URL = process.env.CHATGPT_API_URL;
       const API_KEY = process.env.CHATGPT_API_KEY;
 
       if (USE_SIMULATION) {
@@ -137,7 +136,7 @@ const ChatGPTMessageEvent = (io: Server, socket: Socket): void => {
           };
 
           const response = await axios.post(
-            `${CHATGPT_API_URL}?key=${API_KEY}`,
+            `${API_URL}?key=${API_KEY}`,
             requestPayload,
             {
               headers: {

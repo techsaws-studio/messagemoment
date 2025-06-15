@@ -19,17 +19,6 @@ class JWTSessionManager {
     this.TOKEN_EXPIRY = process.env.JWT_EXPIRY || "24h";
     this.COOKIE_NAME = "mm_session_token";
     this.REFRESH_THRESHOLD = 3600;
-
-    if (
-      process.env.NODE_ENV === "production" &&
-      this.SECRET_KEY ===
-        "40fcb0de18a2a9361d2b7e787586cd9114b5ae4b88d0eeb190cbce32b8a1f64d6e5d3c667d6f26b320306bf61c989e667a310077880beefa18bce1ad75686aeef918c6fb6667e13059c8d217ad6903ae722f1f75e5ae82f31e9be73bde3eb92bdc6af14b77344556fb0763e6138dab1fbe8640663548cb00861f9249dd5f7ab3a98ac0e77aa8827e8d0f452f9de4332f2641c25961888072154899d927350690d4d938a54b330741c03db75d94789d49904a0afdd3b9e7d990d7c1e4bd62f24cee44e1e0111cf55c4b67f590c64bde36d03a96df07a2c359354d3c02fcfd25f985f48c8a752b611ca54c14782d34e9552a1021146f6c066c394fcb8be19bf7e2"
-    ) {
-      console.error(
-        "⚠️ CRITICAL: Please set JWT_SECRET_KEY in production environment!"
-      );
-      process.exit(1);
-    }
   }
 
   generateSessionToken(
