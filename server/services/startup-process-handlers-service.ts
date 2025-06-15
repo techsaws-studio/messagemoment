@@ -3,17 +3,17 @@ import { Server } from "http";
 import { HandleRejection } from "../middlewares/rejection-handler.js";
 import { GracefullyShutdown } from "../middlewares/gracefully-shutdown.js";
 
-import { StopCleanupService } from "./startup-cleanup-data.js";
-import { DisconnectAllDatabases } from "./startup-connect-databases.js";
+import { StopCleanupServices } from "./startup-cleanup-service.js";
+import { DisconnectAllDatabasesService } from "./startup-connect-databases-service.js";
 
-export const SetupProcessHandlers = (server: Server): void => {
+export const SetupProcessHandlersService = (server: Server): void => {
   HandleRejection(server);
   GracefullyShutdown(server);
 
   const cleanup = async () => {
     console.info("Performing graceful shutdown...");
-    StopCleanupService();
-    await DisconnectAllDatabases();
+    StopCleanupServices();
+    await DisconnectAllDatabasesService();
   };
 
   process.on("SIGTERM", async () => {

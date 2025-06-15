@@ -5,6 +5,8 @@ import ParticipantModel from "../models/participant-model.js";
 
 import { SessionUnlockedNotification } from "../notifications/session-unlocked-notification.js";
 
+import { MessageCleanupService } from "./message-cleanup-service.js";
+
 import { FormatDuration } from "../utils/format-duration.js";
 
 export const LeaveSessionService = async (
@@ -30,7 +32,6 @@ export const LeaveSessionService = async (
       hasLockedSession = true;
     }
 
-    // Calculate session duration
     if (!participant) {
       console.warn(`Participant ${username} not found in session ${sessionId}`);
     } else if (!participant.createdAt) {
@@ -70,7 +71,6 @@ export const LeaveSessionService = async (
           { sessionLocked: false }
         );
 
-        // Send unlock notification to all users in the room
         if (io) {
           await SessionUnlockedNotification(io, sessionId, normalizedUsername);
         }
@@ -97,6 +97,12 @@ export const LeaveSessionService = async (
       if (session && session.participantCount <= 0) {
         console.info(`Session ${sessionId} is now empty, marking as expired`);
         await SessionModel.updateOne({ sessionId }, { sessionExpired: true });
+
+        const deletedCount =
+          await MessageCleanupService.cleanupSpecificSessionMessages(sessionId);
+        console.info(
+          `Cleaned up ${deletedCount} messages for expired session ${sessionId}`
+        );
       }
     } catch (removeError: any) {
       console.error(

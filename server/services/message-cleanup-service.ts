@@ -1,57 +1,41 @@
 import MessageModel from "../models/message-model.js";
 import SessionModel from "../models/session-model.js";
 
+import { CleanupLogger } from "../utils/cleanup-logger.js";
+
 export class MessageCleanupService {
-  static async cleanupOldMessages(
-    olderThan: number = 60 * 24 * 60 * 60 * 1000
-  ): Promise<number> {
-    try {
-      const cutoffDate = new Date(Date.now() - olderThan);
-      console.info(
-        `Cleaning up messages older than ${cutoffDate.toISOString()}`
-      );
-
-      const result = await MessageModel.deleteMany({
-        createdAt: { $lt: cutoffDate },
-      });
-
-      console.info(`Deleted ${result.deletedCount} old messages`);
-      return result.deletedCount;
-    } catch (error) {
-      console.error("Error cleaning up old messages:", error);
-      throw error;
-    }
-  }
-
   static async cleanupExpiredSessionMessages(): Promise<number> {
     try {
       const expiredSessions = await SessionModel.find(
         { sessionExpired: true },
         { sessionId: 1 }
-      );
+      ).lean();
 
       if (expiredSessions.length === 0) {
-        console.info("No expired sessions found for cleanup");
+        await CleanupLogger.logOperation("EXPIRED_SESSION_MESSAGES", {
+          expiredSessionsFound: 0,
+          messagesDeleted: 0,
+        });
         return 0;
       }
 
       const expiredSessionIds = expiredSessions.map(
         (session) => session.sessionId
       );
-      console.info(
-        `Found ${expiredSessionIds.length} expired sessions for message cleanup`
-      );
 
       const result = await MessageModel.deleteMany({
         sessionId: { $in: expiredSessionIds },
       });
 
-      console.info(
-        `Deleted ${result.deletedCount} messages from expired sessions`
-      );
+      await CleanupLogger.logOperation("EXPIRED_SESSION_MESSAGES", {
+        expiredSessionsFound: expiredSessionIds.length,
+        messagesDeleted: result.deletedCount,
+        sessionIds: expiredSessionIds,
+      });
+
       return result.deletedCount;
     } catch (error) {
-      console.error("Error cleaning up expired session messages:", error);
+      await CleanupLogger.logError("EXPIRED_SESSION_MESSAGES", error as Error);
       throw error;
     }
   }
@@ -62,46 +46,87 @@ export class MessageCleanupService {
 
       const result = await MessageModel.deleteMany({
         displayExpiresAt: { $lt: now },
-        $nor: [{ isSystemMessage: true }, { isAIMessage: true }],
+        $nor: [
+          { isSystemMessage: true },
+          { isAIMessage: true },
+          { isPermanent: true },
+        ],
       });
 
-      console.info(`Deleted ${result.deletedCount} expired messages`);
+      await CleanupLogger.logOperation("INDIVIDUALLY_EXPIRED_MESSAGES", {
+        messagesDeleted: result.deletedCount,
+        cutoffTime: now.toISOString(),
+      });
+
       return result.deletedCount;
     } catch (error) {
-      console.error("Error cleaning up expired messages:", error);
+      await CleanupLogger.logError(
+        "INDIVIDUALLY_EXPIRED_MESSAGES",
+        error as Error
+      );
       throw error;
     }
   }
 
-  static async runFullCleanup(): Promise<{
-    oldMessages: number;
+  static async runSessionBasedCleanup(): Promise<{
     expiredSessionMessages: number;
     expiredMessages: number;
   }> {
+    const startTime = Date.now();
+
     try {
-      console.info("Running comprehensive message cleanup");
-      console.info("- Removing messages older than 60 days (2 months)");
-      console.info("- Removing messages from expired sessions");
-      console.info("- Removing individually expired messages");
+      const [expiredSessionMessages, expiredMessages] = await Promise.all([
+        this.cleanupExpiredSessionMessages(),
+        this.cleanupExpiredMessages(),
+      ]);
 
-      const [oldMessages, expiredSessionMessages, expiredMessages] =
-        await Promise.all([
-          this.cleanupOldMessages(),
-          this.cleanupExpiredSessionMessages(),
-          this.cleanupExpiredMessages(),
-        ]);
+      const totalRemoved = expiredSessionMessages + expiredMessages;
+      const executionTime = Date.now() - startTime;
 
-      const totalRemoved =
-        oldMessages + expiredSessionMessages + expiredMessages;
-      console.info(`Total messages removed: ${totalRemoved}`);
+      await CleanupLogger.logStatistics(
+        "SESSION_BASED_CLEANUP",
+        {
+          expiredSessionMessages,
+          expiredMessages,
+          totalRemoved,
+        },
+        executionTime
+      );
+
+      CleanupLogger.logSummaryToConsole(
+        "Message cleanup",
+        totalRemoved,
+        executionTime
+      );
 
       return {
-        oldMessages,
         expiredSessionMessages,
         expiredMessages,
       };
     } catch (error) {
-      console.error("Error running full message cleanup:", error);
+      await CleanupLogger.logError("SESSION_BASED_CLEANUP", error as Error);
+      throw error;
+    }
+  }
+
+  static async cleanupSpecificSessionMessages(
+    sessionId: string
+  ): Promise<number> {
+    try {
+      const result = await MessageModel.deleteMany({
+        sessionId: sessionId,
+      });
+
+      await CleanupLogger.logOperation("SPECIFIC_SESSION_CLEANUP", {
+        sessionId,
+        messagesDeleted: result.deletedCount,
+      });
+
+      return result.deletedCount;
+    } catch (error) {
+      await CleanupLogger.logError("SPECIFIC_SESSION_CLEANUP", error as Error, {
+        sessionId,
+      });
       throw error;
     }
   }

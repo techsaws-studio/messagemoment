@@ -7,9 +7,9 @@ import { InitializeSocket } from "./socket.js";
 
 import { HandleException } from "./middlewares/exception-handler.js";
 
-import { ConnectAllDatabases } from "services/startup-connect-databases.js";
-import { SetupCleanupService } from "services/startup-cleanup-data.js";
-import { SetupProcessHandlers } from "services/startup-process-handlers.js";
+import { ConnectAllDatabasesService } from "services/startup-connect-databases-service.js";
+import { SetupCleanupServices } from "services/startup-cleanup-service.js";
+import { SetupProcessHandlersService } from "services/startup-process-handlers-service.js";
 
 const SERVER = createServer(app);
 const PORT = process.env.PORT || 8000;
@@ -23,9 +23,9 @@ const StartServer = async (): Promise<void> => {
       console.info(`Server is running on port: ${PORT}`);
     });
 
-    await ConnectAllDatabases();
-    SetupCleanupService();
-    SetupProcessHandlers(SERVER);
+    await ConnectAllDatabasesService();
+    SetupCleanupServices();
+    SetupProcessHandlersService(SERVER);
   } catch (error) {
     console.error(`Failed to start the server: ${(error as Error).message}`);
     process.exit(1);
