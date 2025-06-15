@@ -176,12 +176,6 @@ export const ReconnectionEvent = (io: Server, socket: Socket): void => {
         sessionType: sessionData.sessionType,
       });
 
-      try {
-        jwtSessionManager.setSessionCookie(socket.request.res, newToken);
-      } catch (cookieError) {
-        console.warn("Could not set session cookie:", cookieError);
-      }
-
       socket.emit("jwtReconnectionSuccessful", {
         sessionId,
         username,
@@ -398,12 +392,6 @@ export const ReconnectionEvent = (io: Server, socket: Socket): void => {
           assignedColor: participant.assignedColor,
           sessionType: session.sessionType,
         });
-
-        try {
-          jwtSessionManager.setSessionCookie(socket.request.res, sessionToken);
-        } catch (cookieError) {
-          console.warn("Could not set session cookie:", cookieError);
-        }
 
         socket.emit("sessionTokenGenerated", {
           token: sessionToken,

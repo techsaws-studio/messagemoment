@@ -119,11 +119,10 @@ const JoinRoom = (io: Server, socket: Socket): void => {
           sessionType: session.sessionType,
         });
 
-        jwtSessionManager.setSessionCookie(socket.request.res, sessionToken);
-
         socket.emit("sessionTokenGenerated", {
           token: sessionToken,
           expiresIn: "24h",
+          secure: process.env.NODE_ENV === "production",
         });
 
         console.info(
