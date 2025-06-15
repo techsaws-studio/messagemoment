@@ -40,6 +40,7 @@ const RealTimeMapActivities = ({ selectedTab }: RealTimeMapActivitiesProps) => {
                 return "bg-green-500";
               };
 
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               const indicatorColor = getIndicatorColor(parseFloat(percentage));
 
               return (

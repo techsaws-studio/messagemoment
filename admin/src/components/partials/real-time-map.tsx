@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { useTheme } from "next-themes";
 
 import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
 
@@ -12,8 +11,6 @@ import * as am5geodata_worldLow from "@amcharts/amcharts5-geodata/worldLow";
 import { RealTimeMapProps } from "@/interfaces/partials-components-interfaces";
 
 const RealTimeMap = ({ MapData }: RealTimeMapProps) => {
-  const { themes } = useTheme();
-
   useEffect(() => {
     const root = am5.Root.new("chartdiv");
 
@@ -88,6 +85,7 @@ const RealTimeMap = ({ MapData }: RealTimeMapProps) => {
         })
       );
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const outerCircle = container.children.push(
         am5.Circle.new(root, {
           radius: 15,
@@ -98,6 +96,7 @@ const RealTimeMap = ({ MapData }: RealTimeMapProps) => {
         })
       );
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const sessionLabel = container.children.push(
         am5.Label.new(root, {
           text: "20",
