@@ -1,8 +1,13 @@
 "use client";
+
 import { createRef, useEffect, useRef, useState } from "react";
-import { chatContext } from "@/chat-context";
 import { useRouter } from "next/navigation";
 import { isFirefox } from "react-device-detect";
+
+import { chatContext } from "@/chat-context";
+
+import { handleCopyText } from "@/dummy-data";
+
 import MobileQrScannerModal from "./cloudflare-components/Qr-scanner-mobile-modal";
 import CloudflareBody from "./cloudflare-components/cloudflare-body";
 import CloudflareFooter from "./cloudflare-components/cloudflare-footer";
@@ -10,28 +15,15 @@ import CloudflareHeader from "./cloudflare-components/cloudflare-header";
 import MobileCloudFlare from "./cloudflare-components/mobile-cloudflare";
 import MobileDropdownModal from "./cloudflare-components/mobile-dropdown-modal";
 import NotificationTooltip from "./cloudflare-components/notification-tooltip";
-import { handleCopyText } from "@/dummy-data";
+
 export const cloudFlareRef = createRef(null);
-/**
- * Cloudflare component handles the generation and sharing of secure chat links.
- * It manages state for various UI elements including tooltips, modals, and notifications.
- * Utilizes `useEffect` to detect browser type and window size changes for responsive design.
- *
- * - Initializes chat session data and browser detection on mount.
- * - Handles visibility toggles for notifications and tooltips.
- * - Manages dropdown and modal interactions for selecting chat types.
- * - Generates random URLs and security codes for chat sessions.
- * - Integrates with `ClipboardJS` for copying links and leverages `Turnstile` for security verification.
- *
- * Note: To run Cloudflare locally, set `IsCfVerified` to true and bypass the Turnstile error handling.
- */
 
 const Cloudflare = () => {
   const router = useRouter();
   const buttonRef = useRef(null);
   const dropdownRef = useRef(null);
   const mobileModalRef = useRef(null);
-  // contenxt
+
   const {
     setSessionData,
     sessionData,
@@ -39,7 +31,7 @@ const Cloudflare = () => {
     setdropdownSelected,
     setIsLoadingGenerateLink,
   } = chatContext();
-  // stats
+
   const [loading, setLoading] = useState(true);
   const [url, setUrl] = useState("");
   const [urlType, setUrlType] = useState("");
@@ -161,6 +153,7 @@ const Cloudflare = () => {
       }
     }
   };
+
   const onQrChange = (val) => {
     if (val) {
       setQrIsVisibleTooltip(false);
@@ -201,6 +194,7 @@ const Cloudflare = () => {
       setOpenQrMobileModal(false);
     }
   };
+
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -214,6 +208,7 @@ const Cloudflare = () => {
         notificationtype={notificationtype}
         isVisible={isVisible}
       />
+
       <MobileDropdownModal
         ref={mobileModalRef}
         openMobileModal={openMobileModal}
@@ -221,12 +216,14 @@ const Cloudflare = () => {
         selectOption={selectOption}
         setOpen={setOpen}
       />
+
       <MobileQrScannerModal
         ref={mobileModalRef}
         openQrMobileModal={openQrMobileModal}
         setOpenQrMobileModal={setOpenQrMobileModal}
         url={url}
       />
+
       {/* CloudFlare Section start For Mobile & Desktop UI */}
       <section
         ref={cloudFlareRef}
@@ -235,6 +232,7 @@ const Cloudflare = () => {
         }`}
       >
         <CloudflareHeader />
+
         <MobileCloudFlare
           ref={buttonRef}
           openMobileModal={openMobileModal}
@@ -258,6 +256,7 @@ const Cloudflare = () => {
             url,
           }}
         />
+        
         {/* *** Desktop cloudfalre body *** */}
         <div className="bottom">
           <CloudflareBody

@@ -109,6 +109,5 @@ const ChatContextProvider = ({ children }) => {
   return <ChatContext.Provider value={data}>{children}</ChatContext.Provider>;
 };
 
-// Custom hook for easier access to the context
 export const chatContext = () => useContext(ChatContext);
 export default ChatContextProvider;

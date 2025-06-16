@@ -286,7 +286,7 @@ export const ValidateSessionTokenFunction = CatchAsyncErrors(
   }
 );
 
-// CLEAR SESSION TOKEN (LOGOUT)
+// CLEAR SESSION TOKEN
 export const ClearSessionTokenFunction = CatchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
