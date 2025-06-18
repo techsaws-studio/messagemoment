@@ -16,12 +16,18 @@ export const app = express();
 // SERVER CONFIGURATIONS
 app.set("trust proxy", 1);
 const corsOptions = {
-  origin: process.env.CLIENT_SIDE_URL,
+  origin: "*",
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    console.log("🔍 CORS Preflight for:", req.headers.origin);
+  }
+  next();
+});
 app.use(
   helmet({
     crossOriginEmbedderPolicy: false,
@@ -65,4 +71,8 @@ app.use("", BasicRouter);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   AppErrorHandler(err, req, res, next);
+});
+
+app.get("/ping", (req, res) => {
+  res.json({ status: "ok", origin: req.headers.origin });
 });
