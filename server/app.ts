@@ -8,6 +8,7 @@ import { CorsConfiguration } from "middlewares/cors-configuration.js";
 
 import BasicRouter from "./routes/basic-routes.js";
 import SessionRouter from "./routes/session-routes.js";
+import WebsiteRouter from "./routes/website-routes.js";
 
 export const app = express();
 
@@ -18,7 +19,7 @@ app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // API ROUTES
-app.use("/api/v1", SessionRouter);
+app.use("/api/v1", SessionRouter, WebsiteRouter);
 
 // BASIC ROUTES
 app.use("", BasicRouter);
