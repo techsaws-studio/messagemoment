@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { chatContext } from "@/chat-context";
+import { chatContext } from "@/contexts/chat-context";
 
 const Notification = () => {
   const { setShowNotification, showNotification } = chatContext();
