@@ -4,9 +4,9 @@ import express, { NextFunction, Request, Response, urlencoded } from "express";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import compression from "compression";
+import cors from "cors";
 
 import { AppErrorHandler } from "./middlewares/app-error-handler.js";
-import { CorsConfiguration } from "middlewares/cors-configuration.js";
 
 import BasicRouter from "./routes/basic-routes.js";
 import SessionRouter from "./routes/session-routes.js";
@@ -29,7 +29,14 @@ app.use(
   })
 );
 app.use(compression());
-app.use(CorsConfiguration);
+app.use(
+  cors({
+    origin: `${process.env.CLIENT_SIDE_URL}`,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(
   express.json({
     limit: "50mb",
