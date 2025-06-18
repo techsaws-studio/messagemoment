@@ -16,9 +16,31 @@ import MobileCloudFlare from "./cloudflare-components/mobile-cloudflare";
 import MobileDropdownModal from "./cloudflare-components/mobile-dropdown-modal";
 import NotificationTooltip from "./cloudflare-components/notification-tooltip";
 
+import { ApiRequest } from "@/utils/api-request";
+
 export const cloudFlareRef = createRef(null);
 
 const Cloudflare = () => {
+  const [loading, setLoading] = useState(true);
+
+  const [url, setUrl] = useState("");
+  const [urlType, setUrlType] = useState("");
+  const [secureCode, setSecureCode] = useState("");
+
+  const [open, setOpen] = useState(false);
+  const [openMobileModal, setOpenMobileModal] = useState(false);
+  const [openQrMobileModal, setOpenQrMobileModal] = useState(false);
+
+  const [IsCfVerified, setIsCfVerified] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isVisibleTooltip, setIsVisibleTooltip] = useState(false);
+  const [isCopyVisibleTooltip, setCopyIsVisibleTooltip] = useState(false);
+  const [isQrVisibleTooltip, setQrIsVisibleTooltip] = useState(false);
+  const [QrVisible, setQrVisisble] = useState(false);
+
+  const [selectedOption, setSelectedOption] = useState("Standard");
+  const [notificationtype, setNotificationType] = useState("reg");
+
   const router = useRouter();
   const buttonRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -31,30 +53,6 @@ const Cloudflare = () => {
     setdropdownSelected,
     setIsLoadingGenerateLink,
   } = chatContext();
-
-  const [loading, setLoading] = useState(true);
-  const [url, setUrl] = useState("");
-  const [urlType, setUrlType] = useState("");
-  const [secureCode, setSecureCode] = useState("");
-  const [open, setOpen] = useState(false);
-  const [IsCfVerified, setIsCfVerified] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const [notificationtype, setNotificationType] = useState("reg");
-  const [isVisibleTooltip, setIsVisibleTooltip] = useState(false);
-  const [isCopyVisibleTooltip, setCopyIsVisibleTooltip] = useState(false);
-  const [isQrVisibleTooltip, setQrIsVisibleTooltip] = useState(false);
-  const [QrVisible, setQrVisisble] = useState(false);
-  const [openMobileModal, setOpenMobileModal] = useState(false);
-  const [openQrMobileModal, setOpenQrMobileModal] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("Standard");
-
-  useEffect(() => {
-    setIsWalletConnected(false);
-    setSessionData((prev) => ({
-      ...prev,
-      type: "Standard",
-    }));
-  }, [isFirefox]);
 
   const toggleVisibility = (type) => {
     if (!isVisible) {
@@ -88,46 +86,35 @@ const Cloudflare = () => {
     }
   };
 
-  const generateRandomString = (length) => {
-    const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
-    let result = "";
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      result += characters[randomIndex];
-    }
-    setSessionData((prev) => ({
-      ...prev,
-      code: result,
-      url: `https://messagemoment.com/chat/${result}`,
-    }));
-    return result;
-  };
-
-  function generateRandomNumber() {
-    const result = Math.floor(1000 + Math.random() * 9000);
-    setSessionData((prev) => ({
-      ...prev,
-      secureCode: result,
-    }));
-    return result;
-  }
-
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-  }, []);
-
-  const handleRegenrateClick = () => {
-    setIsLoadingGenerateLink(true);
-    setTimeout(() => {
+  const handleRegenrateClick = async () => {
+    try {
       setIsVisibleTooltip(false);
-      setUrl(`https://messagemoment.com/chat/${generateRandomString(12)}`);
-      setSecureCode(generateRandomNumber());
-      setNotificationType("reg");
-      toggleVisibility("reg");
+      setIsLoadingGenerateLink(true);
+
+      const response = await ApiRequest("/generate-session-link", "POST", {
+        sessionType: sessionData.type.toLowerCase(),
+      });
+
+      if (response?.data?.sessionId) {
+        const generatedUrl = `https://messagemoment.com/chat/${response.data.sessionId}`;
+
+        setSessionData((prev) => ({
+          ...prev,
+          code: response.data.sessionId,
+          url: generatedUrl,
+          secureCode: response.data.sessionSecurityCode || "",
+        }));
+
+        setUrl(generatedUrl);
+        setSecureCode(response.data.sessionSecurityCode || "");
+        setNotificationType("reg");
+        toggleVisibility("reg");
+      }
+    } catch (error) {
+      console.error("Error regenerating session link:", error);
+    } finally {
       setIsLoadingGenerateLink(false);
-    }, 1000);
+    }
   };
 
   const handleHover = (type = "reg") => {
@@ -196,6 +183,20 @@ const Cloudflare = () => {
   };
 
   useEffect(() => {
+    setIsWalletConnected(false);
+    setSessionData((prev) => ({
+      ...prev,
+      type: "Standard",
+    }));
+  }, [isFirefox]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+  }, []);
+
+  useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -224,7 +225,6 @@ const Cloudflare = () => {
         url={url}
       />
 
-      {/* CloudFlare Section start For Mobile & Desktop UI */}
       <section
         ref={cloudFlareRef}
         className={`cloud-flare ${
@@ -233,6 +233,7 @@ const Cloudflare = () => {
       >
         <CloudflareHeader />
 
+        {/* *** MOBILE CLOUDFLARE BODY *** */}
         <MobileCloudFlare
           ref={buttonRef}
           openMobileModal={openMobileModal}
@@ -256,8 +257,8 @@ const Cloudflare = () => {
             url,
           }}
         />
-        
-        {/* *** Desktop cloudfalre body *** */}
+
+        {/* *** DESKTOP CLOUDFLARE BODY *** */}
         <div className="bottom">
           <CloudflareBody
             {...{
