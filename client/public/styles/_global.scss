@@ -275,7 +275,7 @@ html {
 
 // adjust header left right padding
 @media screen and (max-width: 1000px) {
-  .headercontainer{
+  .headercontainer {
     padding: 0 20px 0 20px;
   }
   .container {
@@ -315,16 +315,15 @@ html {
     color: white;
     font-size: 14px;
   }
-  &.chatScreenPopup{
+  &.chatScreenPopup {
     position: absolute !important;
     top: -9px;
   }
-
 }
 
-@media screen and (max-width: 1000px){
+@media screen and (max-width: 1000px) {
   .notification-popup {
-    &.chatScreenPopup{
+    &.chatScreenPopup {
       position: fixed !important;
       top: 86px;
     }
@@ -337,13 +336,11 @@ html {
     height: fit-content;
     min-height: 45px;
     padding: 10px 30px;
-    p{
+    p {
       text-align: center;
     }
   }
 }
-
-
 
 // chat notification styles
 .chatNotification {
@@ -367,4 +364,65 @@ html {
     text-align: center;
     font-size: 14px;
   }
+}
+
+// SKELETON STYLING
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.skeleton {
+  background-color: #e5e7eb;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.skeleton-pulse {
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 468px 100%;
+}
+
+.skeleton-rounded {
+  border-radius: 4px;
+}
+
+.skeleton-rounded-md {
+  border-radius: 6px;
+}
+
+.skeleton-rounded-full {
+  border-radius: 50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-pulse {
+    animation: none;
+    background: #e5e7eb;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .skeleton-pulse {
+      background: #4b5563;
+    }
+  }
+}
+
+.skeleton-text {
+  height: 1rem;
+}
+
+.skeleton-inline {
+  display: inline-block;
+}
+
+.loading-container {
+  min-height: 20px;
+  display: flex;
+  align-items: center;
 }

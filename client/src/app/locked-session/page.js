@@ -1,8 +1,10 @@
+import React from "react";
+
 import SessionHeader from "@/components/session-header";
 import Session from "@/components/session/session";
-import React from "react";
-import LockImg from "@/assets/icons/lock.svg"
 import LockedSessionContent from "@/components/locked-session-content";
+
+import LockImg from "@/assets/icons/lock.svg"
 
 function LockedSession() {
   return (

@@ -1,4 +1,4 @@
-import { chatContext } from "@/chat-context";
+import { chatContext } from "@/contexts/chat-context";
 import React from "react";
 
 const ChatNotification = () => {

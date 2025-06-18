@@ -6,13 +6,13 @@ import lock_grey from "@/assets/icons/chat/lock_grey.svg";
 import pin from "@/assets/icons/chat/pin.svg";
 import alert from "@/assets/icons/chat/red_alert.svg";
 import warning_sign from "@/assets/icons/chat/warning_sign.svg";
-import { chatContext } from "@/chat-context";
+import { chatContext } from "@/contexts/chat-context";
 import { messageType, scrollToBottom, USER_HANDERLS } from "@/dummy-data";
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import Typed from "typed.js";
 import { getMessageClass } from "./chat-messages-utils";
-import useCheckIsMobileView from "@/hook/useCheckIsMobileView";
+import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
 import { messageContainerRef } from "./messagesBox";
 
 /**

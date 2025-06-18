@@ -3,7 +3,7 @@ import FaqIcon from "@/assets/icons/faqHero.svg";
 import IconSearch from "@/assets/icons/icon_search.svg";
 import RightArrow from "@/assets/icons/rightArrow.svg";
 import { Faqcommandlist, Faqs } from "@/dummy-data";
-import useCheckIsMobileView from "@/hook/useCheckIsMobileView";
+import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
 import Image from "next/image";
 import React, { createRef, useEffect, useState } from "react";
 import NoFaqFound from "./no-faq-found";

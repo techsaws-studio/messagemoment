@@ -1,7 +1,7 @@
 import React from "react";
 import { Spin } from "antd";
 
-import { chatContext } from "@/chat-context";
+import { chatContext } from "@/contexts/chat-context";
 
 import CustomTurnstile from "@/components/custom-turnstile";
 

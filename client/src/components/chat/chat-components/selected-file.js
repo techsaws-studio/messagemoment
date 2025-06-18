@@ -1,7 +1,7 @@
 import React from "react";
 import grey_cross from "@/assets/icons/chat/grey_icon.svg";
 import Image from "next/image";
-import { chatContext } from "@/chat-context";
+import { chatContext } from "@/contexts/chat-context";
 import { getUploadIconType } from "@/dummy-data";
 
 const SelectedFileView = () => {

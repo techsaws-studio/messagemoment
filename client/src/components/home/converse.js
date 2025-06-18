@@ -1,5 +1,5 @@
 "use client";
-import { chatContext } from "@/chat-context";
+import { chatContext } from "@/contexts/chat-context";
 import Image from "next/image";
 import { useRef } from "react";
 import scroll_down from "../../../src/assets/icons/scroll_down.svg";

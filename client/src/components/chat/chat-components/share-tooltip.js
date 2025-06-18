@@ -6,7 +6,7 @@ import message from "@/assets/icons/chat/messageIcon.svg";
 import messenger from "@/assets/icons/chat/messenger.svg";
 import telegram from "@/assets/icons/chat/telegram.svg";
 import whatsapp from "@/assets/icons/chat/whatsapp.svg";
-import { chatContext } from "@/chat-context";
+import { chatContext } from "@/contexts/chat-context";
 import { ShareLink } from "@/dummy-data";
 import ClipboardJS from "clipboard";
 import Image from "next/image";

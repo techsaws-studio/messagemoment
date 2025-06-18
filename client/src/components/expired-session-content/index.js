@@ -1,18 +1,57 @@
-'use client';
-import React from "react";
+"use client";
+
+import React, { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+
+import { useClientHydration } from "../../hooks/useClientHydration";
+
 import Button from "../button";
+import { Skeleton } from "../skeleton";
+
+const SessionUrlDisplay = () => {
+  const searchParams = useSearchParams();
+  const sessionId = searchParams.get("sessionId");
+
+  return (
+    <p className="small link">
+      https://messagemoment.com/{sessionId || "unknown"}
+    </p>
+  );
+};
+
+const SessionUrlSkeleton = () => (
+  <div className="small link loading-container">
+    <Skeleton
+      width="280px"
+      height="16px"
+      className="skeleton-inline"
+      variant="text"
+    />
+  </div>
+);
 
 function ExpiredSessionContent() {
+  const isHydrated = useClientHydration();
+
   return (
     <div className="expired-content">
       <h4>
         The chat session you were invited to with this link is no longer
         available
       </h4>
-      <p className="small link">https://messagemoment.com/5qjjc37f9sn</p>
+
+      {isHydrated ? (
+        <Suspense fallback={<SessionUrlSkeleton />}>
+          <SessionUrlDisplay />
+        </Suspense>
+      ) : (
+        <SessionUrlSkeleton />
+      )}
+
       <p className="small return-text">
         Return to the homepage to generate a new chat session.
       </p>
+
       <Button
         text="Return to Homepage"
         className="btn-primary text-white responsive-button"

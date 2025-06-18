@@ -1,6 +1,6 @@
 import cross from "@/assets/icons/chat/cross.svg";
 import uploadfile from "@/assets/icons/chat/uploadfile.svg";
-import { chatContext } from "@/chat-context";
+import { chatContext } from "@/contexts/chat-context";
 import { getUploadIconType } from "@/dummy-data";
 import { Progress } from "antd";
 import Image from "next/image";

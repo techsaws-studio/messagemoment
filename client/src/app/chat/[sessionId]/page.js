@@ -5,9 +5,9 @@ import SideCookieModal from "@/components/home/sideCookieModal";
 function Chat() {
   return (
     <>
-        <ChatHeader />
-        <MessageBox />
-        <SideCookieModal />
+      <ChatHeader />
+      <MessageBox />
+      <SideCookieModal />
     </>
   );
 }

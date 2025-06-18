@@ -10,7 +10,7 @@ import qrcodeGray from "@/assets/icons/qrcode-grey.svg";
 import qrcode from "@/assets/icons/qrcode.svg";
 import copyGray from "@/assets/icons/copy-grey.svg";
 import copy from "@/assets/icons/copy.svg";
-import { chatContext } from "@/chat-context";
+import { chatContext } from "@/contexts/chat-context";
 import CustomTurnstile from "@/components/custom-turnstile";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";

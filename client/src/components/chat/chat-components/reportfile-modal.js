@@ -9,7 +9,7 @@ import Button from "@/components/button";
 import Dropdown from "@/assets/icons/dropdown.svg";
 import dropDownIcon from "@/assets/icons/dropdown_Icon.svg";
 import { reason_options } from "@/dummy-data";
-import { chatContext } from "@/chat-context";
+import { chatContext } from "@/contexts/chat-context";
 
 const ReportFileModal = () => {
   const { setShowReportfileModal, showReportfileModal } = chatContext();

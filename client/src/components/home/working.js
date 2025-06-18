@@ -6,7 +6,7 @@ import genLink from "../../assets/icons/genLink.svg";
 import share from "../../assets/icons/share.svg";
 import expiry from "../../assets/icons/timer.svg";
 import session from "../../assets/icons/endSession.svg";
-import useCheckIsMobileView from "@/hook/useCheckIsMobileView";
+import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
 
 const Working = () => {
   const [hoveredCard, setHoveredCard] = useState(0);

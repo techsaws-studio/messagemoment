@@ -1,7 +1,7 @@
 "use client";
 import sendBtn from "@/assets/icons/chat/sendBtn.svg";
 import sendBtnGrey from "@/assets/icons/chat/send_grey.svg";
-import { chatContext } from "@/chat-context";
+import { chatContext } from "@/contexts/chat-context";
 import {
   checkIsConnected,
   connectPhantomDeeplinking,
@@ -15,8 +15,8 @@ import {
   SESSION_TYPE,
   USER_HANDERLS,
 } from "@/dummy-data";
-import useCheckIsMobileView from "@/hook/useCheckIsMobileView";
-import usePhantomWallet from "@/hook/usePhantomWallet";
+import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
+import usePhantomWallet from "@/hooks/usePhantomWallet";
 import { createRef, useEffect, useRef, useState } from "react";
 import {
   isSafari as isSAF,

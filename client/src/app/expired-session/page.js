@@ -1,7 +1,9 @@
+import React from "react";
+
 import ExpiredSessionContent from "@/components/expired-session-content";
 import SessionHeader from "@/components/session-header";
 import Session from "@/components/session/session";
-import React from "react";
+
 import ExpiredsessionImg from "@/assets/icons/expired-session.svg";
 
 function ExpiredSession() {

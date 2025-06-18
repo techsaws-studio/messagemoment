@@ -1,4 +1,4 @@
-import ChatContextProvider from "@/chat-context";
+import ChatContextProvider from "@/contexts/chat-context";
 import "../../public/styles/main.scss";
 
 export const metadata = {

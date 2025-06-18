@@ -8,6 +8,9 @@
 # PRODUCTION
 /client/build
 
+# NEXT JS
+/client/.next
+
 # MISC
 /client/.DS_Store
 /server/.DS_Store

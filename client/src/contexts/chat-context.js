@@ -1,5 +1,7 @@
 "use client";
+
 import React, { createContext, useContext, useState } from "react";
+
 const ChatContext = createContext();
 const ChatContextProvider = ({ children }) => {
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -44,7 +46,6 @@ const ChatContextProvider = ({ children }) => {
 
   // Wallet Exist or not
   const [isWalletExist, setIsWalletExist] = useState(true);
-
 
   // dropdown selected
   const [dropdownSelected, setdropdownSelected] = useState("Standard");

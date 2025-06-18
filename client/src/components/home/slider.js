@@ -13,7 +13,7 @@ import laptop from "../../assets/icons/laptop.svg";
 import tablet from "../../assets/icons/tablet.svg";
 import Tv from "../../assets/icons/television.svg";
 import Consoles from "../../assets/icons/controller.svg";
-import useCheckIsMobileView from "@/hook/useCheckIsMobileView";
+import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
 
 const Sliders = () => {
   const [scrollPosition, setScrollPosition] = useState(0);

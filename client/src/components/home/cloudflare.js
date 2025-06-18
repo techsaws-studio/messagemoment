@@ -4,7 +4,7 @@ import { createRef, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { isFirefox } from "react-device-detect";
 
-import { chatContext } from "@/chat-context";
+import { chatContext } from "@/contexts/chat-context";
 
 import { handleCopyText } from "@/dummy-data";
 

@@ -16,7 +16,7 @@ import chat_shareIcon from "@/assets/icons/chat/chat_mobile_icon/share.svg";
 import chat_uploadIcon from "@/assets/icons/chat/chat_mobile_icon/upload.svg";
 import ads from "@/assets/icons/chat/chat_mobile_icon/ads.svg";
 import ClipboardJS from "clipboard";
-import { chatContext } from "@/chat-context";
+import { chatContext } from "@/contexts/chat-context";
 import { useRouter } from "next/navigation";
 
 // Mobile icons
@@ -25,7 +25,7 @@ import upload_m from "@/assets/icons/chat/chat_mobile_icon/upload_m.svg";
 import close_menu from "@/assets/icons/chat/chat_mobile_icon/close_menu.svg";
 import grey_logo from "@/assets/icons/chat/grey_logo.png";
 import { getYear } from "date-fns";
-import useCheckIsMobileView from "@/hook/useCheckIsMobileView";
+import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
 import Button from "../button";
 import heartIcon from "@/assets/icons/heart_white.svg";
 import MMLogo from "@/assets/icons/chat/mmLogo";

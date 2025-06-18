@@ -2,9 +2,9 @@ import Session from "@/components/session/session";
 import React, { useState } from "react";
 import conversation from "@/assets/icons/chat/conversation.svg";
 import Button from "@/components/button";
-import { chatContext } from "@/chat-context";
+import { chatContext } from "@/contexts/chat-context";
 import { useRouter } from "next/navigation";
-import useCheckIsMobileView from "@/hook/useCheckIsMobileView";
+import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
 import Image from "next/image";
 import Blur from "@/assets/images/blur.png";
 

@@ -2,7 +2,7 @@ import { Tooltip } from "antd";
 import React from "react";
 import leave_tooltip from "@/assets/icons/chat/leave_tooltip.svg";
 import Image from "next/image";
-import { chatContext } from "@/chat-context";
+import { chatContext } from "@/contexts/chat-context";
 
 const DisconnectBtn = () => {
   // context

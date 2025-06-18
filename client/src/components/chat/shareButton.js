@@ -7,7 +7,7 @@ import share from "@/assets/icons/chat/share.svg";
 import small_arrow from "@/assets/icons/chat/small_arrow.svg";
 import telegram from "@/assets/icons/chat/telegram.svg";
 import whatsapp from "@/assets/icons/chat/whatsapp.svg";
-import { chatContext } from "@/chat-context";
+import { chatContext } from "@/contexts/chat-context";
 import { ShareLink } from "@/dummy-data";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
