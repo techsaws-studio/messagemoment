@@ -3,12 +3,13 @@ export class HealthMonitor {
     this.isHealthy = true;
     this.consecutiveFailures = 0;
     this.maxFailures = 3;
-    this.checkInterval = 30000;
-    this.quickCheckInterval = 10000;
-    this.timeoutDuration = 15000;
+    this.checkInterval = 30000; // 30 seconds
+    this.quickCheckInterval = 10000; // 10 seconds
+    this.timeoutDuration = 15000; // 15 seconds
     this.listeners = [];
     this.monitoringInterval = null;
     this.lastHealthData = null;
+    this.correctEndpoint = null;
   }
 
   subscribe(callback) {
@@ -24,29 +25,86 @@ export class HealthMonitor {
     this.listeners.forEach((callback) => callback(status));
   }
 
+  async detectEndpoint() {
+    if (this.correctEndpoint) {
+      return this.correctEndpoint;
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const possiblePaths = ["/api/v1/website-health"];
+
+    console.log("🔍 Auto-detecting correct health endpoint...");
+
+    for (const path of possiblePaths) {
+      try {
+        const testUrl = `${baseUrl}${path}`;
+        console.log(`🧪 Testing: ${testUrl}`);
+
+        const response = await fetch(testUrl, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          mode: "cors",
+          credentials: "omit",
+          signal: AbortSignal.timeout(10000), // 10 second timeout
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success !== undefined) {
+            this.correctEndpoint = path;
+            console.log(`✅ Found correct endpoint: ${testUrl}`);
+            return path;
+          }
+        }
+      } catch (error) {
+        console.log(`❌ Failed ${path}: ${error.message}`);
+        continue;
+      }
+    }
+
+    // If no endpoint works, default to the most common one
+    console.error(
+      "🚨 No working endpoint found, defaulting to /website-health"
+    );
+    this.correctEndpoint = "/website-health";
+    return this.correctEndpoint;
+  }
+
   async checkHealth() {
     try {
+      const endpoint = await this.detectEndpoint();
+      const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+      const fullUrl = `${baseUrl}${endpoint}`;
+
+      console.log(`🔍 Health check: ${fullUrl}`);
+
       const controller = new AbortController();
       const timeoutId = setTimeout(
         () => controller.abort(),
         this.timeoutDuration
       );
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/website-health`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          signal: controller.signal,
-        }
-      );
+      const response = await fetch(fullUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        mode: "cors",
+        credentials: "omit",
+        signal: controller.signal,
+      });
 
       clearTimeout(timeoutId);
 
+      console.log(`📊 Response: ${response.status} ${response.statusText}`);
+
       if (response.ok) {
         const data = await response.json();
+        console.log("📋 Health data:", data);
 
         if (data.success && data.status === "healthy") {
           if (!this.isHealthy) {
@@ -85,6 +143,10 @@ export class HealthMonitor {
       } else if (response.status === 429) {
         console.warn("⏰ Health check rate limited, skipping...");
         return { healthy: this.isHealthy, rateLimited: true };
+      } else if (response.status === 404) {
+        console.error("🚨 Health endpoint not found - trying to re-detect...");
+        this.correctEndpoint = null;
+        throw new Error("Health endpoint not found");
       } else {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
@@ -103,11 +165,17 @@ export class HealthMonitor {
         let errorMessage =
           "Server currently unavailable. Please try again later!";
 
+        // Customize message based on error type
         if (error.name === "AbortError") {
           errorMessage =
             "Server response timeout. Please check your connection.";
-        } else if (error.message.includes("fetch")) {
+        } else if (
+          error.message.includes("fetch") ||
+          error.message.includes("CORS")
+        ) {
           errorMessage = "Unable to connect to server. Please try again later.";
+        } else if (error.message.includes("not found")) {
+          errorMessage = "Server configuration error. Please contact support.";
         }
 
         this.notifyListeners({
@@ -129,6 +197,9 @@ export class HealthMonitor {
 
   startMonitoring() {
     if (this.monitoringInterval) return;
+
+    console.log("🏥 Starting health monitoring...");
+    console.log(`📡 Backend URL: ${process.env.NEXT_PUBLIC_BACKEND_URL}`);
 
     this.checkHealth();
 
@@ -155,6 +226,7 @@ export class HealthMonitor {
       isHealthy: this.isHealthy,
       consecutiveFailures: this.consecutiveFailures,
       lastHealthData: this.lastHealthData,
+      correctEndpoint: this.correctEndpoint,
     };
   }
 
@@ -162,6 +234,37 @@ export class HealthMonitor {
     console.log("🔄 Manual health check initiated...");
     const result = await this.checkHealth();
     return result;
+  }
+
+  async debugEndpoints() {
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const paths = ["/api/v1/website-health"];
+
+    console.log("🐛 Debug: Testing all possible endpoints...");
+
+    for (const path of paths) {
+      try {
+        const testUrl = `${baseUrl}${path}`;
+        const response = await fetch(testUrl, {
+          method: "GET",
+          mode: "cors",
+          credentials: "omit",
+        });
+
+        console.log(
+          `${response.ok ? "✅" : "❌"} ${testUrl} → ${response.status} ${
+            response.statusText
+          }`
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(`📋 Response data:`, data);
+        }
+      } catch (error) {
+        console.log(`❌ ${baseUrl}${path} → Error: ${error.message}`);
+      }
+    }
   }
 }
 
