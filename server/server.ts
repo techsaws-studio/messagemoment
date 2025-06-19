@@ -12,7 +12,7 @@ import { SetupCleanupServices } from "services/startup-cleanup-service.js";
 import { SetupProcessHandlersService } from "services/startup-process-handlers-service.js";
 
 const SERVER = createServer(app);
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 3000;
 
 HandleException();
 InitializeSocket(SERVER);
