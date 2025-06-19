@@ -24,12 +24,15 @@ const allowedOrigins: string[] =
         "http://127.0.0.1:3000",
         "https://messagemoment-one.vercel.app",
       ];
-const corsOptions = {
+const corsOptions = { 
   origin: (
     origin: string | undefined,
     callback: (err: Error | null, allow?: boolean) => void
   ) => {
-    if (!origin) return callback(null, true);
+    if (!origin) {
+      console.warn("⚠️ No Origin header found on request. Denying CORS.");
+      return callback(new Error("No origin header"));
+    }
 
     if (allowedOrigins.includes(origin)) {
       console.log(`✅ CORS allowed for origin: ${origin}`);
@@ -51,7 +54,7 @@ const corsOptions = {
     "X-File-Name",
   ],
   exposedHeaders: ["Set-Cookie"],
-  maxAge: 86400, // 24 hours
+  maxAge: 86400,
   optionsSuccessStatus: 200,
 };
 app.use((req, res, next) => {
@@ -120,6 +123,12 @@ app.get("/ping", (req, res) => {
     allowedOrigins: allowedOrigins,
   });
 });
+
+app.options("/test-cors", cors(corsOptions));
+app.get("/test-cors", cors(corsOptions), (req, res) => {
+  res.json({ message: "CORS OK" });
+});
+
 
 // API ROUTES
 app.use("/api/v1", SessionRouter);
