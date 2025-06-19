@@ -15,19 +15,48 @@ export const app = express();
 
 // SERVER CONFIGURATIONS
 app.set("trust proxy", 1);
-const corsOptions = {
-  origin: "*",
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
+const allowedOrigins =
+  process.env.NODE_ENV === "production"
+    ? [
+        "https://messagemoment-one.vercel.app",
+        "https://messagemoment-one.vercel.app/",
+      ]
+    : [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3000",
+        "https://messagemoment-one.vercel.app",
+      ];
 
-app.use((req, res, next) => {
-  if (req.method === "OPTIONS") {
-    console.log("🔍 CORS Preflight for:", req.headers.origin);
-  }
-  next();
-});
+const corsOptions = {
+  origin: (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void
+  ) => {
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`🚫 CORS blocked origin: ${origin}`);
+      callback(new Error(`Origin ${origin} not allowed by CORS policy`));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "X-Requested-With",
+    "Accept",
+    "Origin",
+    "Cache-Control",
+    "X-File-Name",
+  ],
+  exposedHeaders: ["Set-Cookie"],
+  maxAge: 86400,
+  optionsSuccessStatus: 200,
+};
 app.use(
   helmet({
     crossOriginEmbedderPolicy: false,
