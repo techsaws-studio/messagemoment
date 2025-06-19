@@ -15,12 +15,9 @@ export const app = express();
 
 // SERVER CONFIGURATIONS
 app.set("trust proxy", 1);
-const allowedOrigins =
+const allowedOrigins: string[] =
   process.env.NODE_ENV === "production"
-    ? [
-        "https://messagemoment-one.vercel.app",
-        "https://messagemoment-one.vercel.app/",
-      ]
+    ? ["https://messagemoment-one.vercel.app"]
     : [
         "http://localhost:3000",
         "http://localhost:3001",
@@ -75,13 +72,8 @@ app.use((req, res, next) => {
 
   next();
 });
+app.options("*", cors(corsOptions));
 app.use(cors(corsOptions));
-app.options("*", (req, res) => {
-  console.log(
-    `✅ Explicit OPTIONS handled for ${req.url} from ${req.headers.origin}`
-  );
-  res.sendStatus(200);
-});
 app.use(
   helmet({
     crossOriginEmbedderPolicy: false,
