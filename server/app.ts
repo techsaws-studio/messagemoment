@@ -7,6 +7,11 @@ import compression from "compression";
 import cors from "cors";
 
 import { AppErrorHandler } from "./middlewares/app-error-handler.js";
+import {
+  CorsHeadersMiddleware,
+  corsOptions,
+  getAllowedOrigins,
+} from "./middlewares/cors-middleware.js";
 
 import BasicRouter from "./routes/basic-routes.js";
 import SessionRouter from "./routes/session-routes.js";
@@ -15,67 +20,8 @@ export const app = express();
 
 // SERVER CONFIGURATIONS
 app.set("trust proxy", 1);
-const allowedOrigins: string[] =
-  process.env.NODE_ENV === "production"
-    ? ["https://messagemoment-one.vercel.app"]
-    : [
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://127.0.0.1:3000",
-        "https://messagemoment-one.vercel.app",
-      ];
-const corsOptions = { 
-  origin: (
-    origin: string | undefined,
-    callback: (err: Error | null, allow?: boolean) => void
-  ) => {
-    if (!origin) {
-      console.warn("⚠️ No Origin header found on request. Denying CORS.");
-      return callback(new Error("No origin header"));
-    }
-
-    if (allowedOrigins.includes(origin)) {
-      console.log(`✅ CORS allowed for origin: ${origin}`);
-      callback(null, true);
-    } else {
-      console.warn(`🚫 CORS blocked origin: ${origin}`);
-      callback(new Error(`Origin ${origin} not allowed by CORS policy`));
-    }
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-  allowedHeaders: [
-    "Content-Type",
-    "Authorization",
-    "X-Requested-With",
-    "Accept",
-    "Origin",
-    "Cache-Control",
-    "X-File-Name",
-  ],
-  exposedHeaders: ["Set-Cookie"],
-  maxAge: 86400,
-  optionsSuccessStatus: 200,
-};
-app.use((req, res, next) => {
-  console.log(
-    `📡 ${req.method} ${req.url} from origin: ${req.headers.origin || "none"}`
-  );
-
-  if (req.method === "OPTIONS") {
-    console.log(`🔍 CORS Preflight detected for: ${req.url}`);
-    console.log(`🌍 Origin: ${req.headers.origin}`);
-    console.log(
-      `🔧 Requested Headers: ${req.headers["access-control-request-headers"]}`
-    );
-    console.log(
-      `⚡ Requested Method: ${req.headers["access-control-request-method"]}`
-    );
-  }
-
-  next();
-});
-app.options("*", cors(corsOptions));
+const allowedOrigins = getAllowedOrigins();
+app.use(CorsHeadersMiddleware);
 app.use(cors(corsOptions));
 app.use(
   helmet({
@@ -111,9 +57,8 @@ app.use(
   })
 );
 app.use(cookieParser(process.env.COOKIE_SECRET));
-
-// HEALTH CHECK ROUTE
-app.get("/ping", (req, res) => {
+  
+app.get("/ping", (req: Request, res: Response): void => {
   console.log(`🏓 Ping received from: ${req.headers.origin || "direct"}`);
   res.json({
     status: "ok",
@@ -123,21 +68,20 @@ app.get("/ping", (req, res) => {
     allowedOrigins: allowedOrigins,
   });
 });
-
 app.options("/test-cors", cors(corsOptions));
-app.get("/test-cors", cors(corsOptions), (req, res) => {
-  res.json({ message: "CORS OK" });
-});
+app.get(
+  "/test-cors",
+  cors(corsOptions),
+  (req: Request, res: Response): void => {
+    res.json({ message: "CORS OK" });
+  }
+);
 
-
-// API ROUTES
 app.use("/api/v1", SessionRouter);
-
-// BASIC ROUTES
 app.use("", BasicRouter);
 
 // ERROR HANDLER
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+app.use((err: any, req: Request, res: Response, next: NextFunction): void => {
   if (err.message.includes("CORS")) {
     console.error(
       `🚫 CORS Error: ${err.message} for origin: ${req.headers.origin}`

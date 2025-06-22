@@ -3,22 +3,28 @@ import "dotenv/config";
 import { Server as SocketIOServer } from "socket.io";
 import { Server as HttpServer } from "http";
 
-const corsOriginsEnv = process.env.CORS_ORIGINS || "";
-const allowedOrigins = corsOriginsEnv.split(",").map((o) => o.trim());
+import { getAllowedOrigins } from "./cors-middleware.js";
 
 export const SocketConfiguration = (server: HttpServer): SocketIOServer => {
+  const allowedOrigins = getAllowedOrigins();
+
   return new SocketIOServer(server, {
     cors: {
       origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes("*")) {
+        if (!origin) {
+          console.log("✅ Socket: No origin header - allowing connection");
           return callback(null, true);
         }
 
         if (allowedOrigins.includes(origin)) {
+          console.log(`✅ Socket: CORS allowed for origin: ${origin}`);
           return callback(null, true);
         }
 
-        console.warn(`❌ CORS blocked socket origin: ${origin}`);
+        console.warn(`❌ Socket: CORS blocked origin: ${origin}`);
+        console.warn(
+          `🔧 Socket: Allowed origins: ${JSON.stringify(allowedOrigins)}`
+        );
         return callback(new Error("Socket CORS policy violation"), false);
       },
       methods: ["GET", "POST"],
