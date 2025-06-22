@@ -15,6 +15,8 @@ const InitializeSocket = (server: HttpServer): void => {
     console.info(`✅ Socket connected: ${socket.id}`);
     SocketEventsRegistry(io, socket);
   });
+
+  console.log(`🚀 Socket.IO initialization complete`);
 };
 
 export { io, InitializeSocket };

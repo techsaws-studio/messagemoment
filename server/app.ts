@@ -8,43 +8,61 @@ import cors from "cors";
 
 import { AppErrorHandler } from "./middlewares/app-error-handler.js";
 import {
-  CorsHeadersMiddleware,
   corsOptions,
+  enhancedCorsMiddleware,
   getAllowedOrigins,
 } from "./middlewares/cors-middleware.js";
 
-import BasicRouter from "./routes/basic-routes.js";
 import SessionRouter from "./routes/session-routes.js";
 
 export const app = express();
 
 // SERVER CONFIGURATIONS
 app.set("trust proxy", 1);
+app.use(enhancedCorsMiddleware);
 const allowedOrigins = getAllowedOrigins();
-app.use(CorsHeadersMiddleware);
-app.use(cors(corsOptions));
+const isDevelopment = process.env.NODE_ENV !== "production";
 app.use(
   helmet({
     crossOriginEmbedderPolicy: false,
-    crossOriginResourcePolicy: { policy: "cross-origin" },
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        scriptSrc: ["'self'"],
-        imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: ["'self'", ...allowedOrigins],
-      },
+    crossOriginResourcePolicy: {
+      policy: isDevelopment ? "cross-origin" : "same-site",
     },
+    contentSecurityPolicy: isDevelopment
+      ? false
+      : {
+          directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            scriptSrc: ["'self'"],
+            imgSrc: ["'self'", "data:", "https:", "blob:"],
+            connectSrc: ["'self'", ...allowedOrigins, "wss:", "ws:"],
+            fontSrc: ["'self'", "https:", "data:"],
+            objectSrc: ["'none'"],
+            mediaSrc: ["'self'", "https:", "data:"],
+            frameSrc: ["'none'"],
+          },
+        },
   })
 );
-app.use(compression());
+app.use(
+  compression({
+    level: 6,
+    threshold: 1024,
+    filter: (req, res) => {
+      if (req.headers["x-no-compression"]) {
+        return false;
+      }
+      return compression.filter(req, res);
+    },
+  })
+)
 app.use(
   express.json({
     limit: "50mb",
     verify: (req, res, buf) => {
-      if (buf.length === 0) {
-        throw new Error("Empty request body");
+      if (req.method !== "GET" && req.method !== "HEAD" && buf.length === 0) {
+        console.warn(`⚠️ Empty request body for ${req.method} ${req.url}`);
       }
     },
   })
@@ -76,9 +94,18 @@ app.get(
     res.json({ message: "CORS OK" });
   }
 );
+app.use("*", (req: Request, res: Response): void => {
+  console.warn(`❌ 404 - Route not found: ${req.method} ${req.originalUrl}`);
+
+  res.status(404).json({
+    success: false,
+    error: "Route Not Found",
+    message: `The requested route ${req.method} ${req.originalUrl} was not found.`,
+    timestamp: new Date().toISOString(),
+  });
+});
 
 app.use("/api/v1", SessionRouter);
-app.use("", BasicRouter);
 
 // ERROR HANDLER
 app.use((err: any, req: Request, res: Response, next: NextFunction): void => {
