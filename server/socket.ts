@@ -2,8 +2,9 @@ import { Server as HttpServer } from "http";
 import { Server as SocketIOServer } from "socket.io";
 
 import { SocketConfiguration } from "./middlewares/socket-configuration.js";
-import { SocketEventsRegistry } from "./routes/socket-events-registry.js";
 import { GlobalSocketListeners } from "./middlewares/socket-globals.js";
+
+import { SocketEventsRegistry } from "./routes/socket-events-registry.js";
 
 let io: SocketIOServer;
 
