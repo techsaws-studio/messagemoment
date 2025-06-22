@@ -3,174 +3,36 @@ import "dotenv/config";
 import { Request, Response, NextFunction } from "express";
 import cors from "cors";
 
-import { CorsConfig } from "interfaces/middlewares-interface.js";
+const GetAllowedOrigins = (): string[] => {
+  const isDev = process.env.NODE_ENV !== "production";
 
-export const getCorsConfiguration = (): CorsConfig => {
-  const isDevelopment = process.env.NODE_ENV !== "production";
-  const allowAllOrigins = process.env.CORS_ALLOW_ALL === "true";
-  const enableDebugLogging = process.env.CORS_DEBUG === "true" || isDevelopment;
-
-  return {
-    allowedOrigins: getAllowedOrigins(),
-    isDevelopment,
-    allowAllOrigins,
-    enableDebugLogging,
-  };
-};
-
-export const getAllowedOrigins = (): string[] => {
-  const envOrigins =
-    process.env.CORS_ORIGINS?.split(",")
-      .map((o) => o.trim())
-      .filter(Boolean) || [];
-
-  const productionOrigins = [
-    "https://messagemoment-one.vercel.app",
-    "https://messagemoment.com",
-    "https://www.messagemoment.com",
-    "https://messagemoment-production-ecf6.up.railway.app",
-
-    // Add Railway auto-generated domains
-    "https://*.up.railway.app",
-    "https://*.railway.app",
-  ];
-
-  const developmentOrigins = [
-    // Local development
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://localhost:5500",
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:3001",
-    "http://127.0.0.1:5500",
-    "http://0.0.0.0:3000",
-    "http://0.0.0.0:3001",
-
-    // Common dev ports
-    "http://localhost:8080",
-    "http://localhost:4200",
-    "http://localhost:5173",
-    "http://localhost:3333",
-    "http://localhost:8000",
-    "http://localhost:8001",
-
-    // File protocol for local HTML files
-    "file://",
-    "null", // Some browsers send this for file:// protocol
-
-    // Online development tools
-    "https://railway.com",
-    "https://cdpn.io",
-    "https://jsfiddle.net",
-    "https://codesandbox.io",
-    "https://stackblitz.com",
-    "https://codepen.io",
-
-    // Railway domains
-    "https://*.up.railway.app",
-    "https://*.railway.app",
-  ];
-
-  if (process.env.NODE_ENV === "production") {
-    return [...productionOrigins, ...envOrigins];
+  if (isDev) {
+    return ["*"];
   }
 
-  return [...developmentOrigins, ...productionOrigins, ...envOrigins];
+  return ["https://messagemoment.com", "https://www.messagemoment.com"];
 };
 
-const isOriginAllowed = (
-  origin: string | undefined,
-  allowedOrigins: string[]
-): boolean => {
-  if (!origin) return true;
+export const CorsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    const allowedOrigins = GetAllowedOrigins();
 
-  if (allowedOrigins.includes(origin)) return true;
-
-  for (const allowedOrigin of allowedOrigins) {
-    if (allowedOrigin.includes("*")) {
-      const pattern = allowedOrigin.replace(/\*/g, ".*");
-      const regex = new RegExp(`^${pattern}$`);
-      if (regex.test(origin)) return true;
-    }
-  }
-
-  if (process.env.NODE_ENV !== "production") {
-    const devPattern =
-      /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?$/;
-    if (devPattern.test(origin)) return true;
-
-    if (origin.startsWith("file://") || origin === "null") return true;
-
-    if (origin.includes(".railway.app") || origin.includes(".up.railway.app"))
-      return true;
-  }
-
-  return false;
-};
-
-export const corsOptions: cors.CorsOptions = {
-  origin: (
-    origin: string | undefined,
-    callback: (err: Error | null, allow?: boolean) => void
-  ) => {
-    const config = getCorsConfiguration();
-
-    if (config.isDevelopment && config.allowAllOrigins) {
-      if (config.enableDebugLogging) {
-        console.log(`🔓 CORS: Allowing all origins in development mode`);
-      }
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`🔓 DEV MODE: Allowing origin: ${origin || "no-origin"}`);
       return callback(null, true);
     }
 
-    const isAllowed = isOriginAllowed(origin, config.allowedOrigins);
-
-    if (config.enableDebugLogging) {
-      console.log(
-        `🔍 CORS Check: ${origin || "no-origin"} - ${
-          isAllowed ? "✅ ALLOWED" : "❌ BLOCKED"
-        }`
-      );
-      if (!isAllowed && origin) {
-        console.log(`📋 Allowed origins:`, config.allowedOrigins.slice(0, 5));
-      }
-    }
-
-    if (isAllowed) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      const error = new Error(
-        `CORS policy violation: Origin '${origin}' not allowed`
-      );
-      callback(error, false);
+      console.log(`❌ BLOCKED: ${origin}`);
+      callback(new Error(`CORS: Origin ${origin} not allowed`), false);
     }
   },
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"],
-  allowedHeaders: [
-    "Content-Type",
-    "Authorization",
-    "X-Requested-With",
-    "Accept",
-    "Origin",
-    "Cache-Control",
-    "X-File-Name",
-    "X-CSRF-Token",
-    "X-Client-Version",
-    "User-Agent",
-    "Access-Control-Allow-Origin",
-    "Access-Control-Allow-Headers",
-    "Access-Control-Allow-Methods",
-  ],
-  exposedHeaders: [
-    "Set-Cookie",
-    "X-Total-Count",
-    "X-Rate-Limit-Remaining",
-    "X-Rate-Limit-Reset",
-    "Access-Control-Allow-Origin",
-  ],
-  maxAge: 86400, // 24 hours
-  optionsSuccessStatus: 200,
-  preflightContinue: false,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Origin", "Accept"],
+  maxAge: 86400,
 };
 
 export const CorsMiddleware = (
@@ -178,64 +40,25 @@ export const CorsMiddleware = (
   res: Response,
   next: NextFunction
 ): void => {
-  const config = getCorsConfiguration();
-  const origin =
-    req.get("Origin") || req.get("Referer")?.split("/").slice(0, 3).join("/");
+  const origin = req.headers.origin;
 
-  if (config.enableDebugLogging) {
-    console.log(`📡 ${req.method} ${req.path} from: ${origin || "no-origin"}`);
-    if (req.method === "OPTIONS") {
-      console.log(`🔍 Preflight request headers:`, req.headers);
-    }
-  }
-
-  if (origin && isOriginAllowed(origin, config.allowedOrigins)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  } else if (!origin || config.allowAllOrigins) {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-  }
-
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET,POST,PUT,DELETE,OPTIONS,PATCH,HEAD"
+  res.header(
+    "Access-Control-Allow-Origin",
+    process.env.NODE_ENV !== "production" ? "*" : origin
   );
-  res.setHeader(
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header(
     "Access-Control-Allow-Headers",
-    "Origin,X-Requested-With,Content-Type,Accept,Authorization,Cache-Control,X-File-Name,X-CSRF-Token,X-Client-Version,User-Agent,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Access-Control-Allow-Methods"
+    "Content-Type,Authorization,Origin,Accept"
   );
-  res.setHeader(
-    "Access-Control-Expose-Headers",
-    "Set-Cookie,X-Total-Count,X-Rate-Limit-Remaining,X-Rate-Limit-Reset,Access-Control-Allow-Origin"
-  );
-  res.setHeader("Access-Control-Max-Age", "86400");
 
   if (req.method === "OPTIONS") {
-    if (config.enableDebugLogging) {
-      console.log(`✅ Preflight response sent for ${req.path}`);
-    }
-    res.status(204).end();
+    res.status(200).end();
     return;
   }
 
   next();
 };
 
-export const corsHealthCheck = (req: Request, res: Response): void => {
-  const config = getCorsConfiguration();
-  const origin = req.get("Origin");
-
-  res.json({
-    status: "ok",
-    cors: {
-      origin: origin || "no-origin",
-      allowed: isOriginAllowed(origin, config.allowedOrigins),
-      environment: process.env.NODE_ENV,
-      allowedOrigins: config.isDevelopment
-        ? config.allowedOrigins
-        : "***HIDDEN***",
-      allowAll: config.allowAllOrigins,
-      timestamp: new Date().toISOString(),
-    },
-  });
-};
+export { GetAllowedOrigins };
