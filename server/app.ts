@@ -9,7 +9,7 @@ import cors from "cors";
 import { AppErrorHandler } from "./middlewares/app-error-handler.js";
 import {
   corsOptions,
-  enhancedCorsMiddleware,
+  CorsMiddleware,
   getAllowedOrigins,
 } from "./middlewares/cors-middleware.js";
 
@@ -19,9 +19,15 @@ export const app = express();
 
 // SERVER CONFIGURATIONS
 app.set("trust proxy", 1);
-app.use(enhancedCorsMiddleware);
+
 const allowedOrigins = getAllowedOrigins();
 const isDevelopment = process.env.NODE_ENV !== "production";
+console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
+console.log(`🔐 CORS Origins: ${JSON.stringify(allowedOrigins, null, 2)}`);
+
+app.use(cors(corsOptions));
+app.use(CorsMiddleware);
+
 app.use(
   helmet({
     crossOriginEmbedderPolicy: false,
@@ -56,7 +62,7 @@ app.use(
       return compression.filter(req, res);
     },
   })
-)
+);
 app.use(
   express.json({
     limit: "50mb",
@@ -75,15 +81,19 @@ app.use(
   })
 );
 app.use(cookieParser(process.env.COOKIE_SECRET));
-  
-app.get("/ping", (req: Request, res: Response): void => {
+
+app.get("/ping", cors(corsOptions), (req: Request, res: Response): void => {
   console.log(`🏓 Ping received from: ${req.headers.origin || "direct"}`);
   res.json({
     status: "ok",
     origin: req.headers.origin,
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
-    allowedOrigins: allowedOrigins,
+    server: "MessageMoment API",
+    version: "1.0.0",
+    allowedOrigins: isDevelopment
+      ? allowedOrigins
+      : `${allowedOrigins.length} configured`,
   });
 });
 app.options("/test-cors", cors(corsOptions));
@@ -91,9 +101,31 @@ app.get(
   "/test-cors",
   cors(corsOptions),
   (req: Request, res: Response): void => {
-    res.json({ message: "CORS OK" });
+    res.json({
+      message: "CORS OK",
+      origin: req.headers.origin,
+      timestamp: new Date().toISOString(),
+      headers: req.headers,
+    });
   }
 );
+
+app.use("/api/v1", SessionRouter);
+
+app.get("/", cors(corsOptions), (req: Request, res: Response): void => {
+  res.json({
+    message: "MessageMoment API Server",
+    status: "running",
+    version: "1.0.0",
+    environment: process.env.NODE_ENV,
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: "/ping",
+      cors: "/test-cors",
+      api: "/api/v1/*",
+    },
+  });
+});
 app.use("*", (req: Request, res: Response): void => {
   console.warn(`❌ 404 - Route not found: ${req.method} ${req.originalUrl}`);
 
@@ -102,10 +134,18 @@ app.use("*", (req: Request, res: Response): void => {
     error: "Route Not Found",
     message: `The requested route ${req.method} ${req.originalUrl} was not found.`,
     timestamp: new Date().toISOString(),
+    availableRoutes: [
+      "GET /",
+      "GET /ping",
+      "GET /test-cors",
+      "POST /api/v1/generate-session-link",
+      "GET /api/v1/validate-session/:sessionId",
+      "GET /api/v1/fetch-initial-chat-load-data/:sessionId",
+      "GET /api/v1/validate-token",
+      "POST /api/v1/clear-session",
+    ],
   });
 });
-
-app.use("/api/v1", SessionRouter);
 
 // ERROR HANDLER
 app.use((err: any, req: Request, res: Response, next: NextFunction): void => {

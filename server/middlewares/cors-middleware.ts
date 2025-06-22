@@ -29,9 +29,14 @@ export const getAllowedOrigins = (): string[] => {
     "https://messagemoment.com",
     "https://www.messagemoment.com",
     "https://messagemoment-production-ecf6.up.railway.app",
+
+    // Add Railway auto-generated domains
+    "https://*.up.railway.app",
+    "https://*.railway.app",
   ];
 
   const developmentOrigins = [
+    // Local development
     "http://localhost:3000",
     "http://localhost:3001",
     "http://localhost:5500",
@@ -41,20 +46,29 @@ export const getAllowedOrigins = (): string[] => {
     "http://0.0.0.0:3000",
     "http://0.0.0.0:3001",
 
+    // Common dev ports
     "http://localhost:8080",
     "http://localhost:4200",
     "http://localhost:5173",
     "http://localhost:3333",
+    "http://localhost:8000",
+    "http://localhost:8001",
 
+    // File protocol for local HTML files
     "file://",
+    "null", // Some browsers send this for file:// protocol
 
+    // Online development tools
     "https://railway.com",
     "https://cdpn.io",
     "https://jsfiddle.net",
     "https://codesandbox.io",
     "https://stackblitz.com",
+    "https://codepen.io",
 
+    // Railway domains
     "https://*.up.railway.app",
+    "https://*.railway.app",
   ];
 
   if (process.env.NODE_ENV === "production") {
@@ -85,7 +99,10 @@ const isOriginAllowed = (
       /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?$/;
     if (devPattern.test(origin)) return true;
 
-    if (origin.startsWith("file://")) return true;
+    if (origin.startsWith("file://") || origin === "null") return true;
+
+    if (origin.includes(".railway.app") || origin.includes(".up.railway.app"))
+      return true;
   }
 
   return false;
@@ -114,7 +131,7 @@ export const corsOptions: cors.CorsOptions = {
         }`
       );
       if (!isAllowed && origin) {
-        console.log(`📋 Allowed origins:`, config.allowedOrigins);
+        console.log(`📋 Allowed origins:`, config.allowedOrigins.slice(0, 5));
       }
     }
 
@@ -140,19 +157,23 @@ export const corsOptions: cors.CorsOptions = {
     "X-CSRF-Token",
     "X-Client-Version",
     "User-Agent",
+    "Access-Control-Allow-Origin",
+    "Access-Control-Allow-Headers",
+    "Access-Control-Allow-Methods",
   ],
   exposedHeaders: [
     "Set-Cookie",
     "X-Total-Count",
     "X-Rate-Limit-Remaining",
     "X-Rate-Limit-Reset",
+    "Access-Control-Allow-Origin",
   ],
   maxAge: 86400, // 24 hours
   optionsSuccessStatus: 200,
   preflightContinue: false,
 };
 
-export const enhancedCorsMiddleware = (
+export const CorsMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction
@@ -181,11 +202,11 @@ export const enhancedCorsMiddleware = (
   );
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Origin,X-Requested-With,Content-Type,Accept,Authorization,Cache-Control,X-File-Name,X-CSRF-Token,X-Client-Version,User-Agent"
+    "Origin,X-Requested-With,Content-Type,Accept,Authorization,Cache-Control,X-File-Name,X-CSRF-Token,X-Client-Version,User-Agent,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Access-Control-Allow-Methods"
   );
   res.setHeader(
     "Access-Control-Expose-Headers",
-    "Set-Cookie,X-Total-Count,X-Rate-Limit-Remaining,X-Rate-Limit-Reset"
+    "Set-Cookie,X-Total-Count,X-Rate-Limit-Remaining,X-Rate-Limit-Reset,Access-Control-Allow-Origin"
   );
   res.setHeader("Access-Control-Max-Age", "86400");
 
