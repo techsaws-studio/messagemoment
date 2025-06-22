@@ -338,7 +338,7 @@
             try {
                 const response = await fetch(`${currentServer}/debug`, {
                     method: 'GET',
-                    credentials: 'include',
+                    // credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
                         'Origin': window.location.origin
@@ -359,7 +359,7 @@
             try {
                 const response = await fetch(`${currentServer}/ping`, {
                     method: 'GET',
-                    credentials: 'include',
+                    // credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
                         'Origin': window.location.origin
@@ -389,7 +389,7 @@
             try {
                 const response = await fetch(`${currentServer}/test-cors`, {
                     method: 'GET',
-                    credentials: 'include',
+                    // credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
                         'Origin': window.location.origin
@@ -420,7 +420,7 @@
                 const sessionType = document.getElementById('sessionType').value;
                 const response = await fetch(`${currentServer}/api/v1/generate-session-link`, {
                     method: 'POST',
-                    credentials: 'include',
+                    // credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
                         'Origin': window.location.origin
@@ -461,7 +461,7 @@
             try {
                 const response = await fetch(`${currentServer}/api/v1/validate-session/${sessionId}`, {
                     method: 'GET',
-                    credentials: 'include',
+                    // credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
                         'Origin': window.location.origin
@@ -559,7 +559,7 @@
             try {
                 const response = await fetch(`${currentServer}/api/v1/validate-token`, {
                     method: 'GET',
-                    credentials: 'include',
+                    // credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
                         'Origin': window.location.origin
