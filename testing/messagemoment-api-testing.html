@@ -197,6 +197,14 @@
         .log-success { background: rgba(39, 174, 96, 0.2); }
         .log-error { background: rgba(231, 76, 60, 0.2); }
         .log-info { background: rgba(52, 152, 219, 0.2); }
+
+        .debug-section {
+            background: #fff3cd;
+            border: 2px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -206,6 +214,14 @@
         <div class="server-url">
             <strong>Server URL:</strong> <code id="serverUrl">https://messagemoment-production-ecf6.up.railway.app</code>
             <button class="btn" onclick="changeServer()" style="width: auto; margin: 10px;">Change Server</button>
+        </div>
+
+        <!-- Debug Section -->
+        <div class="debug-section">
+            <h4>🔍 Debug Information</h4>
+            <p><strong>Current Origin:</strong> <span id="currentOrigin">Loading...</span></p>
+            <p><strong>Protocol:</strong> <span id="currentProtocol">Loading...</span></p>
+            <button class="btn" onclick="testDebug()" style="width: auto;">Test Debug Endpoint</button>
         </div>
 
         <div class="test-grid">
@@ -280,6 +296,12 @@
         let socket = null;
         let currentSessionId = null;
 
+        // Initialize debug info
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('currentOrigin').textContent = window.location.origin;
+            document.getElementById('currentProtocol').textContent = window.location.protocol;
+        });
+
         function log(message, type = 'info') {
             const logs = document.getElementById('logs');
             const timestamp = new Date().toLocaleTimeString();
@@ -310,6 +332,26 @@
             }
         }
 
+        async function testDebug() {
+            log('Testing debug endpoint...', 'info');
+            
+            try {
+                const response = await fetch(`${currentServer}/debug`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin
+                    }
+                });
+                
+                const data = await response.json();
+                log(`Debug response: ${JSON.stringify(data, null, 2)}`, 'info');
+            } catch (error) {
+                log(`Debug test failed: ${error.message}`, 'error');
+            }
+        }
+
         async function testHealth() {
             updateStatus('health-status', 'loading');
             log('Testing server health...', 'info');
@@ -317,7 +359,11 @@
             try {
                 const response = await fetch(`${currentServer}/ping`, {
                     method: 'GET',
-                    credentials: 'include'
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin
+                    }
                 });
                 
                 const data = await response.json();
@@ -345,7 +391,8 @@
                     method: 'GET',
                     credentials: 'include',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin
                     }
                 });
                 
@@ -375,7 +422,8 @@
                     method: 'POST',
                     credentials: 'include',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin
                     },
                     body: JSON.stringify({ sessionType })
                 });
@@ -413,7 +461,11 @@
             try {
                 const response = await fetch(`${currentServer}/api/v1/validate-session/${sessionId}`, {
                     method: 'GET',
-                    credentials: 'include'
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin
+                    }
                 });
                 
                 const data = await response.json();
@@ -453,7 +505,8 @@
             socket = io(currentServer, {
                 transports: ['websocket', 'polling'],
                 timeout: 10000,
-                withCredentials: true
+                withCredentials: true,
+                forceNew: true
             });
             
             socket.on('connect', () => {
@@ -506,7 +559,11 @@
             try {
                 const response = await fetch(`${currentServer}/api/v1/validate-token`, {
                     method: 'GET',
-                    credentials: 'include'
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin
+                    }
                 });
                 
                 const data = await response.json();
@@ -528,6 +585,7 @@
         // Auto-run health check on load
         window.onload = () => {
             log('🚀 API Testing Dashboard initialized', 'info');
+            log(`Testing from origin: ${window.location.origin}`, 'info');
             testHealth();
         };
     </script>
