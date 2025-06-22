@@ -8,7 +8,7 @@ export const ApiRequest = async (endpoint, method = "GET", body) => {
 
     const response = await fetch(fullUrl, {
       method,
-      credentials: "include",
+      // credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
