@@ -1,6 +1,12 @@
-'use client'
+"use client";
+
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
+import { Collapse } from "antd";
+import Cookies from "js-cookie";
+
 import Button from "../button";
+
 import Cookie from "../../assets/icons/cookie.svg";
 import Cross from "../../assets/icons/cross.svg";
 import Blur from "../../assets/icons/blur.svg";
@@ -9,26 +15,26 @@ import CrossDark from "../../assets/icons/cross_darkgray.svg";
 import SwitchTickIcon from "../../assets/icons/tickIcon.svg";
 import SwitchCrossIcon from "../../assets/icons/switchCross.svg";
 import SwitchDisabled from "../../assets/icons/switchDisabled.svg";
-import Image from "next/image";
-import { Collapse } from "antd";
-import Cookies from "js-cookie";
 
-/**
- * A modal component that displays a list of cookie categories and allows the user to opt-in/opt-out of each category.
- * The component also displays a message explaining the use of cookies and provides a link to the privacy policy.
- * When the user presses the "Accept All" or "Reject All" buttons, the corresponding action is triggered and the component is closed.
- * When the user presses the "Save Settings" button, the current cookie settings are saved and the component is closed.
- * @param {boolean} isVisible Indicates whether the modal is visible or not.
- * @param {boolean} isClosing Indicates whether the modal is closing or not.
- * @param {function} onPress Function that is called when the user presses the "Accept All" or "Reject All" buttons.
- * @returns A JSX element that represents the modal component.
- */
-const ScreenModalCookie = ({ isVisible, isClosing, onPress }) => {
-  const [ischeck, setIshcek] = useState(false);
-  const [isperfomancecheck, setperfomanceIshcek] = useState(false);
+const ScreenModalCookie = ({
+  isVisible,
+  isClosing,
+  onPress,
+  initialPreferences,
+  onPreferencesChange,
+}) => {
+  const [cookiePreferences, setCookiePreferences] = useState(
+    initialPreferences || {
+      essential: true,
+      analytics: false,
+      advertising: false,
+    }
+  );
+
   const text = `
   These cookies are essential for the proper functioning of this website. Without these cookies, the website would not work properly.
 `;
+
   const text2 = `
   These cookies collect information about how you use this website, which pages you visited and which links you clicked on. All of the data is anonymized and cannot be used to identify you.
 `;
@@ -37,14 +43,18 @@ const ScreenModalCookie = ({ isVisible, isClosing, onPress }) => {
     <div className="panel-header">
       Performance and Analytics cookies
       <div
-        className={`custom-switch ${ischeck ? "checked" : ""}`}
+        className={`custom-switch ${
+          cookiePreferences.analytics ? "checked" : ""
+        }`}
         onClick={(e) => {
-          setIshcek(!ischeck);
           e.stopPropagation();
+          const newValue = !cookiePreferences.analytics;
+          const newPreferences = { ...cookiePreferences, analytics: newValue };
+          updatePreferences(newPreferences);
         }}
       >
         <div className="custom-switch-handle"></div>
-        {ischeck ? (
+        {cookiePreferences.analytics ? (
           <>
             <Image
               className="custom-switch-icon checked-icon"
@@ -70,18 +80,26 @@ const ScreenModalCookie = ({ isVisible, isClosing, onPress }) => {
       </div>
     </div>
   );
+
   const label3 = (
     <div className="panel-header">
-       Advertisement and Targeting cookies
+      Advertisement and Targeting cookies
       <div
-        className={`custom-switch ${isperfomancecheck ? "checked" : ""}`}
+        className={`custom-switch ${
+          cookiePreferences.advertising ? "checked" : ""
+        }`}
         onClick={(e) => {
-          setperfomanceIshcek(!isperfomancecheck);
           e.stopPropagation();
+          const newValue = !cookiePreferences.advertising;
+          const newPreferences = {
+            ...cookiePreferences,
+            advertising: newValue,
+          };
+          updatePreferences(newPreferences);
         }}
       >
         <div className="custom-switch-handle"></div>
-        {isperfomancecheck ? (
+        {cookiePreferences.advertising ? (
           <>
             <Image
               className="custom-switch-icon checked-icon"
@@ -170,26 +188,75 @@ const ScreenModalCookie = ({ isVisible, isClosing, onPress }) => {
     },
   ];
 
-  const setCookie = () => {
-    // Cookies.set("cookiesAccepted", "true");
-    // console.log("cookie click");
-    Cookies.set("cookiesAccepted", true, {
-      domain: "message-moment-app.vercel.app",
-      secure: true,
+  const setCookie = (preferences = cookiePreferences) => {
+    const cookieOptions = {
+      expires: 365,
       sameSite: "Lax",
-      expires: 365, 
-    });
+      secure: window.location.protocol === "https:",
+      path: "/",
+      ...(process.env.NODE_ENV === "production" && {
+        domain: window.location.hostname,
+      }),
+    };
+
+    Cookies.set(
+      "cookiePreferences",
+      JSON.stringify(preferences),
+      cookieOptions
+    );
+    Cookies.set("cookiesAccepted", "true", cookieOptions);
+
+    if (preferences.analytics) {
+      loadAnalyticsScripts();
+    }
+    if (preferences.advertising) {
+      loadAdvertisingScripts();
+    }
   };
+
+  const loadAnalyticsScripts = () => {
+    if (typeof gtag !== "undefined") {
+      gtag("consent", "update", { analytics_storage: "granted" });
+    }
+    console.log("Analytics cookies enabled");
+  };
+
+  const loadAdvertisingScripts = () => {
+    if (typeof gtag !== "undefined") {
+      gtag("consent", "update", { ad_storage: "granted" });
+    }
+    console.log("Advertising cookies enabled");
+  };
+
+  useEffect(() => {
+    if (initialPreferences) {
+      setCookiePreferences(initialPreferences);
+    }
+  }, [initialPreferences]);
+
+  const updatePreferences = (newPreferences) => {
+    setCookiePreferences(newPreferences);
+    if (onPreferencesChange) {
+      onPreferencesChange(newPreferences);
+    }
+  };
+
   return (
     <div className={`cookie-modal ${isVisible ? "open-fade" : ""}`}>
       <div className={`cookie-modal-wrapper ${isClosing ? "fade-out" : ""}`}>
-        {/* header */}
+        {/* HEADER */}
         <div className="header">
-          <Image src={Cookie} className="cooki-img" alt="Cookie"/>
+          <Image src={Cookie} className="cooki-img" alt="Cookie" />
           <h4>Cookie Preferences</h4>
-          <Image src={CrossDark} onClick={onPress} className="dark-cross" alt="CrossDark" />
+          <Image
+            src={CrossDark}
+            onClick={onPress}
+            className="dark-cross"
+            alt="CrossDark"
+          />
         </div>
-        {/* body */}
+
+        {/* BODY */}
         <div className="cookie-body">
           <p className="title">Cookie Usage</p>
           <p className="paragraph">
@@ -197,12 +264,15 @@ const ScreenModalCookie = ({ isVisible, isClosing, onPress }) => {
             and to enhance your online experience. You can choose for each
             category to opt-in/out whenever you want. For more details relative
             to cookies and other sensitive data, please read the full{" "}
-            <span className="underline-link" >
-              <a href="/privacy" target="_blank">Privacy Policy</a>
+            <span className="underline-link">
+              <a href="/privacy" target="_blank">
+                Privacy Policy
+              </a>
             </span>
             .
           </p>
-          {/* accordion */}
+
+          {/* ACCORDIANS */}
           <Collapse
             items={items}
             // defaultActiveKey={["2"]}
@@ -215,7 +285,8 @@ const ScreenModalCookie = ({ isVisible, isClosing, onPress }) => {
               />
             )}
           />
-          {/* More infor */}
+
+          {/* MORE INFORMATION */}
           <div className="more-info">
             <p className="title">More Information</p>
             <p className="paragraph">
@@ -230,6 +301,8 @@ const ScreenModalCookie = ({ isVisible, isClosing, onPress }) => {
             </p>
           </div>
         </div>
+
+        {/* FOOTER */}
         <div className="footer">
           <div className="first-col">
             <Button
@@ -239,7 +312,12 @@ const ScreenModalCookie = ({ isVisible, isClosing, onPress }) => {
               className="btn-primary text-white"
               marginLeft={-1}
               onClick={() => {
-                setCookie();
+                const allAccepted = {
+                  essential: true,
+                  analytics: true,
+                  advertising: true,
+                };
+                setCookie(allAccepted);
                 onPress();
               }}
             />
@@ -250,7 +328,15 @@ const ScreenModalCookie = ({ isVisible, isClosing, onPress }) => {
               height="46px"
               className="reject-button btn-secondary mt-10"
               marginLeft={10}
-              onClick={onPress}
+              onClick={() => {
+                const onlyEssential = {
+                  essential: true,
+                  analytics: false,
+                  advertising: false,
+                };
+                setCookie(onlyEssential);
+                onPress();
+              }}
             />
           </div>
           <br />
@@ -259,7 +345,7 @@ const ScreenModalCookie = ({ isVisible, isClosing, onPress }) => {
             className="reject-button btn-secondary save-setting-btn responsive-button-sideCookie"
             marginLeft={3}
             onClick={() => {
-              setCookie();
+              setCookie(cookiePreferences);
               onPress();
             }}
           />
@@ -269,26 +355,19 @@ const ScreenModalCookie = ({ isVisible, isClosing, onPress }) => {
   );
 };
 
-
-
-/**
- * A side cookie modal that will appear if the user hasn't accepted the cookie usage yet.
- * The modal will appear on the right side of the screen and will have a blurred background.
- * The modal will have a "Accept All" button and a "Reject All" button.
- * The user can close the modal by clicking the "x" button on the top right of the modal.
- * The user can also close the modal by clicking outside the modal.
- * The modal will not appear if the user has already accepted the cookie usage.
- * @returns {React.ReactElement} The side cookie modal component.
- */
-
 export default function SideCookieModal() {
   const [isVisible, setIsVisible] = useState(false);
   const [cookieModal, setCookieModal] = useState(false);
   const [isClosing, setisClosing] = useState(false);
   const [hasShown, setHasShown] = useState(false);
+  const [cookiePreferences, setCookiePreferences] = useState({
+    essential: true,
+    analytics: false,
+    advertising: false,
+  });
 
   const cookiesAccepted = Cookies.get("cookiesAccepted");
-  
+
   const closedModal = () => {
     setisClosing(true);
     setTimeout(() => {
@@ -296,56 +375,106 @@ export default function SideCookieModal() {
     }, 280);
   };
 
+  const setCookie = (
+    preferences = { essential: true, analytics: true, advertising: true }
+  ) => {
+    const cookieOptions = {
+      expires: 365,
+      sameSite: "Lax",
+      secure: window.location.protocol === "https:",
+      path: "/",
+      ...(process.env.NODE_ENV === "production" && {
+        domain: window.location.hostname,
+      }),
+    };
+
+    Cookies.set(
+      "cookiePreferences",
+      JSON.stringify(preferences),
+      cookieOptions
+    );
+    Cookies.set("cookiesAccepted", "true", cookieOptions);
+
+    if (preferences.analytics) {
+      if (typeof gtag !== "undefined") {
+        gtag("consent", "update", { analytics_storage: "granted" });
+      }
+    }
+    if (preferences.advertising) {
+      if (typeof gtag !== "undefined") {
+        gtag("consent", "update", { ad_storage: "granted" });
+      }
+    }
+  };
+
   useEffect(() => {
-    if (cookiesAccepted) {
-      setIsVisible(false);
-      setHasShown(false);
-    } else {
+    const savedPreferences = Cookies.get("cookiePreferences");
+    const hasVisitedBefore = Cookies.get("hasVisited");
+
+    if (cookiesAccepted && savedPreferences) {
+      try {
+        const preferences = JSON.parse(savedPreferences);
+        setCookiePreferences(preferences);
+        setIsVisible(false);
+        setHasShown(true);
+
+        if (preferences.analytics && typeof gtag !== "undefined") {
+          gtag("consent", "update", { analytics_storage: "granted" });
+        }
+        if (preferences.advertising && typeof gtag !== "undefined") {
+          gtag("consent", "update", { ad_storage: "granted" });
+        }
+      } catch (error) {
+        console.error("Error parsing cookie preferences:", error);
+        setIsVisible(true);
+        setHasShown(false);
+      }
+    } else if (!hasVisitedBefore) {
       setIsVisible(true);
+      setHasShown(false);
+      Cookies.set("hasVisited", "true", {
+        expires: 365,
+        path: "/",
+        sameSite: "Lax",
+        secure: window.location.protocol === "https:",
+      });
+    } else {
+      setIsVisible(false);
       setHasShown(true);
     }
   }, [cookiesAccepted]);
 
-  const setCookie = () => {
-    // Cookies.set("cookiesAccepted", "true");
-    // console.log("cookie click");
-
-    Cookies.set("cookiesAccepted", true, {
-      domain: "message-moment-app.vercel.app",
-      secure: true,
-      sameSite: "Lax",
-      expires: 365, // Set the cookie to expire in 365 days
-    });
-  };
-
   useEffect(() => {
     if (cookieModal) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     }
-    // Cleanup on unmount
     return () => {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     };
   }, [cookieModal]);
-  
+
   return (
     <>
       <ScreenModalCookie
         isVisible={cookieModal}
         isClosing={isClosing}
         onPress={closedModal}
+        initialPreferences={cookiePreferences}
+        onPreferencesChange={setCookiePreferences}
       />
+
       <div className={`${isVisible ? "bg-wrapper" : "bg-wrappper-hide"}`}>
-        {isVisible && <Image src={Blur} className="cookie-blur" alt="Blur"/>}
+        {isVisible && <Image src={Blur} className="cookie-blur" alt="Blur" />}
       </div>
+
       <div
         className={`cookie-wrapper ${
           isVisible ? "show" : hasShown ? "hide" : ""
         } `}
       >
-        <Image src={Cookie} className="cookie" alt="Cookie"/>
+        <Image src={Cookie} className="cookie" alt="Cookie" />
         <Image
           src={Cross}
           onClick={() => setIsVisible(false)}
@@ -378,7 +507,11 @@ export default function SideCookieModal() {
             height="45px"
             className="btn-primary text-white mt-28"
             onClick={() => {
-              setCookie();
+              setCookie({
+                essential: true,
+                analytics: true,
+                advertising: true,
+              });
               setIsVisible(false);
             }}
           />
@@ -387,7 +520,14 @@ export default function SideCookieModal() {
             width="180px"
             height="45px"
             className="reject-button btn-secondary mt-28 "
-            onClick={() => setIsVisible(false)}
+            onClick={() => {
+              setCookie({
+                essential: true,
+                analytics: false,
+                advertising: false,
+              });
+              setIsVisible(false);
+            }}
           />
         </div>
       </div>
