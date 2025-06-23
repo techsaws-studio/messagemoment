@@ -14,9 +14,7 @@ async function validateSessionWithCache(sessionId) {
   }
 
   try {
-    const response = await ApiRequest(
-      `/api/v1/controller/validate-session/${sessionId}`
-    );
+    const response = await ApiRequest(`/validate-session/${sessionId}`);
 
     const ttl = response?.success ? CACHE_TTL : CACHE_TTL / 4;
     sessionCache.set(sessionId, {
@@ -39,10 +37,36 @@ async function validateSessionWithCache(sessionId) {
   }
 }
 
+function isMaintenanceMode() {
+  const frontendMaintenance = process.env.IS_MAINTENANCE === "true";
+
+  if (frontendMaintenance) {
+    console.log("🚧 Frontend maintenance mode active");
+    return true;
+  }
+
+  return false;
+}
+
 export async function middleware(req) {
   try {
     const url = new URL(req.nextUrl);
     const pathname = url.pathname;
+
+    if (
+      pathname === "/maintenance" ||
+      pathname.startsWith("/_next/") ||
+      pathname.startsWith("/api/")
+    ) {
+      return NextResponse.next();
+    }
+
+    if (isMaintenanceMode()) {
+      console.log(
+        `🚧 Redirecting to maintenance page due to frontend maintenance mode`
+      );
+      return NextResponse.redirect(new URL("/maintenance", req.nextUrl.origin));
+    }
 
     const sessionIdMatch = pathname.match(/^\/chat\/([^/]+)$/);
     if (!sessionIdMatch) {
@@ -90,6 +114,13 @@ export async function middleware(req) {
       );
     }
 
+    if (response.redirect === "/maintenance") {
+      console.log(
+        `🚧 Backend maintenance mode detected, redirecting to maintenance page`
+      );
+      return NextResponse.redirect(new URL("/maintenance", req.nextUrl.origin));
+    }
+
     if (response.success === true) {
       console.log(`✅ Session validation successful: ${sessionId}`);
 
@@ -105,6 +136,10 @@ export async function middleware(req) {
     );
 
     let redirectUrl = response.redirect || "/expired-session";
+
+    if (redirectUrl === "/maintenance") {
+      return NextResponse.redirect(new URL("/maintenance", req.nextUrl.origin));
+    }
 
     switch (redirectUrl) {
       case "/expired-session":
