@@ -1,5 +1,3 @@
-import "dotenv/config";
-
 import { NextFunction, Request, Response } from "express";
 
 import { CatchAsyncErrors } from "../utils/catch-async-errors.js";
@@ -39,23 +37,6 @@ export const RootEndpointFunction = CatchAsyncErrors(
         health: "/health",
         api: "/api/v1/*",
       },
-    });
-  }
-);
-
-// CHECK MAINTENANCE STATUS FUNCTION
-export const CheckMaintenanceStatusFunction = CatchAsyncErrors(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const isMaintenanceMode = process.env.IS_MAINTENANCE === "true";
-
-    // Send response instead of returning
-    res.status(isMaintenanceMode ? 503 : 200).json({
-      isMaintenanceMode,
-      status: isMaintenanceMode ? "maintenance" : "operational",
-      message: isMaintenanceMode
-        ? "System is currently under maintenance. Please try again later."
-        : "System is operational",
-      timestamp: new Date().toISOString(),
     });
   }
 );

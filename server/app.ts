@@ -8,7 +8,6 @@ import cors from "cors";
 
 import { AppErrorHandler } from "./middlewares/app-error-handler.js";
 import { CorsOptions, CorsMiddleware } from "./middlewares/cors-middleware.js";
-import { MaintenanceMiddleware } from "./middlewares/maintenance-middleware.js";
 
 import SessionRouter from "./routes/session-routes.js";
 import BasicRouter from "./routes/basic-routes.js";
@@ -24,7 +23,6 @@ app.use(compression());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
-app.use(MaintenanceMiddleware);
 
 // API ROUTES PATH
 app.use("/", BasicRouter);
