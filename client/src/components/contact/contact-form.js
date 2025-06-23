@@ -247,7 +247,7 @@ function ContactForm() {
           />
 
           <Button
-            text={isSubmitting ? "Sending..." : "Send"}
+            text="Send"
             className={`text-white responsive-button-contactus ${
               isAlldone() ? "btn-primary" : "send-button btn-secondary2"
             }`}
