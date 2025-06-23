@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import type { Server, Socket } from "socket.io";
 
 import type { JoinRoomPayload } from "../interfaces/events-interface.js";

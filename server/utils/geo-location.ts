@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import axios from "axios";
 
 export const GetGeoLocation = async (ip: string) => {

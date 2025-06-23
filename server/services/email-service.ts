@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import nodemailer from "nodemailer";
 
 import { EmailConfig } from "interfaces/services-interface.js";

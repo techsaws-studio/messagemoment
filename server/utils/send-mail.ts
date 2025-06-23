@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import { ITicket } from "interfaces/models-interface.js";
 
 import { isConfigured, transporter } from "services/email-service.js";
@@ -16,7 +18,9 @@ export const SendEmail = async (ticket: ITicket): Promise<boolean> => {
   }
 
   try {
-    const supportEmail = process.env.EMAIL_SUPPORT || "info@messagemoment.com";
+    // const supportEmail = process.env.EMAIL_SUPPORT || "info@messagemoment.com";
+    const supportEmail =
+      process.env.EMAIL_SUPPORT || "techsawsdevelopment@gmail.com";
     const fromEmail = process.env.EMAIL_FROM || "noreply@messagemoment.com";
 
     await transporter.sendMail({

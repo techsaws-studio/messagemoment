@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import { NextFunction, Request, Response } from "express";
 
 import { CatchAsyncErrors } from "../utils/catch-async-errors.js";
