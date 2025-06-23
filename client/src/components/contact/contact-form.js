@@ -122,7 +122,7 @@ function ContactForm() {
       };
 
       const response = await ApiRequest(
-        "/api/v1/submit-ticket",
+        "/submit-ticket",
         "POST",
         ticketData
       );
