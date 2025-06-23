@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-import { SessionTypeEnum } from "../enums/session-type-enum.js";
+import { SessionTypeEnum } from "../enums/session-enum.js";
 import { ISession } from "../interfaces/models-interface.js";
 
 const SessionSchema: Schema<ISession> = new Schema(

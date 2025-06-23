@@ -1,6 +1,6 @@
 import { Socket } from "socket.io";
 
-import { SessionTypeEnum } from "../enums/session-type-enum.js";
+import { SessionTypeEnum } from "../enums/session-enum.js";
 import { ISession } from "../interfaces/models-interface.js";
 
 export const ValidateSessionSecurityCode = (

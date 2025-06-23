@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 import { RedisDatabase } from "../databases/redis-database.js";
 
-import { SessionTypeEnum } from "../enums/session-type-enum.js";
+import { SessionTypeEnum } from "../enums/session-enum.js";
 import { AuthenticatedRequest } from "../interfaces/utils-interface.js";
 
 import { StoreSessionLinkService } from "../services/store-session-link-service.js";

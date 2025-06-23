@@ -1,6 +1,7 @@
 import { Document } from "mongoose";
 
-import { SessionTypeEnum } from "../enums/session-type-enum.js";
+import { SessionTypeEnum } from "../enums/session-enum.js";
+import { TicketTopicEnum } from "enums/ticket-enum.js";
 
 export interface IMessage extends Document {
   sessionId: string;
@@ -85,4 +86,21 @@ export interface ITimerChange {
   setBy: string;
   newTimerValue: number;
   previousTimerValue: number;
+}
+
+export interface ITicket extends Document {
+  ticketId: string;
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  topic: TicketTopicEnum;
+  query: string;
+  userIp: string;
+  userLocation: {
+    longitude: number;
+    latitude: number;
+    city: string;
+    country: string;
+  };
+  createdAt: Date;
 }

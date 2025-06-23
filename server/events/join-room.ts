@@ -1,7 +1,7 @@
 import type { Server, Socket } from "socket.io";
 
 import type { JoinRoomPayload } from "../interfaces/events-interface.js";
-import { SessionTypeEnum } from "../enums/session-type-enum.js";
+import { SessionTypeEnum } from "../enums/session-enum.js";
 
 import { RedisDatabase } from "../databases/redis-database.js";
 

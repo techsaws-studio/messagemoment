@@ -1,12 +1,18 @@
 "use client";
+
 import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+
+import { options } from "@/dummy-data";
+
 import Button from "../button";
+import CustomTurnstile from "../custom-turnstile";
+import ContactUsSuccessModal from "./contact-success-modal";
+
+import { ApiRequest } from "@/utils/api-request";
+
 import Dropdown from "@/assets/icons/dropdown.svg";
 import dropDownIcon from "@/assets/icons/dropdown_Icon.svg";
-import Image from "next/image";
-import CustomTurnstile from "../custom-turnstile";
-import { options } from "@/dummy-data";
-import ContactUsSuccessModal from "./contact-success-modal";
 
 function ContactForm() {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,25 +30,16 @@ function ContactForm() {
     email: false,
     query: false,
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const maxLength = 1500;
+
   const toggleDropdown = () => setIsOpen(!isOpen);
+
   const handleOptionClick = (option) => {
     setSelectedOption(option);
     setIsOpen(false);
   };
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   const handleInputChange = (event, field) => {
     const { value } = event.target;
@@ -79,11 +76,13 @@ function ContactForm() {
         break;
     }
   };
+
   const isValidEmail = (email) => {
     const emaRg =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return emaRg.test(email);
   };
+
   const isAlldone = () => {
     return (
       firstName != "" &&
@@ -108,10 +107,56 @@ function ContactForm() {
     setShowModal(false);
   };
 
+  const handleSubmit = async () => {
+    if (!isAlldone()) return;
+
+    setIsSubmitting(true);
+
+    try {
+      const ticketData = {
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        emailAddress: email.trim(),
+        topic: selectedOption,
+        query: text.trim(),
+      };
+
+      const response = await ApiRequest(
+        "/api/v1/submit-ticket",
+        "POST",
+        ticketData
+      );
+
+      if (response.success) {
+        console.log("✅ Ticket submitted:", response.data.ticketId);
+        setShowModal(true);
+      }
+    } catch (error) {
+      console.error("❌ Ticket submission failed:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <>
       {showModal && <ContactUsSuccessModal onPressOk={onPressOk} />}
+
       <div className="contact-form">
+        {/* FIRST NAME & LAST NAME FIELDS */}
         <div className="row">
           <div className="full-w">
             <p className="medium">First Name*</p>
@@ -122,6 +167,7 @@ function ContactForm() {
               onChange={(e) => handleInputChange(e, "firstName")}
             />
           </div>
+
           <div className="full-w">
             <p className="medium">Last Name*</p>
             <input
@@ -132,7 +178,8 @@ function ContactForm() {
             />
           </div>
         </div>
-        {/* Email */}
+
+        {/* EMAIL FIELDS */}
         <div className="input-cont">
           <p className="medium">Email Address*</p>
           <input
@@ -142,7 +189,8 @@ function ContactForm() {
             onChange={(e) => handleInputChange(e, "email")}
           />
         </div>
-        {/* drpodown */}
+
+        {/* DROPDOWN FIELD */}
         <div className="animated-dropdown" ref={dropdownRef}>
           <p className="medium">Select a topic*</p>
           <div
@@ -168,7 +216,8 @@ function ContactForm() {
             </div>
           </div>
         </div>
-        {/* drpodown */}
+
+        {/* QUERY FIELD */}
         <div className="input-cont">
           <div className="row2">
             <p className="medium">Query*</p>
@@ -198,15 +247,12 @@ function ContactForm() {
           />
 
           <Button
-            text="Send"
+            text={isSubmitting ? "Sending..." : "Send"}
             className={`text-white responsive-button-contactus ${
               isAlldone() ? "btn-primary" : "send-button btn-secondary2"
             }`}
-            onClick={() => {
-              if (isAlldone()) {
-                setShowModal(true);
-              }
-            }}
+            onClick={handleSubmit}
+            disabled={!isAlldone() || isSubmitting}
           />
         </div>
       </div>
