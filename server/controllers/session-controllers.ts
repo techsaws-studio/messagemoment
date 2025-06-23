@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import { NextFunction, Request, Response } from "express";
 
 import { RedisDatabase } from "../databases/redis-database.js";
@@ -69,6 +71,16 @@ export const ValidationSessionFunction = CatchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { sessionId } = req.params;
+
+      if (process.env.IS_MAINTENANCE === "true") {
+        console.log(`🚧 Maintenance mode active - blocking session validation`);
+        return res.status(200).json({
+          success: false,
+          redirect: "/maintenance",
+          message:
+            "System is currently under maintenance. Please try again later.",
+        });
+      }
 
       if (!sessionId) {
         return res.status(400).json({

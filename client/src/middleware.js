@@ -160,9 +160,7 @@ export async function middleware(req) {
 
     return NextResponse.redirect(
       new URL(
-        `/expired-session?sessionId=${encodeURIComponent(
-          sessionId
-        )}&reason=middleware-error`,
+        `/expired-session?sessionId=${encodeURIComponent(sessionId)}`,
         req.nextUrl.origin
       )
     );

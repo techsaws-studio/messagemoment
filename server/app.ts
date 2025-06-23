@@ -8,8 +8,10 @@ import cors from "cors";
 
 import { AppErrorHandler } from "./middlewares/app-error-handler.js";
 import { CorsOptions, CorsMiddleware } from "./middlewares/cors-middleware.js";
+import { MaintenanceMiddleware } from "./middlewares/maintenance-middleware.js";
 
 import SessionRouter from "./routes/session-routes.js";
+import BasicRouter from "./routes/basic-routes.js";
 
 export const app = express();
 
@@ -22,51 +24,27 @@ app.use(compression());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(MaintenanceMiddleware);
 
-app.get("/health", (req: Request, res: Response) => {
-  res.status(200).json({
-    status: "healthy",
-    timestamp: new Date().toISOString(),
-    port: process.env.PORT,
-    host: process.env.HOST,
-  });
-});
-app.get("/debug", (req: Request, res: Response) => {
-  res.json({
-    nodeEnv: process.env.NODE_ENV,
-    origin: req.headers.origin,
-    allHeaders: req.headers,
-    timestamp: new Date().toISOString(),
-  });
-});
-app.get("/ping", (req: Request, res: Response) => {
-  console.log(`🏓 Ping from: ${req.headers.origin || "direct"}`);
-  res.json({
-    status: "ok",
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV,
-  });
-});
-app.get("/test-cors", (req: Request, res: Response) => {
-  res.json({
-    message: "CORS working!",
-    origin: req.headers.origin,
-    timestamp: new Date().toISOString(),
-  });
-});
-app.get("/", (req: Request, res: Response) => {
-  res.json({
-    message: "MessageMoment API",
-    status: "running",
-    timestamp: new Date().toISOString(),
-  });
-});
+// API ROUTES PATH
+app.use("/", BasicRouter);
 app.use("/api/v1", SessionRouter);
-app.use("*", (req: Request, res: Response) => {
+app.use("*", (req: Request, res: Response): void => {
   res.status(404).json({
     success: false,
-    message: `Route ${req.method} ${req.originalUrl} not found`,
+    error: "Route Not Found",
+    message: `The route ${req.method} ${req.originalUrl} does not exist`,
     timestamp: new Date().toISOString(),
+    availableEndpoints: [
+      "GET /",
+      "GET /health",
+      "GET /ping",
+      "POST /api/v1/generate-session-link",
+      "GET /api/v1/validate-session/:sessionId",
+      "GET /api/v1/fetch-initial-chat-load-data/:sessionId",
+      "GET /api/v1/validate-token",
+      "POST /api/v1/clear-session",
+    ],
   });
 });
 

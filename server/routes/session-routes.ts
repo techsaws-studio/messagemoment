@@ -12,7 +12,6 @@ import {
 const SessionRouter = express.Router();
 SessionRouter.use(cookieParser());
 
-// API PATHS
 SessionRouter.post("/generate-session-link", GenerateSessionLinkFunction);
 SessionRouter.get("/validate-session/:sessionId", ValidationSessionFunction);
 SessionRouter.get(
