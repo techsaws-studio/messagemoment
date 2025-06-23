@@ -6,7 +6,7 @@ function Chat() {
   return (
     <>
       <ChatHeader />
-      <MessageBox />
+      <MessageBox /> 
       <SideCookieModal />
     </>
   );
