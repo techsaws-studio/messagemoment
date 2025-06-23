@@ -71,9 +71,7 @@ export async function middleware(req) {
 
       return NextResponse.redirect(
         new URL(
-          `/expired-session?sessionId=${encodeURIComponent(
-            sessionId
-          )}&reason=invalid-response`,
+          `/expired-session?sessionId=${encodeURIComponent(sessionId)}`,
           req.nextUrl.origin
         )
       );
@@ -84,13 +82,9 @@ export async function middleware(req) {
         `🚨 API Error for session ${sessionId}: ${response.message}`
       );
 
-      const errorReason =
-        response.errorType === "NETWORK_ERROR" ? "network-error" : "api-error";
       return NextResponse.redirect(
         new URL(
-          `/expired-session?sessionId=${encodeURIComponent(
-            sessionId
-          )}&reason=${errorReason}`,
+          `/expired-session?sessionId=${encodeURIComponent(sessionId)}`,
           req.nextUrl.origin
         )
       );
