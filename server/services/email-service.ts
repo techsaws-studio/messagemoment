@@ -36,15 +36,4 @@ export const EmailService = (): void => {
   }
 };
 
-export const VerifyEmailConnection = async (): Promise<boolean> => {
-  if (!isConfigured || !transporter) return false;
-
-  try {
-    await transporter.verify();
-    console.info("✅ Email service connection verified");
-    return true;
-  } catch (error) {
-    console.error("❌ Email service connection failed:", error);
-    return false;
-  }
-};
+EmailService();
