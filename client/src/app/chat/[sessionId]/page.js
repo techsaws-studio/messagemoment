@@ -1,15 +1,9 @@
-import { ChatHeader } from "@/components/chat/header";
-import MessageBox from "@/components/chat/messagesBox";
-import SideCookieModal from "@/components/home/sideCookieModal";
+import React from "react";
+
+import ChatPage from "@/custom-pages/chat-page";
 
 function Chat() {
-  return (
-    <>
-      <ChatHeader />
-      <MessageBox /> 
-      <SideCookieModal />
-    </>
-  );
+  return <ChatPage />;
 }
 
 export default Chat;
