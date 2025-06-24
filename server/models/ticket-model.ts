@@ -52,7 +52,6 @@ const TicketSchema: Schema<ITicket> = new Schema(
       required: true,
       trim: true,
       maxlength: [1500, "Query cannot exceed 1500 characters"],
-      minlength: [10, "Query must be at least 10 characters long"],
     },
 
     userIp: {
