@@ -11,7 +11,8 @@ import { CorsOptions, CorsMiddleware } from "./middlewares/cors-middleware.js";
 
 import SessionRouter from "./routes/session-routes.js";
 import BasicRouter from "./routes/basic-routes.js";
-import UserRouter from "routes/user-routes.js";
+import UserRouter from "./routes/user-routes.js";
+import SystemRouter from "./routes/system-routes.js";
 
 export const app = express();
 
@@ -27,7 +28,7 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 
 // API ROUTES PATH
 app.use("/", BasicRouter);
-app.use("/api/v1", SessionRouter, UserRouter);
+app.use("/api/v1", SessionRouter, UserRouter, SystemRouter);
 app.use("*", (req: Request, res: Response): void => {
   res.status(404).json({
     success: false,

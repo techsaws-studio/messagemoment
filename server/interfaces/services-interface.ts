@@ -7,3 +7,22 @@ export interface EmailConfig {
     pass: string;
   };
 }
+
+export interface DatabaseHealthDetails {
+  mongodb: {
+    status: "UP" | "DOWN" | "DEGRADED";
+    responseTime: number;
+    host?: string;
+    database?: string;
+    collections?: number;
+    readyState: string;
+    error?: string;
+  };
+  redis: {
+    status: "UP" | "DOWN" | "DEGRADED";
+    responseTime: number;
+    mode?: string;
+    redisStatus?: string;
+    error?: string;
+  };
+}

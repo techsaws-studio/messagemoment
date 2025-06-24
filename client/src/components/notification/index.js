@@ -2,22 +2,34 @@ import React, { useEffect, useState } from "react";
 
 import { chatContext } from "@/contexts/chat-context";
 
+import { useServerHealth } from "@/hooks/useServerHealth";
+
 const Notification = () => {
   const { setShowNotification, showNotification } = chatContext();
   const [isChatScreen, setIsChatScreen] = useState(false);
 
+  const { isServerDown } = useServerHealth({
+    checkInterval: 60000,
+    enableAutoCheck: true,
+  });
+
   useEffect(() => {
     if (window.location.pathname.includes("/chat")) {
-        setIsChatScreen(true);
-      }
-    const timer = setTimeout(() => {
-        setShowNotification({message: "Server currently unavailable. Please try again later!", visible: true });
-    }, 3000); 
-    const timer2 = setTimeout(() => {
-        setShowNotification((prev)=>({...prev, visible: false}));
-    }, 6000); 
-    return () => clearTimeout(timer);
+      setIsChatScreen(true);
+    }
   }, []);
+
+  useEffect(() => {
+    if (isServerDown) {
+      setShowNotification({
+        message: "Server currently unavailable. Please try again later!",
+        visible: true,
+      });
+    } else {
+      setShowNotification((prev) => ({ ...prev, visible: false }));
+    }
+  }, [isServerDown, setShowNotification]);
+
   return (
     <div
       className={`notification-popup ${isChatScreen ? "chatScreenPopup" : ""} ${
@@ -25,7 +37,9 @@ const Notification = () => {
       }`}
     >
       <p className="medium">
-        {showNotification.message ? showNotification.message : "Unknown message"}
+        {showNotification.message
+          ? showNotification.message
+          : "Unknown message"}
       </p>
     </div>
   );
