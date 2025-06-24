@@ -31,7 +31,7 @@ export const SendEmail = async (ticket: ITicket): Promise<boolean> => {
     console.log("📧 From:", fromEmail);
 
     await transporter.sendMail({
-      from: `"MessageMoment System" <${fromEmail}>`,
+      from: `"MessageMoment" <${fromEmail}>`,
       to: supportEmail,
       subject: `🎫 New Ticket: ${ticket.topic} - ${ticket.ticketId}`,
       html: TicketEmailTemplate(ticket),
