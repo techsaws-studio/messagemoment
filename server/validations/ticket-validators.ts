@@ -51,10 +51,6 @@ export const ValidateTicketData = (
     errors.push("Last name cannot exceed 50 characters");
   }
 
-  if (data.query && data.query.trim().length < 10) {
-    errors.push("Query must be at least 10 characters long");
-  }
-
   if (data.query && data.query.trim().length > 1500) {
     errors.push("Query cannot exceed 1500 characters");
   }
