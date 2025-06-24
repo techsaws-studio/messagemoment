@@ -82,9 +82,9 @@ export const ServerHealthFunction = CatchAsyncErrors(
     const statusCode =
       overallStatus === "UP" ? 200 : overallStatus === "DEGRADED" ? 207 : 503;
 
-    return res.status(statusCode).json({
-      success: overallStatus === "UP",
-      ...response,
-    });
+      return res.status(statusCode).json({
+        success: overallStatus === "UP" || overallStatus === "DEGRADED",
+        ...response,
+      });
   }
 );

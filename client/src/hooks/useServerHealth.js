@@ -48,7 +48,7 @@ export const useServerHealth = (options = {}) => {
     try {
       const data = await ApiRequest("/server-status", "GET");
       consecutiveFailures.current = 0;
-      return data.success;
+      return data.status !== "DOWN";
     } catch (error) {
       consecutiveFailures.current++;
       return false;
