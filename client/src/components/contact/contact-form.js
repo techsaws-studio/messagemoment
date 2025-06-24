@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { Spin } from "antd";
 
 import { options } from "@/dummy-data";
 
@@ -13,6 +14,7 @@ import { ApiRequest } from "@/utils/api-request";
 
 import Dropdown from "@/assets/icons/dropdown.svg";
 import dropDownIcon from "@/assets/icons/dropdown_Icon.svg";
+import { LoadingOutlined } from "@ant-design/icons";
 
 function ContactForm() {
   const [isOpen, setIsOpen] = useState(false);
@@ -247,7 +249,13 @@ function ContactForm() {
           />
 
           <Button
-            text="Send"
+            text={
+              isSubmitting ? (
+                <Spin indicator={<LoadingOutlined spin />} size="default" />
+              ) : (
+                "Send"
+              )
+            }
             className={`text-white responsive-button-contactus ${
               isAlldone() ? "btn-primary" : "send-button btn-secondary2"
             }`}
