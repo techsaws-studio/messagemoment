@@ -123,11 +123,7 @@ function ContactForm() {
         query: text.trim(),
       };
 
-      const response = await ApiRequest(
-        "/submit-ticket",
-        "POST",
-        ticketData
-      );
+      const response = await ApiRequest("/submit-ticket", "POST", ticketData);
 
       if (response.success) {
         console.log("✅ Ticket submitted:", response.data.ticketId);
@@ -251,7 +247,10 @@ function ContactForm() {
           <Button
             text={
               isSubmitting ? (
-                <Spin indicator={<LoadingOutlined spin />} size="default" />
+                <Spin
+                  indicator={<LoadingOutlined spin style={{ color: "#fff" }} />}
+                  size="default"
+                />
               ) : (
                 "Send"
               )
