@@ -72,6 +72,7 @@ const MobileCloudFlare = forwardRef(
         } catch (error) {
           console.error("Error generating session link:", error);
           setShowLinkNotification({
+            message: "Server currently unavailable. Please try again later!",
             visible: true,
           });
         } finally {
