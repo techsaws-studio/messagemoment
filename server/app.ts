@@ -29,6 +29,14 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 // API ROUTES PATH
 app.use("/", BasicRouter);
 app.use("/api/v1", SessionRouter, UserRouter, SystemRouter);
+
+if (process.env.TESTING_CRASH === "true") {
+  console.log("🚨 Testing mode: Crashing server...");
+  setTimeout(() => {
+    process.exit(1);
+  }, 5000);
+}
+
 app.use("*", (req: Request, res: Response): void => {
   res.status(404).json({
     success: false,
