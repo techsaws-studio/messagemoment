@@ -19,7 +19,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import arrow_white from "../assets/icons/arrow_white.svg";
 import { getYear } from "date-fns";
-import Notification from "./notification";
 
 /**
  * The Header component renders the topmost part of the webpage, including the navigation bar
@@ -64,7 +63,6 @@ const Header = () => {
 
   return (
     <>
-      <Notification />
       <header>
         {!menuOpen && <div className="bar"></div>}
         {/* mobile header */}

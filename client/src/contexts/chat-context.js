@@ -57,7 +57,12 @@ const ChatContextProvider = ({ children }) => {
   const [showNotification, setShowNotification] = useState({
     visible: false,
     message: "Server currently unavailable. Please try again later!",
-  }); 
+  });
+
+  const [showLinkNotification, setShowLinkNotification] = useState({
+    visible: false,
+    message: "Server currently unavailable. Please try again later!",
+  });
 
   // display notification for chat screen messages like error, success, etc.
   // this is for the chat screen only
@@ -105,6 +110,9 @@ const ChatContextProvider = ({ children }) => {
     dropdownSelected,
     setIsLoadingGenerateLink,
     isLoadingGenerateLink,
+
+    showLinkNotification,
+    setShowLinkNotification,
   };
 
   return <ChatContext.Provider value={data}>{children}</ChatContext.Provider>;

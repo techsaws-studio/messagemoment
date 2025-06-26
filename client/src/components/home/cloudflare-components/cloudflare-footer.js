@@ -22,6 +22,7 @@ const CloudflareFooter = ({
     sessionData,
     setIsLoadingGenerateLink,
     isLoadingGenerateLink,
+    setShowLinkNotification,
   } = chatContext();
 
   const handleOnGenerateLink = async () => {
@@ -47,6 +48,9 @@ const CloudflareFooter = ({
         }
       } catch (error) {
         console.error("Error generating session link:", error);
+        setShowLinkNotification({
+          visible: true,
+        });
       } finally {
         setIsLoadingGenerateLink(false);
       }
