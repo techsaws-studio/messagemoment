@@ -61,7 +61,7 @@ const Footer = () => {
               icon={heartIcon}
               text="Support Us"
               className="support-btn support-us-blue-text primary-bg  responsive-button-footer"
-              onClick={() => handleLogoClick("https://ko-fi.com/messagemoment")}
+              onClick={() => handleNavClick("https://ko-fi.com/messagemoment")}
             />
           </div>
         </ul>
