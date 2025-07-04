@@ -24,7 +24,7 @@ const SideBar = () => {
               <li
                 key={`userlist-${i.toString()}`}
                 className={`${user === activeUser ? "active" : ""} ${
-                  users.length>= 10 && i === users.length - 1
+                  users.length >= 10 && i === users.length - 1
                     ? "last-child"
                     : ""
                 }`}
@@ -63,6 +63,9 @@ const SideBar = () => {
                   width={"190px"}
                   height={"36px"}
                   className="support-btn text-white secondary-bg"
+                  onClick={() =>
+                    handleLogoClick("https://ko-fi.com/messagemoment")
+                  }
                 />
               </div>
               <h3 className="chat-text">

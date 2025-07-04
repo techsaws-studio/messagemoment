@@ -144,153 +144,173 @@ export const ChatHeader = () => {
 
   const activeUser = "Richard"; // Define active user dynamically
   return (
-      <div className="header-cont">
-        <div className={openMenu ? "chat-m-bar" : "bar"} />
-        {/*   *** mobile menu  *** */}
-        <div
-          className={`chat-mobile-header ${
-            openMenu ? "chat-header-open" : "chat-header-close"
-          }`}
-        >
-          <div className={"chat-m-bar"} />
-          <div className="top-chat-head">
-            <div className="logo">
-              <MMLogo onClick={() => window.open("/", "_blank")} />
-            </div>
-            <div id={"flex-chat-row"}>
-              <div className="chat-m-timerClock">
-                <p className={`small ${expiryTime && "hasactive"}`}>
-                  {expiryTime ? expiryTime : "30"}
-                </p>
-              </div>
-              <div id="chat-vt-divider-m" />
-              <div>
-                <Image
-                  src={upload_m}
-                  alt="upload_m"
-                  onClick={onClickShareMobileIcon}
-                />
-              </div>
-              <div>
-                <Image
-                  src={share_m}
-                  alt="share_m"
-                  onClick={onClickLeaveMobileIcon}
-                />
-              </div>
-              <div>
-                <Image
-                  src={close_menu}
-                  alt="close_menu"
-                  onClick={() => setOpenMenu(false)}
-                />
-              </div>
-            </div>
+    <div className="header-cont">
+      <div className={openMenu ? "chat-m-bar" : "bar"} />
+      {/*   *** mobile menu  *** */}
+      <div
+        className={`chat-mobile-header ${
+          openMenu ? "chat-header-open" : "chat-header-close"
+        }`}
+      >
+        <div className={"chat-m-bar"} />
+        <div className="top-chat-head">
+          <div className="logo">
+            <MMLogo onClick={() => window.open("/", "_blank")} />
           </div>
-
-          {/* user list */}
-          <div className="chat-mobile-header_inner" id="chat-scroll">
-            <div className="chat-group">
-              <div className="header">
-                <p className="title">Chat Group</p>
-                <p className="chat-text">{users.length}/10</p>
-              </div>
-
-              {/* User list */}
-              <ul>
-                {users.map((user, i) => (
-                  <li
-                    key={`userlist-${i.toString()}`}
-                    className={`${user === activeUser ? "active" : ""} ${
-                      users.length < 10 && i === users.length - 1
-                        ? "last-child"
-                        : ""
-                    }`}
-                  >
-                    <p className="chat-text">[{user}]</p>
-                    {user === activeUser && <div>*</div>}
-                  </li>
-                ))}
-              </ul>
-              {/* Advertisement section */}
-              <div className="chatm_footer">
-                <section className="mads">
-                  <Image src={ads} alt="ads-img" />
-                </section>
-                <div id="divider_m" />
-                <section className="side-footer">
-                  <Image src={grey_logo} alt="gre_Logo" />
-                  <div className="side-footer-links">
-                    <Link href="/about" target="_blank">
-                      <p>About MessageMoment</p>
-                    </Link>
-                    <Link href="/faqs" target="_blank">
-                      <p>FAQs</p>
-                    </Link>
-                    <Link href="/terms" target="_blank">
-                      <p>Terms of Use</p>
-                    </Link>
-                    <Link href="/privacy" target="_blank">
-                      <p>Privacy</p>
-                    </Link>
-                  </div>
-                  <div className="supportus-btn">
-                    <Button
-                      icon={heartIcon}
-                      text="Support Us"
-                      maxWidth={"388px"}
-                      className="support-btn text-white secondary-bg responsive-button-footer"
-                    />
-                  </div>
-                  <h3 className="chat-text">
-                    Copyright © {currentYear} MessageMoment. All rights
-                    reserved.
-                  </h3>
-                </section>
-              </div>
+          <div id={"flex-chat-row"}>
+            <div className="chat-m-timerClock">
+              <p className={`small ${expiryTime && "hasactive"}`}>
+                {expiryTime ? expiryTime : "30"}
+              </p>
+            </div>
+            <div id="chat-vt-divider-m" />
+            <div>
+              <Image
+                src={upload_m}
+                alt="upload_m"
+                onClick={onClickShareMobileIcon}
+              />
+            </div>
+            <div>
+              <Image
+                src={share_m}
+                alt="share_m"
+                onClick={onClickLeaveMobileIcon}
+              />
+            </div>
+            <div>
+              <Image
+                src={close_menu}
+                alt="close_menu"
+                onClick={() => setOpenMenu(false)}
+              />
             </div>
           </div>
         </div>
 
-        {/* *** desktop header *** */}
+        {/* user list */}
+        <div className="chat-mobile-header_inner" id="chat-scroll">
+          <div className="chat-group">
+            <div className="header">
+              <p className="title">Chat Group</p>
+              <p className="chat-text">{users.length}/10</p>
+            </div>
 
-        <div className="container_chat chat-header">
-          {/* logo */}
-          <div className="logo">
-            <Image
-              src={mmlogo}
-              alt="mmlogo"
-              onClick={() => window.open("/", "_blank")}
-            />
-            <div className="vertical-divider" />
+            {/* User list */}
+            <ul>
+              {users.map((user, i) => (
+                <li
+                  key={`userlist-${i.toString()}`}
+                  className={`${user === activeUser ? "active" : ""} ${
+                    users.length < 10 && i === users.length - 1
+                      ? "last-child"
+                      : ""
+                  }`}
+                >
+                  <p className="chat-text">[{user}]</p>
+                  {user === activeUser && <div>*</div>}
+                </li>
+              ))}
+            </ul>
+            {/* Advertisement section */}
+            <div className="chatm_footer">
+              <section className="mads">
+                <Image src={ads} alt="ads-img" />
+              </section>
+              <div id="divider_m" />
+              <section className="side-footer">
+                <Image src={grey_logo} alt="gre_Logo" />
+                <div className="side-footer-links">
+                  <Link href="/about" target="_blank">
+                    <p>About MessageMoment</p>
+                  </Link>
+                  <Link href="/faqs" target="_blank">
+                    <p>FAQs</p>
+                  </Link>
+                  <Link href="/terms" target="_blank">
+                    <p>Terms of Use</p>
+                  </Link>
+                  <Link href="/privacy" target="_blank">
+                    <p>Privacy</p>
+                  </Link>
+                </div>
+                <div className="supportus-btn">
+                  <Button
+                    icon={heartIcon}
+                    text="Support Us"
+                    maxWidth={"388px"}
+                    className="support-btn text-white secondary-bg responsive-button-footer"
+                    onClick={() =>
+                      handleLogoClick("https://ko-fi.com/messagemoment")
+                    }
+                  />
+                </div>
+                <h3 className="chat-text">
+                  Copyright © {currentYear} MessageMoment. All rights reserved.
+                </h3>
+              </section>
+            </div>
           </div>
+        </div>
+      </div>
 
-          {/* url */}
-          <div className="url">
-            <Image src={lock} alt="lock" />
-            <Tooltip
-              overlayClassName="copylink-tooltip"
-              title={<Image src={copylink} alt="copy-tooltip" />}
-              open={showTooltip}
-              onOpenChange={(open) => setShowTooltip(open)}
+      {/* *** desktop header *** */}
+
+      <div className="container_chat chat-header">
+        {/* logo */}
+        <div className="logo">
+          <Image
+            src={mmlogo}
+            alt="mmlogo"
+            onClick={() => window.open("/", "_blank")}
+          />
+          <div className="vertical-divider" />
+        </div>
+
+        {/* url */}
+        <div className="url">
+          <Image src={lock} alt="lock" />
+          <Tooltip
+            overlayClassName="copylink-tooltip"
+            title={<Image src={copylink} alt="copy-tooltip" />}
+            open={showTooltip}
+            onOpenChange={(open) => setShowTooltip(open)}
+          >
+            <p
+              className="small"
+              onClick={() => {
+                handleCopy("https://messagemoment.com/chat/S2d3454");
+                setShowTooltip(false);
+              }}
             >
-              <p
-                className="small"
-                onClick={() => {
-                  handleCopy("https://messagemoment.com/chat/S2d3454");
-                  setShowTooltip(false);
-                }}
-              >
-                https://messagemoment.com/chat/*********
-              </p>
-            </Tooltip>
-          </div>
+              https://messagemoment.com/chat/*********
+            </p>
+          </Tooltip>
+        </div>
 
-          {/* buttons */}
-          {isProjectModeOn ? (
-            <div id="flex-row">
-              {isMobileView ? (
-                <>
+        {/* buttons */}
+        {isProjectModeOn ? (
+          <div id="flex-row">
+            {isMobileView ? (
+              <>
+                <div>
+                  <Image
+                    src={project_mode_on}
+                    draggable={false}
+                    id="projectmode"
+                    className="projectmode-img"
+                    alt="project_mode_on"
+                    onClick={() => setShowProjectModeTooltip(true)}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <Tooltip
+                  placement="leftBottom"
+                  overlayClassName="projectMode-tooltip"
+                  title={renderProjectModeActiveTooltip()}
+                >
                   <div>
                     <Image
                       src={project_mode_on}
@@ -298,83 +318,65 @@ export const ChatHeader = () => {
                       id="projectmode"
                       className="projectmode-img"
                       alt="project_mode_on"
-                      onClick={() => setShowProjectModeTooltip(true)}
                     />
                   </div>
-                </>
-              ) : (
-                <>
-                  <Tooltip
-                    placement="leftBottom"
-                    overlayClassName="projectMode-tooltip"
-                    title={renderProjectModeActiveTooltip()}
-                  >
-                    <div>
-                      <Image
-                        src={project_mode_on}
-                        draggable={false}
-                        id="projectmode"
-                        className="projectmode-img"
-                        alt="project_mode_on"
-                      />
-                    </div>
-                  </Tooltip>
-                </>
-              )}
-              <div id="half-vt-divider" />
-            </div>
-          ) : (
-            <div className="timer-cont">
-              {isMobileView ? (
-                <>
+                </Tooltip>
+              </>
+            )}
+            <div id="half-vt-divider" />
+          </div>
+        ) : (
+          <div className="timer-cont">
+            {isMobileView ? (
+              <>
+                <div className="timer-block">
+                  <p className={`small ${expiryTime && "hasactive"}`}>
+                    {expiryTime ? expiryTime : "30"}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <>
+                <Tooltip
+                  overlayClassName="copylink-tooltip"
+                  title={<Image src={expiry_tooltip} alt="copy-tooltip" />}
+                >
                   <div className="timer-block">
                     <p className={`small ${expiryTime && "hasactive"}`}>
                       {expiryTime ? expiryTime : "30"}
                     </p>
                   </div>
-                </>
-              ) : (
-                <>
-                  <Tooltip
-                    overlayClassName="copylink-tooltip"
-                    title={<Image src={expiry_tooltip} alt="copy-tooltip" />}
-                  >
-                    <div className="timer-block">
-                      <p className={`small ${expiryTime && "hasactive"}`}>
-                        {expiryTime ? expiryTime : "30"}
-                      </p>
-                    </div>
-                  </Tooltip>
-                </>
-              )}
-              <div id="half-vt-divider" />
-            </div>
-          )}
-          {/*  */}
-          <div className="side-btns">
-            <DisconnectBtn />
-            <ShareButton onCopyClick={(text) => handleCopy(text)} />
-
-            <Image
-              className="chat_header_icons"
-              src={chat_uploadIcon}
-              alt="chat_uploadIcon"
-              onClick={() => setShareTooltip(true)}
-            />
-            <Image
-              className="chat_header_icons"
-              src={chat_shareIcon}
-              alt="chat_shareIcon"
-              onClick={() => setShowChatLeaveModal(true)}
-            />
-            <Image
-              className="chat_header_icons"
-              src={chat_menuIcon}
-              alt="chat-menu"
-              onClick={() => setOpenMenu(true)}
-            />
+                </Tooltip>
+              </>
+            )}
+            <div id="half-vt-divider" />
           </div>
+        )}
+        {/*  */}
+        <div className="side-btns">
+          <DisconnectBtn />
+          <ShareButton onCopyClick={(text) => handleCopy(text)} />
+
+          <Image
+            className="chat_header_icons"
+            src={chat_uploadIcon}
+            alt="chat_uploadIcon"
+            onClick={() => setShareTooltip(true)}
+          />
+          <Image
+            className="chat_header_icons"
+            src={chat_shareIcon}
+            alt="chat_shareIcon"
+            onClick={() => setShowChatLeaveModal(true)}
+          />
+          <Image
+            className="chat_header_icons"
+            src={chat_menuIcon}
+            alt="chat-menu"
+            onClick={() => setOpenMenu(true)}
+          />
         </div>
       </div>
+    </div>
   );
 };

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import Image from "next/image";
 import facebook from "../assets/icons/Facebook.svg";
 import Instagram from "../assets/icons/Instagram.svg";
@@ -15,6 +15,7 @@ import SideCookieModal from "./home/sideCookieModal";
 
 const Footer = () => {
   const currentYear = getYear(new Date());
+
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -25,6 +26,11 @@ const Footer = () => {
   const handleLogoClick = () => {
     window.location.href = window.location.href;
     window.location.href = "/";
+  };
+
+  const handleNavClick = (path) => {
+    scrollToTop();
+    window.open(path, "_blank");
   };
 
   return (
@@ -55,6 +61,7 @@ const Footer = () => {
               icon={heartIcon}
               text="Support Us"
               className="support-btn support-us-blue-text primary-bg  responsive-button-footer"
+              onClick={() => handleLogoClick("https://ko-fi.com/messagemoment")}
             />
           </div>
         </ul>
@@ -67,6 +74,7 @@ const Footer = () => {
               text="Support Us"
               maxWidth={"388px"}
               className="support-btn support-us-blue-text primary-bg  responsive-button-footer"
+              onClick={() => handleLogoClick("https://ko-fi.com/messagemoment")}
             />
           </div>
           <p className="note text-dark-gray">
