@@ -74,7 +74,7 @@ const Footer = () => {
               text="Support Us"
               maxWidth={"388px"}
               className="support-btn support-us-blue-text primary-bg  responsive-button-footer"
-              onClick={() => handleLogoClick("https://ko-fi.com/messagemoment")}
+              onClick={() => handleNavClick("https://ko-fi.com/messagemoment")}
             />
           </div>
           <p className="note text-dark-gray">

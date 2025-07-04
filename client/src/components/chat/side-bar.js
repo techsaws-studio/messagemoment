@@ -64,7 +64,7 @@ const SideBar = () => {
                   height={"36px"}
                   className="support-btn text-white secondary-bg"
                   onClick={() =>
-                    handleLogoClick("https://ko-fi.com/messagemoment")
+                    handleNavClick("https://ko-fi.com/messagemoment")
                   }
                 />
               </div>

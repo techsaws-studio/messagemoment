@@ -241,7 +241,7 @@ export const ChatHeader = () => {
                     maxWidth={"388px"}
                     className="support-btn text-white secondary-bg responsive-button-footer"
                     onClick={() =>
-                      handleLogoClick("https://ko-fi.com/messagemoment")
+                      handleNavClick("https://ko-fi.com/messagemoment")
                     }
                   />
                 </div>
