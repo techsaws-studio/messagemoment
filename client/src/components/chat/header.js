@@ -1,45 +1,43 @@
 "use client";
-import Image from "next/image";
+
 import React, { useEffect, useState } from "react";
-import mmlogo from "@/assets/icons/chat/mm_logo.svg";
-import lock from "@/assets/icons/chat/url_lock.svg";
+import Image from "next/image";
+import Link from "next/link";
+import ClipboardJS from "clipboard";
+import { Tooltip } from "antd";
+import { getYear } from "date-fns";
+
+import { chatContext } from "@/contexts/chat-context";
+import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
+
+import { users } from "@/dummy-data";
+
 import DisconnectBtn from "./disconnectButton";
 import ShareButton from "./shareButton";
-import { Tooltip } from "antd";
-import Link from "next/link";
+import Button from "../button";
+
+import chat_shareIcon from "@/assets/icons/chat/chat_mobile_icon/share.svg";
+import project_mode_on from "@/assets/icons/chat/project_mode_on.svg";
+import mmlogo from "@/assets/icons/chat/mm_logo.svg";
+import lock from "@/assets/icons/chat/url_lock.svg";
 import copylink from "@/assets/icons/chat/copylink_tooltip.svg";
 import expiry_tooltip from "@/assets/icons/chat/expiry_tooltip.svg";
-import project_mode_on from "@/assets/icons/chat/project_mode_on.svg";
 import project_mode_tooltip from "@/assets/icons/chat/project_mode_tooltip.svg";
-import chat_menuIcon from "@/assets/icons/chat/chat_mobile_icon/menu.svg";
-import chat_shareIcon from "@/assets/icons/chat/chat_mobile_icon/share.svg";
 import chat_uploadIcon from "@/assets/icons/chat/chat_mobile_icon/upload.svg";
+import chat_menuIcon from "@/assets/icons/chat/chat_mobile_icon/menu.svg";
 import ads from "@/assets/icons/chat/chat_mobile_icon/ads.svg";
-import ClipboardJS from "clipboard";
-import { chatContext } from "@/contexts/chat-context";
-import { useRouter } from "next/navigation";
-
-// Mobile icons
 import share_m from "@/assets/icons/chat/chat_mobile_icon/share_m.svg";
 import upload_m from "@/assets/icons/chat/chat_mobile_icon/upload_m.svg";
 import close_menu from "@/assets/icons/chat/chat_mobile_icon/close_menu.svg";
 import grey_logo from "@/assets/icons/chat/grey_logo.png";
-import { getYear } from "date-fns";
-import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
-import Button from "../button";
 import heartIcon from "@/assets/icons/heart_white.svg";
 import MMLogo from "@/assets/icons/chat/mmLogo";
-import { users } from "@/dummy-data";
+import { SessionTypeEnum } from "@/enums/session-type-enum";
 
-/**
- * ChatHeader renders the header section of the chat UI. It includes
- * logo, chat group url, buttons and notification for copying the link.
- *
- * @returns {JSX.Element} The chat header component
- */
 export const ChatHeader = () => {
-  const router = useRouter();
-  // states
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false);
+
   const {
     isProjectModeOn,
     expiryTime,
@@ -48,11 +46,11 @@ export const ChatHeader = () => {
     showCopiedNotification,
     setShowChatLeaveModal,
     setChatScreenNotification,
+    sessionData,
   } = chatContext();
+
   const currentYear = getYear(new Date());
-  const [openMenu, setOpenMenu] = useState(false);
   const { isMobileView } = useCheckIsMobileView();
-  const [showTooltip, setShowTooltip] = useState(false);
 
   const handleCopy = (text) => {
     const textToCopy = text;
@@ -80,18 +78,6 @@ export const ChatHeader = () => {
     }
   };
 
-  useEffect(() => {
-    if (showCopiedNotification) {
-      setChatScreenNotification({
-        message: "Link copied to clipboard",
-        visible: true,
-      });
-      setTimeout(() => {
-        setChatScreenNotification((prev) => ({ ...prev, visible: false }));
-      }, 2000);
-    }
-  }, [showCopiedNotification]);
-
   const onClickReadMore = () => {
     window.open("/faqs#project_mode", "_blank");
   };
@@ -110,7 +96,6 @@ export const ChatHeader = () => {
     }, 200);
   };
 
-  // UI
   const renderProjectModeActiveTooltip = () => {
     return (
       <div className="header-projectmode" style={{ position: "relative" }}>
@@ -142,11 +127,24 @@ export const ChatHeader = () => {
     );
   };
 
-  const activeUser = "Richard"; // Define active user dynamically
+  const activeUser = "Richard";
+
+  useEffect(() => {
+    if (showCopiedNotification) {
+      setChatScreenNotification({
+        message: "Link copied to clipboard",
+        visible: true,
+      });
+      setTimeout(() => {
+        setChatScreenNotification((prev) => ({ ...prev, visible: false }));
+      }, 2000);
+    }
+  }, [showCopiedNotification]);
+
   return (
     <div className="header-cont">
       <div className={openMenu ? "chat-m-bar" : "bar"} />
-      {/*   *** mobile menu  *** */}
+      {/*   MOBILE MENU */}
       <div
         className={`chat-mobile-header ${
           openMenu ? "chat-header-open" : "chat-header-close"
@@ -188,7 +186,7 @@ export const ChatHeader = () => {
           </div>
         </div>
 
-        {/* user list */}
+        {/* USER LIST HEADER */}
         <div className="chat-mobile-header_inner" id="chat-scroll">
           <div className="chat-group">
             <div className="header">
@@ -196,7 +194,7 @@ export const ChatHeader = () => {
               <p className="chat-text">{users.length}/10</p>
             </div>
 
-            {/* User list */}
+            {/* USER LIST */}
             <ul>
               {users.map((user, i) => (
                 <li
@@ -212,7 +210,8 @@ export const ChatHeader = () => {
                 </li>
               ))}
             </ul>
-            {/* Advertisement section */}
+
+            {/* ADVERTISMENT SECTION */}
             <div className="chatm_footer">
               <section className="mads">
                 <Image src={ads} alt="ads-img" />
@@ -254,10 +253,9 @@ export const ChatHeader = () => {
         </div>
       </div>
 
-      {/* *** desktop header *** */}
-
+      {/* DESKTOP HEADER */}
       <div className="container_chat chat-header">
-        {/* logo */}
+        {/* LOGO */}
         <div className="logo">
           <Image
             src={mmlogo}
@@ -267,7 +265,7 @@ export const ChatHeader = () => {
           <div className="vertical-divider" />
         </div>
 
-        {/* url */}
+        {/* SESSION URL */}
         <div className="url">
           <Image src={lock} alt="lock" />
           <Tooltip
@@ -279,16 +277,22 @@ export const ChatHeader = () => {
             <p
               className="small"
               onClick={() => {
-                handleCopy("https://messagemoment.com/chat/S2d3454");
+                handleCopy(
+                  `https://messagemoment.com/chat/${sessionData.code}`
+                );
                 setShowTooltip(false);
               }}
             >
-              https://messagemoment.com/chat/*********
+              {`https://messagemoment.com/chat/${
+                sessionData.type === SessionTypeEnum.STANDARD
+                  ? sessionData.code
+                  : "**************"
+              }`}
             </p>
           </Tooltip>
         </div>
 
-        {/* buttons */}
+        {/* BUTTON */}
         {isProjectModeOn ? (
           <div id="flex-row">
             {isMobileView ? (
@@ -352,7 +356,7 @@ export const ChatHeader = () => {
             <div id="half-vt-divider" />
           </div>
         )}
-        {/*  */}
+
         <div className="side-btns">
           <DisconnectBtn />
           <ShareButton onCopyClick={(text) => handleCopy(text)} />
