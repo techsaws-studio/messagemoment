@@ -14,6 +14,7 @@ import Typed from "typed.js";
 import { getMessageClass } from "./chat-messages-utils";
 import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
 import { messageContainerRef } from "./messagesBox";
+import { SessionTypeEnum } from "@/enums/session-type-enum";
 
 /**
  * Renders a chat message with various types and styles based on the message type.
@@ -40,58 +41,58 @@ const Message = ({
   const el = useRef(null);
   const { isMessageMobileView: isMobileView } = useCheckIsMobileView();
   useEffect(() => {
-  let typed;
-  let observer;
-  let lastContent = "";
-  let userScrolled = false;
-  let scrollPauseTimeout;
-  const container = messageContainerRef.current;
+    let typed;
+    let observer;
+    let lastContent = "";
+    let userScrolled = false;
+    let scrollPauseTimeout;
+    const container = messageContainerRef.current;
 
-  const handleUserScroll = () => {
-    if (!userScrolled) {
-      userScrolled = true;
-    }
-    clearTimeout(scrollPauseTimeout);
-    scrollPauseTimeout = setTimeout(() => {
-      userScrolled = false; // Resume auto-scroll after 3 seconds of inactivity
-    }, 3000);
-  };
-
-  if (container) {
-    container.addEventListener("scroll", handleUserScroll);
-  }
-
-  if (el.current) {
-    typed = new Typed(el.current, {
-      strings: [message],
-      typeSpeed: 25,
-      showCursor: false,
-    });
-
-    observer = new MutationObserver(() => {
-      const currentContent = el.current?.innerHTML;
-      if (currentContent && currentContent !== lastContent) {
-        lastContent = currentContent;
-        if (!userScrolled) {
-          scrollToBottom?.(); // Only scroll if user isn't actively scrolling
-        }
+    const handleUserScroll = () => {
+      if (!userScrolled) {
+        userScrolled = true;
       }
-    });
+      clearTimeout(scrollPauseTimeout);
+      scrollPauseTimeout = setTimeout(() => {
+        userScrolled = false; // Resume auto-scroll after 3 seconds of inactivity
+      }, 3000);
+    };
 
-    observer.observe(el.current, {
-      childList: true,
-      characterData: true,
-      subtree: true,
-    });
-  }
+    if (container) {
+      container.addEventListener("scroll", handleUserScroll);
+    }
 
-  return () => {
-    if (typed) typed.destroy();
-    if (observer) observer.disconnect();
-    if (container) container.removeEventListener("scroll", handleUserScroll);
-    clearTimeout(scrollPauseTimeout);
-  };
-}, []);
+    if (el.current) {
+      typed = new Typed(el.current, {
+        strings: [message],
+        typeSpeed: 25,
+        showCursor: false,
+      });
+
+      observer = new MutationObserver(() => {
+        const currentContent = el.current?.innerHTML;
+        if (currentContent && currentContent !== lastContent) {
+          lastContent = currentContent;
+          if (!userScrolled) {
+            scrollToBottom?.(); // Only scroll if user isn't actively scrolling
+          }
+        }
+      });
+
+      observer.observe(el.current, {
+        childList: true,
+        characterData: true,
+        subtree: true,
+      });
+    }
+
+    return () => {
+      if (typed) typed.destroy();
+      if (observer) observer.disconnect();
+      if (container) container.removeEventListener("scroll", handleUserScroll);
+      clearTimeout(scrollPauseTimeout);
+    };
+  }, []);
   const {
     setShowReportfileModal,
     sessionData,
@@ -137,7 +138,8 @@ const Message = ({
             paddingTop: "14px",
           }}
         >
-          {(sessionData?.type == "Secure" || sessionData?.type == "Wallet") && (
+          {(sessionData?.type == SessionTypeEnum.SECURE ||
+            sessionData?.type == SessionTypeEnum.WALLET) && (
             <>
               Thank you!
               <div id="dot-line">
@@ -658,8 +660,8 @@ const Message = ({
       <div
         style={{
           margin:
-            (sessionData?.type == "Standard" ||
-              sessionData?.type == "Secure") &&
+            (sessionData?.type == SessionTypeEnum.STANDARD ||
+              sessionData?.type == SessionTypeEnum.SECURE) &&
             type == messageType.MESSAGE_MOMENT
               ? "15px 0px"
               : "",

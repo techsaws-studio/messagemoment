@@ -1,4 +1,5 @@
 import { chatContext } from "@/contexts/chat-context";
+import { SessionTypeEnum } from "@/enums/session-type-enum";
 import { useEffect, useState } from "react";
 
 const usePhantomWallet = () => {
@@ -18,13 +19,13 @@ const usePhantomWallet = () => {
         setLoading(false)
         setSessionData((prev) => ({
           ...prev,
-          type: "Wallet",
+          type: SessionTypeEnum.WALLET,
         }));
         setPhantomSession(true);
       } else if (phantomError) {
         setSessionData((prev) => ({
           ...prev,
-          type: "Wallet",
+          type: SessionTypeEnum.WALLET,
         }));
         setPhantomSession(false);
       } else {

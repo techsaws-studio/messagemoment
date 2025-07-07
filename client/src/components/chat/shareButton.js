@@ -9,6 +9,7 @@ import telegram from "@/assets/icons/chat/telegram.svg";
 import whatsapp from "@/assets/icons/chat/whatsapp.svg";
 import { chatContext } from "@/contexts/chat-context";
 import { ShareLink } from "@/dummy-data";
+import { SessionTypeEnum } from "@/enums/session-type-enum";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
@@ -52,40 +53,44 @@ const ShareButton = ({ onCopyClick }) => {
           <Image src={small_arrow} alt={"small_arrow"} />
         </div>
         <ul>
-          <li onClick={()=>ShareLink("message",sessionData,initialUrl)}>
+          <li onClick={() => ShareLink("message", sessionData, initialUrl)}>
             <Image src={message} alt="message" />
             <p className="chat-text">Message</p>
           </li>
-          <li onClick={()=>ShareLink("mail",sessionData,initialUrl)}>
+          <li onClick={() => ShareLink("mail", sessionData, initialUrl)}>
             <Image src={mail} alt="mail" />
             <p className="chat-text">Mail</p>
           </li>
-          <li onClick={()=>ShareLink("messenger",sessionData,initialUrl)}>
+          <li onClick={() => ShareLink("messenger", sessionData, initialUrl)}>
             <Image src={messenger} alt="messenger" />
             <p className="chat-text">Messenger</p>
           </li>
-          <li onClick={()=>ShareLink("whatsapp",sessionData,initialUrl)}>
+          <li onClick={() => ShareLink("whatsapp", sessionData, initialUrl)}>
             <Image src={whatsapp} alt="whatsapp" />
             <p className="chat-text">WhatsApp</p>
           </li>
-          <li onClick={()=>ShareLink("telegram",sessionData,initialUrl)}>
+          <li onClick={() => ShareLink("telegram", sessionData, initialUrl)}>
             <Image src={telegram} alt="telegram" />
             <p className="chat-text">Telegram</p>
           </li>
-          <li onClick={()=>ShareLink("instagram",sessionData,initialUrl)}>
+          <li onClick={() => ShareLink("instagram", sessionData, initialUrl)}>
             <Image src={instagram} alt="instagram" />
             <p className="chat-text">Instagram</p>
           </li>
         </ul>
         <div className="footer-block">
-          <p className="chat-text">
-            https://message-moment-app.vercel.app/
-          </p>
+          <p className="chat-text">https://message-moment-app.vercel.app/</p>
         </div>
         <div
           className="chain-block"
           onClick={() =>
-            onCopyClick(`${initialUrl}${sessionData.type=="Secure"?`\n\nSecurity Code: ${sessionData?.secureCode}`:""}`)
+            onCopyClick(
+              `${initialUrl}${
+                sessionData.type == SessionTypeEnum.SECURE
+                  ? `\n\nSecurity Code: ${sessionData?.secureCode}`
+                  : ""
+              }`
+            )
           }
         >
           <Image src={chain} alt="chain" />

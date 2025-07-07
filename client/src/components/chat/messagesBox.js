@@ -12,7 +12,6 @@ import {
   commandlist as listcommands,
   messageType,
   renderRemoveUserText,
-  SESSION_TYPE,
   USER_HANDERLS,
 } from "@/dummy-data";
 import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
@@ -28,6 +27,7 @@ import { validateDisplayName } from "./chat-messages-utils";
 import MessagesModals from "./message-box-components/messagesModals";
 import MessageInput from "./message-box-components/message-input";
 import MessageContainer from "./message-box-components/message-container";
+import { SessionTypeEnum } from "@/enums/session-type-enum";
 
 /**
  * MessageBox is a React component implementing a chat interface with various functionalities.
@@ -36,7 +36,7 @@ import MessageContainer from "./message-box-components/message-container";
  * It also handles mobile-specific features and device detection, including Safari browser adjustments.
  * The chat interface supports project modes, user management, and security code verification.
  */
-export  const messageContainerRef = createRef(null);
+export const messageContainerRef = createRef(null);
 const MessageBox = () => {
   // context
   const {
@@ -112,7 +112,7 @@ const MessageBox = () => {
     if (!isMobileView) return;
 
     setIsSafari(isSafari);
-  // Code to disable the scroll on keyboard open
+    // Code to disable the scroll on keyboard open
     const preventScroll = (e) => {
       const activeElement = document.activeElement;
       if (
@@ -174,7 +174,7 @@ const MessageBox = () => {
   }, [isMobileView]);
 
   useEffect(() => {
-    if (sessionData.type == "Wallet") {
+    if (sessionData.type == SessionTypeEnum.WALLET) {
       if (isWalletConnected) {
         setInputFieldDisabled(false);
       } else {
@@ -300,34 +300,23 @@ const MessageBox = () => {
 
   // VALIDATION REGEX
   useEffect(() => {
-    if (sessionData?.type == "Secure" && !isVerifiedCode) {
+    if (sessionData?.type == SessionTypeEnum.SECURE && !isVerifiedCode) {
       setKeyboardType("number");
     } else {
       setKeyboardType("text");
     }
   }, [sessionData, isVerifiedCode]);
 
-  /**
-   * InitialChatLoad function is called on initial chat load.
-   * It takes the session type and renders the appropriate message.
-   * If the session type is Standard, it renders a message moment and
-   * and an error message saying the chat session is full.
-   * If the session type is Wallet, it renders a message moment with a
-   * phantom wallet message.
-   * If the session type is Secure, it renders a security code message.
-   * Then it sets the ask handler name flag to true if the session type
-   * is Standard.
-   */
   const InitialChatLoad = () => {
-    if (sessionData?.type === "Standard") {
+    if (sessionData?.type === SessionTypeEnum.STANDARD) {
       setChatMessages([
         ...chatMessage,
         {
           type:
-            sessionData?.type == "Standard"
+            sessionData?.type == SessionTypeEnum.STANDARD
               ? messageType.MESSAGE_MOMENT
               : messageType.SECURITY_CODE,
-          handlerName: sessionData?.type == "Secure" && " ",
+          handlerName: sessionData?.type == SessionTypeEnum.SECURE && " ",
         },
         {
           type: messageType.MM_ERROR_MSG,
@@ -335,7 +324,7 @@ const MessageBox = () => {
             "The chat session is full! There are currently 10/10 users joined.",
         },
       ]);
-    } else if (sessionData?.type === "Wallet") {
+    } else if (sessionData?.type === SessionTypeEnum.WALLET) {
       setChatMessages([
         ...chatMessage,
         {
@@ -348,15 +337,15 @@ const MessageBox = () => {
         ...chatMessage,
         {
           type:
-            sessionData?.type == "Standard"
+            sessionData?.type == SessionTypeEnum.STANDARD
               ? messageType.MESSAGE_MOMENT
               : messageType.SECURITY_CODE,
-          handlerName: sessionData?.type == "Secure" && " ",
+          handlerName: sessionData?.type == SessionTypeEnum.SECURE && " ",
         },
       ]);
     }
 
-    if (sessionData?.type == "Standard") {
+    if (sessionData?.type == SessionTypeEnum.STANDARD) {
       setAskHandlerName(true);
     }
   };
@@ -467,26 +456,6 @@ const MessageBox = () => {
     }
   };
 
-  /**
-   * Handles changes to the input field.
-   * If the input field is disabled, do nothing.
-   * If the input starts with "/", reset command selections and validate the command.
-   * If the command is "/remove", check if the input value exists in the userlist.
-   * If the command is not "/remove", check if the input value exists in the commandlist.
-   * If the input is empty, reset the state.
-   * If the user is in a Secure session, validate the Secure Code.
-   * If the user is in a Secure session and the code is invalid, disable the input field.
-   * If the user is in a Secure session and the code is valid, enable the input field.
-   * If the user is in a Project or Share session, validate the display name.
-   * If the user is in a Project or Share session and the display name is invalid, disable the input field.
-   * If the user is in a Project or Share session and the display name is valid, enable the input field.
-   * If the input starts with "/timer", only add space if it’s exactly "/timer" and space hasn’t been added yet.
-   * If the input starts with "/remove", only add space if it’s exactly "/remove" and space hasn’t been added yet.
-   * If the input starts with "/mm", only add space if it’s exactly "/mm" and space hasn’t been added yet.
-   * If the user removes space, reset the spaceAdded flag.
-   * If the user removes space and it was previously a timer command, reset the timer command flag.
-   * If the user removes space and it was previously a remove command, reset the remove command flag.
-   */
   const handleInputChange = (e) => {
     if (InputFieldDisabled) return;
     let value = e.target.value;
@@ -504,7 +473,7 @@ const MessageBox = () => {
         setIsTimerCommand(false);
       }
       // Validate Secure Code
-      if (sessionData?.type === SESSION_TYPE.Secure && !isVerifiedCode) {
+      if (sessionData?.type === SessionTypeEnum.SECURE && !isVerifiedCode) {
         // const numberOnlyRegex = /^[0-9]{4}$/;
         const numberOnlyRegex = /^(?!.*[.eE])[0-9]{4}$/;
 
@@ -702,34 +671,15 @@ const MessageBox = () => {
     }
   };
 
-  /**
-   * Handles the key down event for the chat input field.
-   *
-   * - Prevents certain invalid characters if the session type is secure
-   *   and the security code is not verified.
-   * - Calls `handleKeyUpAndDown` for keys other than "Enter".
-   * - On "Enter" key press:
-   *   - If an item is selected in the command modal, calls `handleKeyUpAndDown`.
-   *   - If the input is not empty and does not start with a command, sends the message.
-   *   - Handles various command inputs starting with '/' including:
-   *     - Timer command
-   *     - Transfer command
-   *     - Project mode toggles (on/off)
-   *     - Leave command
-   *     - ChatGPT command
-   *     - Chat lock/unlock
-   *     - Download chat
-   *     - Remove user
-   */
   const handleKeyDown = (event) => {
-    if (sessionData?.type === SESSION_TYPE.Secure && !isVerifiedCode) {
+    if (sessionData?.type === SessionTypeEnum.SECURE && !isVerifiedCode) {
       if (
         event.keyCode === 69 ||
         event.keyCode === 189 ||
         event.keyCode === 187 ||
         event.keyCode === 190
       ) {
-        event.preventDefault(); // Block invalid characters
+        event.preventDefault();
       }
     }
 
@@ -874,7 +824,7 @@ const MessageBox = () => {
    * @returns {boolean} true if the code is valid, false if not.
    */
   const verifySecurityCode = () => {
-    if (sessionData?.type === SESSION_TYPE.Secure && !isVerifiedCode) {
+    if (sessionData?.type === SessionTypeEnum.SECURE && !isVerifiedCode) {
       // const numberOnlyRegex = /^[0-9]{4}$/;
       const numberOnlyRegex = /^(?!.*[.eE])[0-9]{4}$/;
 

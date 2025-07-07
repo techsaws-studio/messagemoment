@@ -355,11 +355,6 @@ export const Faqcommandlist = [
   "/clear",
 ];
 
-export const SESSION_TYPE = {
-  Standard: "Standard",
-  Secure: "Secure",
-};
-
 export const reason_options = [
   {
     title: "Inappropiate Content",
@@ -649,12 +644,13 @@ export const disconnectPhantom = () => {
 
 import ClipboardJS from "clipboard";
 import { messageContainerRef } from "./components/chat/messagesBox";
+import { SessionTypeEnum } from "./enums/session-type-enum";
 export const handleCopyText = async (url, secureCode, urlType) => {
   return new Promise((resolve, reject) => {
     try {
       let isSuccess = false;
       const textToCopy =
-        urlType === "Secure" && url
+        urlType === SessionTypeEnum.SECURE && url
           ? `${url}\n\nSecurity Code: ${secureCode}`
           : url;
       if (textToCopy) {
@@ -716,14 +712,14 @@ export const users = [
 export const ShareLink = (type, sessionData, url) => {
   const shareText = encodeURIComponent(
     `Join me for a chat on MessageMoment – ${url}${
-      sessionData.type == "Secure"
+      sessionData.type == SessionTypeEnum.SECURE
         ? `\n\nSecurity Code: ${sessionData?.secureCode}`
         : ""
     }`
   );
   const shareTextMail = encodeURIComponent(
     `Join me here – ${url}/${
-      sessionData.type == "Secure"
+      sessionData.type == SessionTypeEnum.SECURE
         ? `\n\nSecurity Code: ${sessionData?.secureCode}`
         : ""
     }`
@@ -732,7 +728,7 @@ export const ShareLink = (type, sessionData, url) => {
   const shareTelegramURL = encodeURIComponent(`${url}`.trim());
   const shareTelegramText = encodeURIComponent(
     `Join me for a chat on MessageMoment.${
-      sessionData.type == "Secure"
+      sessionData.type == SessionTypeEnum.SECURE
         ? `\n\nSecurity Code: ${sessionData?.secureCode}`
         : ""
     }`

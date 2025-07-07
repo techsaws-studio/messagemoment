@@ -17,6 +17,7 @@ import MobileDropdownModal from "./cloudflare-components/mobile-dropdown-modal";
 import NotificationTooltip from "./cloudflare-components/notification-tooltip";
 
 import { ApiRequest } from "@/utils/api-request";
+import { SessionTypeEnum } from "@/enums/session-type-enum";
 
 export const cloudFlareRef = createRef(null);
 
@@ -38,7 +39,9 @@ const Cloudflare = () => {
   const [isQrVisibleTooltip, setQrIsVisibleTooltip] = useState(false);
   const [QrVisible, setQrVisisble] = useState(false);
 
-  const [selectedOption, setSelectedOption] = useState("Standard");
+  const [selectedOption, setSelectedOption] = useState(
+    SessionTypeEnum.STANDARD
+  );
   const [notificationtype, setNotificationType] = useState("reg");
 
   const router = useRouter();
@@ -186,7 +189,7 @@ const Cloudflare = () => {
     setIsWalletConnected(false);
     setSessionData((prev) => ({
       ...prev,
-      type: "Standard",
+      type: SessionTypeEnum.STANDARD,
     }));
   }, [isFirefox]);
 
@@ -228,7 +231,7 @@ const Cloudflare = () => {
       <section
         ref={cloudFlareRef}
         className={`cloud-flare ${
-          selectedOption == "Secure" ? "secure" : "default"
+          selectedOption == SessionTypeEnum.SECURE ? "secure" : "default"
         }`}
       >
         <CloudflareHeader />

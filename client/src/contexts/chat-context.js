@@ -1,5 +1,6 @@
 "use client";
 
+import { SessionTypeEnum } from "@/enums/session-type-enum";
 import React, { createContext, useContext, useState } from "react";
 
 const ChatContext = createContext();
@@ -16,10 +17,10 @@ const ChatContextProvider = ({ children }) => {
   const [showReportfileModal, setShowReportfileModal] = useState(false);
   // home page
   const [sessionData, setSessionData] = useState({
-    type: "Standard",
+    type: SessionTypeEnum.STANDARD,
     url: "",
     code: "",
-    secureCode: "4562",
+    secureCode: "",
   });
 
   // expiry chat time
@@ -48,7 +49,9 @@ const ChatContextProvider = ({ children }) => {
   const [isWalletExist, setIsWalletExist] = useState(true);
 
   // dropdown selected
-  const [dropdownSelected, setdropdownSelected] = useState("Standard");
+  const [dropdownSelected, setdropdownSelected] = useState(
+    SessionTypeEnum.STANDARD
+  );
 
   const [isLoadingGenerateLink, setIsLoadingGenerateLink] = useState(false);
   // isLoading on generate link button click

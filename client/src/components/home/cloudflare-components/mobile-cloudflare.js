@@ -19,6 +19,7 @@ import qrcodeGray from "@/assets/icons/qrcode-grey.svg";
 import qrcode from "@/assets/icons/qrcode.svg";
 import copyGray from "@/assets/icons/copy-grey.svg";
 import copy from "@/assets/icons/copy.svg";
+import { SessionTypeEnum } from "@/enums/session-type-enum";
 
 const MobileCloudFlare = forwardRef(
   (
@@ -97,9 +98,9 @@ const MobileCloudFlare = forwardRef(
             >
               <Image
                 src={
-                  selectedOption == "Standard"
+                  selectedOption == SessionTypeEnum.STANDARD
                     ? globe
-                    : selectedOption == "Wallet"
+                    : selectedOption == SessionTypeEnum.WALLET
                     ? wallet
                     : lock
                 }
@@ -116,7 +117,7 @@ const MobileCloudFlare = forwardRef(
               <p className="small">{url}</p>
             </div>
           </div>
-          {selectedOption == "Secure" && (
+          {selectedOption == SessionTypeEnum.SECURE && (
             <div className="cloudflare-header flex-center">
               <Image src={lock} alt="globe" />
               <p className="small">{url && secureCode}</p>

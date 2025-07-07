@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRef } from "react";
 import scroll_down from "../../../src/assets/icons/scroll_down.svg";
 import banner from "../../../src/assets/images/converse.png";
+import { SessionTypeEnum } from "@/enums/session-type-enum";
 
 const Converse = () => {
   const { dropdownSelected } = chatContext();
@@ -37,14 +38,18 @@ const Converse = () => {
             <Image
               src={scroll_down}
               className={`down-arrow ${
-                dropdownSelected == "Secure" ? "secure" : ".non-secure"
+                dropdownSelected == SessionTypeEnum.SECURE
+                  ? "secure"
+                  : ".non-secure"
               }`}
               onClick={scrollToSection}
             />
             <div
               ref={sectionRef}
               className={`right ${
-                dropdownSelected == "Secure" ? "secure" : "non-secure"
+                dropdownSelected == SessionTypeEnum.SECURE
+                  ? "secure"
+                  : "non-secure"
               }`}
             >
               <Image src={banner} alt="banner" />

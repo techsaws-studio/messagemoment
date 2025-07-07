@@ -4,6 +4,7 @@ import X_white from "@/assets/icons/cross_white.svg";
 import globe from "@/assets/icons/globe.svg";
 import lock from "@/assets/icons/secure.svg";
 import wallet from "@/assets/icons/wallet.svg";
+import { SessionTypeEnum } from "@/enums/session-type-enum";
 
 /**
  * MobileDropdownModal
@@ -41,31 +42,31 @@ const MobileDropdownModal = forwardRef(({
       </div>
       {/* body */}
       <div className="body">
-        <div className="row" onClick={() => {
-            selectOption("Standard")
-        }}>
-          <Image
-            src={globe}
-            className="globe-icon"
-          />
+        <div
+          className="row"
+          onClick={() => {
+            selectOption(SessionTypeEnum.STANDARD);
+          }}
+        >
+          <Image src={globe} className="globe-icon" />
           <p>Standard</p>
         </div>
         <div className="divider" />
-        <div className="row" onClick={() => {
-            selectOption("Secure")
-        }}>
-          <Image
-            src={lock}
-            className="lock-icon"
-          />
+        <div
+          className="row"
+          onClick={() => {
+            selectOption(SessionTypeEnum.SECURE);
+          }}
+        >
+          <Image src={lock} className="lock-icon" />
           <p>Secure</p>
         </div>
         <div className="divider" />
-        <div className="row" onClick={() => selectOption("Wallet")}>
-          <Image
-            src={wallet}
-            className="globe-icon"
-          />
+        <div
+          className="row"
+          onClick={() => selectOption(SessionTypeEnum.WALLET)}
+        >
+          <Image src={wallet} className="globe-icon" />
           <p>Wallet</p>
         </div>
       </div>
