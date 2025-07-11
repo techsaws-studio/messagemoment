@@ -248,7 +248,7 @@ export const ChatHeader = () => {
                   Copyright © {currentYear} MessageMoment. All rights reserved.
                 </h3>
               </section>
-            </div>
+            </div> 
           </div>
         </div>
       </div>
