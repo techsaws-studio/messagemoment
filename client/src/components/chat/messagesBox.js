@@ -13,6 +13,7 @@ import { SessionTypeEnum } from "@/enums/session-type-enum";
 import { chatContext } from "@/contexts/chat-context";
 import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
 import usePhantomWallet from "@/hooks/usePhantomWallet";
+import { useSocket } from "@/contexts/socket-context";
 
 import {
   checkIsConnected,
@@ -64,12 +65,7 @@ const MessageBox = () => {
   const [isDisabled, setIsDisabled] = useState(false);
   const [InputFieldDisabled, setInputFieldDisabled] = useState(false);
   const { PhantomSessionApproved, isLoading } = usePhantomWallet();
-  const [userlist, setUserList] = useState([
-    { name: "[Richard]", color: USER_HANDERLS[4] },
-    { name: "[Nicolas]", color: USER_HANDERLS[5] },
-    { name: "[Laura]", color: USER_HANDERLS[6] },
-    { name: "[Robert]", color: USER_HANDERLS[7] },
-  ]);
+  const [userlist, setUserList] = useState([]);
 
   const {
     setShowUploadModal,
@@ -91,6 +87,7 @@ const MessageBox = () => {
   } = chatContext();
   const fileInputRef = useRef(null);
   const commandModalRef = useRef();
+  const socket = useSocket();
 
   const WalletChatUtils = () => {
     if (isMobileView) {
@@ -158,11 +155,6 @@ const MessageBox = () => {
               ? messageType.MESSAGE_MOMENT
               : messageType.SECURITY_CODE,
           handlerName: sessionData?.type == SessionTypeEnum.SECURE && " ",
-        },
-        {
-          type: messageType.MM_ERROR_MSG,
-          message:
-            "The chat session is full! There are currently 10/10 users joined.",
         },
       ]);
     } else if (sessionData?.type === SessionTypeEnum.WALLET) {
@@ -757,9 +749,10 @@ const MessageBox = () => {
   const handleUserName = () => {
     const username = input.trim();
     const isValidate = validateDisplayName(username);
+
     if (isValidate !== "All Good!") return;
 
-    // T0 hanle duplicate display name scenario
+    // To hanle duplicate display name scenario
     if (username.toLowerCase() == "Timothy".toLowerCase()) {
       setChatMessages([
         ...chatMessage,
@@ -773,6 +766,7 @@ const MessageBox = () => {
       scrollToBottom();
       return;
     }
+
     const isExist = userlist.find(
       (item) =>
         item.name.replace(/\[|\]/g, "").toLowerCase() == username.toLowerCase()
@@ -784,14 +778,13 @@ const MessageBox = () => {
           type: messageType.MM_ALERT,
           message:
             "The Display Name you entered is already in use. Please choose something else.",
-          // message:
-          //   "This Display Name was previously used in this session and cannot be reused by another user.",
         },
       ]);
       setinput("");
       scrollToBottom();
       return;
     }
+
     if (input.trim() != "" && input.length >= 15) {
       setHandlerName(`[${input.trim().slice(0, 15)}]`);
     } else {
@@ -800,45 +793,8 @@ const MessageBox = () => {
 
     setAskHandlerName(false);
     setinput("");
-
     setChatMessages([
       ...chatMessage,
-      {
-        type: messageType.MM_NOTIFICATION,
-        message: "Joined",
-        handlerColor: USER_HANDERLS[3],
-        handlerName: `[${input.slice(0, 18)}]`,
-      },
-      {
-        type: messageType.MM_NOTIFICATION,
-        message: "Joined",
-        handlerColor: USER_HANDERLS[4],
-        handlerName: "[Richard]",
-      },
-      {
-        type: messageType.MM_NOTIFICATION,
-        message: "Joined",
-        handlerColor: USER_HANDERLS[5],
-        handlerName: "[Nicolas]",
-      },
-      {
-        type: messageType.MM_NOTIFICATION,
-        message: "Joined",
-        handlerColor: USER_HANDERLS[6],
-        handlerName: "[Laura]",
-      },
-      {
-        type: messageType.MM_NOTIFICATION,
-        message: "Left",
-        handlerColor: USER_HANDERLS[8],
-        handlerName: "[William]",
-      },
-      {
-        type: messageType.MM_NOTIFICATION,
-        message: "Joined",
-        handlerColor: USER_HANDERLS[7],
-        handlerName: "[Robert]",
-      },
       {
         type: messageType.ASK_TO_SET_EXPIRYTIME,
       },
@@ -1275,6 +1231,105 @@ const MessageBox = () => {
       setKeyboardType("text");
     }
   }, [sessionData, isVerifiedCode]);
+
+  // SOCKET INTEGRATION
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.emit("joinRoom", {
+      sessionId: sessionData.code,
+      username: handlerName,
+      sessionSecurityCode: sessionData.secureCode || "",
+    });
+
+    // USER LIST
+    socket.on("userList", (data) => {
+      const formattedList = data.participants.map((user) => ({
+        name: user.username,
+        color: USER_HANDERLS[user.assignedColor] ?? USER_HANDERLS[0],
+      }));
+
+      setUserList(formattedList);
+    });
+
+    // NOTIFICATIONS LOGIC (STARTS)
+    socket.on("userJoined", (data) => {
+      console.log("New User Joined:", data);
+
+      setChatMessages((prevMessages) => {
+        const isAlreadyAdded = prevMessages.some(
+          (msg) => msg.handlerName === data.handlerName
+        );
+
+        if (isAlreadyAdded) return prevMessages;
+
+        return [
+          ...prevMessages,
+          {
+            type: messageType.MM_NOTIFICATION,
+            message: data.message,
+            handlerName: data.handlerName,
+            handlerColor: USER_HANDERLS[data.handlerColor],
+          },
+        ];
+      });
+    });
+
+    socket.on("userLeft", (data) => {
+      console.log("User Left:", data);
+
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          type: messageType.MM_NOTIFICATION,
+          message: data.message,
+          handlerName: data.handlerName,
+          handlerColor: USER_HANDERLS[data.handlerColor],
+        },
+      ]);
+    });
+
+    socket.on("sessionFull", (data) => {
+      console.log("Session Full:", data);
+
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          type: messageType.MM_ERROR_MSG,
+          message: data.message,
+        },
+      ]);
+    });
+
+    // NOTIFICATIONS LOGIC (ENDS)
+
+    socket.on("usernameError", (message) => {
+      console.error("Username Error:", message);
+
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          type: messageType.MM_ALERT,
+          message: message,
+        },
+      ]);
+      setHandlerName("");
+      setAskHandlerName(true);
+    });
+
+    socket.on("error", (message) => {
+      console.error("Join Room Error:", message);
+    });
+
+    return () => {
+      socket.off("joinedRoom");
+      socket.off("userJoined");
+      socket.off("userLeft");
+      socket.off("sessionFull");
+      socket.off("usernameError");
+      socket.off("error");
+    };
+  }, [socket, sessionData, handlerName]);
 
   return (
     <>

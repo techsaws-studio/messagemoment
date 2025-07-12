@@ -616,7 +616,7 @@ const Message = ({
     );
   };
 
-  // NessageContent
+  // MessageContent
   const renderMessageContent = (type) => {
     const renderMap = {
       [messageType.ADVERTISEMENT]: renderAdertisment,
