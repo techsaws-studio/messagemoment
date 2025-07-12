@@ -1,7 +1,19 @@
 "use client";
-import sendBtn from "@/assets/icons/chat/sendBtn.svg";
-import sendBtnGrey from "@/assets/icons/chat/send_grey.svg";
+
+import React, { createRef, useEffect, useRef, useState } from "react";
+import {
+  isSafari as isSAF,
+  isAndroid,
+  isMobile,
+  isTablet,
+} from "react-device-detect";
+
+import { SessionTypeEnum } from "@/enums/session-type-enum";
+
 import { chatContext } from "@/contexts/chat-context";
+import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
+import usePhantomWallet from "@/hooks/usePhantomWallet";
+
 import {
   checkIsConnected,
   connectPhantomDeeplinking,
@@ -14,31 +26,51 @@ import {
   renderRemoveUserText,
   USER_HANDERLS,
 } from "@/dummy-data";
-import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
-import usePhantomWallet from "@/hooks/usePhantomWallet";
-import { createRef, useEffect, useRef, useState } from "react";
-import {
-  isSafari as isSAF,
-  isAndroid,
-  isMobile,
-  isTablet,
-} from "react-device-detect";
+
 import { validateDisplayName } from "./chat-messages-utils";
 import MessagesModals from "./message-box-components/messagesModals";
 import MessageInput from "./message-box-components/message-input";
 import MessageContainer from "./message-box-components/message-container";
-import { SessionTypeEnum } from "@/enums/session-type-enum";
 
-/**
- * MessageBox is a React component implementing a chat interface with various functionalities.
- * It supports chat commands, file attachments, message handling, and integration with Phantom Wallet.
- * The component maintains several states for user input, commands, chat messages, and UI behavior.
- * It also handles mobile-specific features and device detection, including Safari browser adjustments.
- * The chat interface supports project modes, user management, and security code verification.
- */
+import sendBtn from "@/assets/icons/chat/sendBtn.svg";
+import sendBtnGrey from "@/assets/icons/chat/send_grey.svg";
+
 export const messageContainerRef = createRef(null);
+
 const MessageBox = () => {
-  // context
+  const [input, setinput] = useState("");
+  const [commandlist, setCommandsList] = useState(listcommands);
+  const [selectedCommands, setSelectedCommands] = useState("");
+  const [chatMessage, setChatMessages] = useState([]);
+  const [handlerName, setHandlerName] = useState("");
+  const [askHanderName, setAskHandlerName] = useState(false);
+  const [askProjectMode, setAskprojectMode] = useState(false);
+  const [askExitProjectMode, setAskExistProjectMode] = useState(false);
+  const [askRemoveUser, setAskRemoveUser] = useState(false);
+  const [askBeforClearChat, setAskBeforClearChat] = useState(false);
+  const { isMobileView } = useCheckIsMobileView();
+  const [removeUserName, setRemoveUserName] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [isExpiryTimeExist, setIsExpiryTimeExist] = useState(false);
+  const [isLandscape, setIsLandscape] = useState(false);
+  const [isTimerCommand, setIsTimerCommand] = useState(false);
+  const [spaceAdded, setSpaceAdded] = useState(false);
+  const [showCommands, setShowCommands] = useState(false);
+  const [isChatLock, setIsChatLock] = useState(false);
+  const [isSafari, setIsSafari] = useState(false);
+  const [KeyboardType, setKeyboardType] = useState("text");
+  const [isRemoveCommand, setIsRemoveCommand] = useState(false);
+  const [selectedColor, setSelectedColor] = useState("");
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [InputFieldDisabled, setInputFieldDisabled] = useState(false);
+  const { PhantomSessionApproved, isLoading } = usePhantomWallet();
+  const [userlist, setUserList] = useState([
+    { name: "[Richard]", color: USER_HANDERLS[4] },
+    { name: "[Nicolas]", color: USER_HANDERLS[5] },
+    { name: "[Laura]", color: USER_HANDERLS[6] },
+    { name: "[Robert]", color: USER_HANDERLS[7] },
+  ]);
+
   const {
     setShowUploadModal,
     setFiledata,
@@ -57,138 +89,8 @@ const MessageBox = () => {
     isWalletConnected,
     setIsWalletExist,
   } = chatContext();
-  // Ref's
   const fileInputRef = useRef(null);
   const commandModalRef = useRef();
-  // const messageContainerRef = useRef(null);
-  // states
-  const [input, setinput] = useState("");
-  const [commandlist, setCommandsList] = useState(listcommands);
-  const [selectedCommands, setSelectedCommands] = useState("");
-  const [chatMessage, setChatMessages] = useState([]);
-  const [handlerName, setHandlerName] = useState("");
-
-  // ASK QUESTION'
-  const [askHanderName, setAskHandlerName] = useState(false); // 1
-  const [askProjectMode, setAskprojectMode] = useState(false); // 2
-  const [askExitProjectMode, setAskExistProjectMode] = useState(false); //3
-  const [askRemoveUser, setAskRemoveUser] = useState(false); //4
-  const [askBeforClearChat, setAskBeforClearChat] = useState(false); //5
-
-  // Verify status states
-  const { isMobileView } = useCheckIsMobileView();
-  const [removeUserName, setRemoveUserName] = useState("");
-  const [selectedIndex, setSelectedIndex] = useState(-1);
-
-  // Handlers
-  const [userlist, setUserList] = useState([
-    { name: "[Richard]", color: USER_HANDERLS[4] },
-    { name: "[Nicolas]", color: USER_HANDERLS[5] },
-    { name: "[Laura]", color: USER_HANDERLS[6] },
-    { name: "[Robert]", color: USER_HANDERLS[7] },
-  ]);
-
-  // status
-  const [isExpiryTimeExist, setIsExpiryTimeExist] = useState(false);
-  const [isLandscape, setIsLandscape] = useState(false);
-  const [isTimerCommand, setIsTimerCommand] = useState(false);
-  const [spaceAdded, setSpaceAdded] = useState(false);
-  const [showCommands, setShowCommands] = useState(false);
-  const [isChatLock, setIsChatLock] = useState(false);
-  const [isSafari, setIsSafari] = useState(false);
-  const [KeyboardType, setKeyboardType] = useState("text");
-  const [isRemoveCommand, setIsRemoveCommand] = useState(false);
-  const [selectedColor, setSelectedColor] = useState("");
-  const [isDisabled, setIsDisabled] = useState(false);
-  const [InputFieldDisabled, setInputFieldDisabled] = useState(false);
-  const { PhantomSessionApproved, isLoading } = usePhantomWallet();
-
-  // HANDLERS use to handle stop scrolling for iOS while keyboard opens
-  useEffect(() => {
-    // // Check if the browser is Safari
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    if (!isSafari) return;
-    if (!isMobile) return;
-    if (!isMobileView) return;
-
-    setIsSafari(isSafari);
-    // Code to disable the scroll on keyboard open
-    const preventScroll = (e) => {
-      const activeElement = document.activeElement;
-      if (
-        activeElement.tagName === "INPUT" ||
-        activeElement.tagName === "TEXTAREA"
-      ) {
-        e.preventDefault();
-        activeElement.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-    };
-    let lastViewportHeight =
-      window.visualViewport?.height || window.innerHeight;
-    const handleViewportResize = () => {
-      const currentHeight = window.visualViewport?.height || window.innerHeight;
-      // If viewport height increased, assume keyboard is closing
-      if (currentHeight > lastViewportHeight + 50) {
-        const activeElement = document.activeElement;
-        if (
-          activeElement &&
-          (activeElement.tagName === "INPUT" ||
-            activeElement.tagName === "TEXTAREA")
-        ) {
-          activeElement.blur(); // blur only when keyboard closes
-        }
-      }
-      lastViewportHeight = currentHeight;
-    };
-    window.visualViewport?.addEventListener("resize", handleViewportResize);
-    window.addEventListener("touchmove", preventScroll, { passive: false });
-    return () => {
-      window.removeEventListener("touchmove", preventScroll);
-      window.visualViewport?.removeEventListener(
-        "resize",
-        handleViewportResize
-      );
-    };
-  }, [isMobileView]);
-
-  useEffect(() => {
-    if (!isPhantomExist() && !isMobileView) {
-      setIsWalletExist(false);
-    } else {
-      setIsWalletExist(true);
-    }
-    // // Check if the browser is Safari
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    if (!isSafari) return;
-    if (!isMobileView) return;
-
-    // Code to disable the scroll on keyboard open
-    const toggleBodyScroll = (e) =>
-      (document.body.style.overflow = e.type === "focusin" ? "hidden" : "");
-    window.addEventListener("focusin", toggleBodyScroll); // Keyboard open
-    window.addEventListener("focusout", toggleBodyScroll); // Keyboard close
-    return () => {
-      window.removeEventListener("focusin", toggleBodyScroll);
-      window.removeEventListener("focusout", toggleBodyScroll);
-    };
-  }, [isMobileView]);
-
-  useEffect(() => {
-    if (sessionData.type == SessionTypeEnum.WALLET) {
-      if (isWalletConnected) {
-        setInputFieldDisabled(false);
-      } else {
-        setInputFieldDisabled(true);
-      }
-    }
-  }, [isWalletConnected]);
-  // ===========  connectWallet ============= //
-
-  useEffect(() => {
-    if (PhantomSessionApproved) {
-      WalletChatUtils();
-    }
-  }, [PhantomSessionApproved]);
 
   const WalletChatUtils = () => {
     if (isMobileView) {
@@ -232,12 +134,6 @@ const MessageBox = () => {
     }
   };
 
-  /**
-   * Handles the Phantom Wallet connection process. If not on mobile, it calls
-   * the `connectToPhantom` function to connect to the Phantom Wallet and if
-   * successful, calls the `WalletChatUtils` function. If on mobile, it calls
-   * the `connectPhantomDeeplinking` function to open the Phantom Wallet app.
-   */
   const handlePhantomConnection = async () => {
     if (!isMobileView) {
       if (!isPhantomExist()) {
@@ -251,61 +147,6 @@ const MessageBox = () => {
       connectPhantomDeeplinking();
     }
   };
-
-  useEffect(() => {
-    setConnectWalletFunction(() => handlePhantomConnection);
-  }, [setConnectWalletFunction, isMobileView]);
-
-  useEffect(() => {
-    if (input == "") {
-      setSpaceAdded(false);
-      setTimeout(() => {
-        setIsRemoveCommand(false);
-      }, 200);
-      setSelectedIndex(-1);
-    }
-  }, [input]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        commandModalRef.current &&
-        !commandModalRef.current.contains(event.target)
-      ) {
-        setShowCommands(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  useEffect(() => {
-    checkIsConnected();
-    if (!isLoading && !PhantomSessionApproved) {
-      InitialChatLoad();
-    }
-  }, [isLoading, PhantomSessionApproved]);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(orientation: portrait)");
-    setIsLandscape(!mediaQuery.matches);
-    const handleChange = (event) => {
-      setIsLandscape(!event.matches);
-    };
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
-
-  // VALIDATION REGEX
-  useEffect(() => {
-    if (sessionData?.type == SessionTypeEnum.SECURE && !isVerifiedCode) {
-      setKeyboardType("number");
-    } else {
-      setKeyboardType("text");
-    }
-  }, [sessionData, isVerifiedCode]);
 
   const InitialChatLoad = () => {
     if (sessionData?.type === SessionTypeEnum.STANDARD) {
@@ -360,13 +201,14 @@ const MessageBox = () => {
       }, 20);
     }
   };
+
   const openFilePopup = () => {
     fileInputRef.current.click();
     if (showAttachment) {
       setShowAttachment(false);
     }
   };
-  // Handle file selection
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -383,17 +225,6 @@ const MessageBox = () => {
     event.target.value = "";
   };
 
-  /**
-   * Handles the selection of a command from the command modal.
-   * Updates the input field and command states based on the selected command.
-   *
-   * @param {string} text - The selected command text.
-   *
-   * If the command is "/timer" or "/mm", appends a space to the command
-   * and hides the command modal. Sets the spaceAdded state to true.
-   * If the command is "/remove", appends a space to the command and
-   * hides the command modal. Sets the isRemoveCommand state to true after a delay.
-   */
   const handleSelectedCommand = (text) => {
     setSelectedCommands(text);
     setinput(text);
@@ -421,12 +252,6 @@ const MessageBox = () => {
     setShowCommands(false);
   };
 
-  /**
-   * Verifies the input command and displays a list of commands or users if the command is valid.
-   * If the command is "/remove", it checks if the input value exists in the userlist.
-   * If the command is not "/remove", it checks if the input value exists in the commandlist.
-   * @param {string} value - The input command value.
-   */
   const verifyInputCommand = (value) => {
     if (isRemoveCommand) {
       let val = value.split(" ")[1];
@@ -583,32 +408,6 @@ const MessageBox = () => {
     }
   };
 
-  /**
-   * Handles the click event for the send button in the chat interface.
-   *
-   * - Verifies the security code before proceeding.
-   * - Sends a message if the input is not empty and does not start with a command prefix ('/').
-   *   - If an attachment is present, it checks for file attachment.
-   *   - Otherwise, adds the input as a normal chat message.
-   * - Resets command states after sending a message or executing a command.
-   * - Handles various command inputs starting with '/' including:
-   *   - Timer command
-   *   - Transfer command
-   *   - Project mode toggles (on/off)
-   *   - Leave command
-   *   - ChatGPT command
-   *   - Chat lock/unlock
-   *   - Download chat
-   *   - Remove user
-   * - Scrolls to the bottom of the chat after sending a message.
-   */
-
-  /**
-   * Handles the logic for sending a chat message.
-   * @function
-   * @param {boolean} [verifySecurityCode=true] - Whether to verify the security code before sending the message.
-   * @returns {void}
-   */
   const handleClickSendBtn = () => {
     if (verifySecurityCode()) {
       if (input.trim() !== "" && !input.startsWith("/")) {
@@ -735,15 +534,6 @@ const MessageBox = () => {
     }
   };
 
-  /**
-   * Handles key up and down events for the command list.
-   * If the command list is visible and the user presses the up or down arrow keys, the
-   * selected index is updated accordingly.
-   * If the user presses Enter while the command list is visible, the selected command is
-   * executed and the command list is closed.
-   * If the user presses Tab while the command list is visible, the input is autocompleted
-   * with the first matching command or user.
-   */
   const handleKeyUpAndDown = (e) => {
     if (!showCommands) return; // Do nothing if the command list is not visible
     if (e.key === "ArrowDown") {
@@ -811,18 +601,6 @@ const MessageBox = () => {
     }
   };
 
-  // HANDLE SECNARIOS
-
-  // 1 VERIFY SECURITY CODE. ELSE RETURN ERROR
-  /**
-   * Verifies the security code entered by the user.
-   * If the code is valid, it sets the isVerifiedCode flag to true and
-   * adds a message moment to the chat log.
-   * If the code is invalid, it adds an error message to the chat log.
-   * If the session is not Secure, it will return true.
-   * If the user has not entered a code, it will return false.
-   * @returns {boolean} true if the code is valid, false if not.
-   */
   const verifySecurityCode = () => {
     if (sessionData?.type === SessionTypeEnum.SECURE && !isVerifiedCode) {
       // const numberOnlyRegex = /^[0-9]{4}$/;
@@ -887,13 +665,6 @@ const MessageBox = () => {
     }
   };
 
-  // Handler Ask Question
-  /**
-   * Handles the Ask Remove User question by verifying the username entered by the user.
-   * If the username is valid, it sets the askRemoveUser flag to true and adds a message moment
-   * to the chat log with the username and color of the user to be removed.
-   * If the username is invalid, it does nothing.
-   */
   const handleAskRemoveUserQuestion = () => {
     const username = input.split(" ")[1];
     if (!username) return;
@@ -936,6 +707,7 @@ const MessageBox = () => {
     setinput("");
     scrollToBottom();
   };
+
   const AskBeforeChatMsgClear = () => {
     setChatMessages([
       ...chatMessage,
@@ -981,6 +753,7 @@ const MessageBox = () => {
       setinput("");
     }
   };
+
   const handleUserName = () => {
     const username = input.trim();
     const isValidate = validateDisplayName(username);
@@ -1084,6 +857,7 @@ const MessageBox = () => {
       }
     }
   };
+
   const handleClearChatConfirmation = () => {
     if (input.trim() != "") {
       if (input.toLowerCase() == "y") {
@@ -1096,7 +870,6 @@ const MessageBox = () => {
     }
   };
 
-  // HANDLE COMMANDS
   const handleRemoveUser = () => {
     setChatMessages([
       ...chatMessage,
@@ -1274,6 +1047,7 @@ const MessageBox = () => {
     setinput("");
     setShowCommands(false);
   };
+
   const handleProjectOnCommand = () => {
     const list = commandlist.filter(
       (item) => item != "/project on" && item != "/timer"
@@ -1368,6 +1142,140 @@ const MessageBox = () => {
     URL.revokeObjectURL(url);
   };
 
+  useEffect(() => {
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    if (!isSafari) return;
+    if (!isMobile) return;
+    if (!isMobileView) return;
+
+    setIsSafari(isSafari);
+    const preventScroll = (e) => {
+      const activeElement = document.activeElement;
+      if (
+        activeElement.tagName === "INPUT" ||
+        activeElement.tagName === "TEXTAREA"
+      ) {
+        e.preventDefault();
+        activeElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    };
+    let lastViewportHeight =
+      window.visualViewport?.height || window.innerHeight;
+    const handleViewportResize = () => {
+      const currentHeight = window.visualViewport?.height || window.innerHeight;
+      if (currentHeight > lastViewportHeight + 50) {
+        const activeElement = document.activeElement;
+        if (
+          activeElement &&
+          (activeElement.tagName === "INPUT" ||
+            activeElement.tagName === "TEXTAREA")
+        ) {
+          activeElement.blur();
+        }
+      }
+      lastViewportHeight = currentHeight;
+    };
+    window.visualViewport?.addEventListener("resize", handleViewportResize);
+    window.addEventListener("touchmove", preventScroll, { passive: false });
+    return () => {
+      window.removeEventListener("touchmove", preventScroll);
+      window.visualViewport?.removeEventListener(
+        "resize",
+        handleViewportResize
+      );
+    };
+  }, [isMobileView]);
+
+  useEffect(() => {
+    if (!isPhantomExist() && !isMobileView) {
+      setIsWalletExist(false);
+    } else {
+      setIsWalletExist(true);
+    }
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    if (!isSafari) return;
+    if (!isMobileView) return;
+
+    const toggleBodyScroll = (e) =>
+      (document.body.style.overflow = e.type === "focusin" ? "hidden" : "");
+    window.addEventListener("focusin", toggleBodyScroll);
+    window.addEventListener("focusout", toggleBodyScroll);
+    return () => {
+      window.removeEventListener("focusin", toggleBodyScroll);
+      window.removeEventListener("focusout", toggleBodyScroll);
+    };
+  }, [isMobileView]);
+
+  useEffect(() => {
+    if (sessionData.type == SessionTypeEnum.WALLET) {
+      if (isWalletConnected) {
+        setInputFieldDisabled(false);
+      } else {
+        setInputFieldDisabled(true);
+      }
+    }
+  }, [isWalletConnected]);
+
+  useEffect(() => {
+    if (PhantomSessionApproved) {
+      WalletChatUtils();
+    }
+  }, [PhantomSessionApproved]);
+
+  useEffect(() => {
+    setConnectWalletFunction(() => handlePhantomConnection);
+  }, [setConnectWalletFunction, isMobileView]);
+
+  useEffect(() => {
+    if (input == "") {
+      setSpaceAdded(false);
+      setTimeout(() => {
+        setIsRemoveCommand(false);
+      }, 200);
+      setSelectedIndex(-1);
+    }
+  }, [input]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        commandModalRef.current &&
+        !commandModalRef.current.contains(event.target)
+      ) {
+        setShowCommands(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    checkIsConnected();
+    if (!isLoading && !PhantomSessionApproved) {
+      InitialChatLoad();
+    }
+  }, [isLoading, PhantomSessionApproved]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(orientation: portrait)");
+    setIsLandscape(!mediaQuery.matches);
+    const handleChange = (event) => {
+      setIsLandscape(!event.matches);
+    };
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  useEffect(() => {
+    if (sessionData?.type == SessionTypeEnum.SECURE && !isVerifiedCode) {
+      setKeyboardType("number");
+    } else {
+      setKeyboardType("text");
+    }
+  }, [sessionData, isVerifiedCode]);
+
   return (
     <>
       <MessagesModals
@@ -1376,6 +1284,7 @@ const MessageBox = () => {
         isLandscape={isLandscape}
         isMobileView={isMobileView}
       />
+
       <MessageContainer
         chatMessage={chatMessage}
         messageContainerRef={messageContainerRef}
@@ -1388,6 +1297,7 @@ const MessageBox = () => {
         messageType={messageType}
         scrollToBottom={scrollToBottom}
       />
+
       <MessageInput
         InputFieldDisabled={InputFieldDisabled}
         showAttachment={showAttachment}
@@ -1403,7 +1313,7 @@ const MessageBox = () => {
         isTimerCommand={isTimerCommand}
         commandModalRef={commandModalRef}
         handleKeyDown={handleKeyDown}
-        // commandlist
+        // COMMAND LISTS
         userlist={userlist}
         commandlist={commandlist}
         handleSelectedCommand={handleSelectedCommand}
