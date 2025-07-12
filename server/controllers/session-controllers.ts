@@ -73,13 +73,13 @@ export const ValidationSessionFunction = CatchAsyncErrors(
       if (!sessionId) {
         return res.status(400).json({
           success: false,
-          redirect: "/invalid-session",
+          redirect: "/expired-session",
           message: "Session ID is required",
         });
       }
 
       if (!RedisDatabase) {
-        console.error("❌ RedisDatabase is not initialized.");
+        console.error("❌ Redis Database is not initialized.");
         return res.status(500).json({
           success: false,
           redirect: "/error",
