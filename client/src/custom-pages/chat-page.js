@@ -44,15 +44,15 @@ function ChatPage() {
     }
   };
 
-  if (isLoading) {
-    return <Loader />;
-  }
-
   useEffect(() => {
     if (sessionId) {
       fetchSessionData(sessionId);
     }
   }, [sessionId]);
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <>
