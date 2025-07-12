@@ -784,7 +784,6 @@ const MessageBox = () => {
       scrollToBottom();
       return;
     }
-
     if (input.trim() != "" && input.length >= 15) {
       setHandlerName(`[${input.trim().slice(0, 15)}]`);
     } else {
@@ -793,12 +792,6 @@ const MessageBox = () => {
 
     setAskHandlerName(false);
     setinput("");
-    setChatMessages([
-      ...chatMessage,
-      {
-        type: messageType.ASK_TO_SET_EXPIRYTIME,
-      },
-    ]);
     scrollToBottom();
   };
 
@@ -1270,6 +1263,9 @@ const MessageBox = () => {
             message: data.message,
             handlerName: data.handlerName,
             handlerColor: USER_HANDERLS[data.handlerColor],
+          },
+          {
+            type: messageType.ASK_TO_SET_EXPIRYTIME,
           },
         ];
       });
