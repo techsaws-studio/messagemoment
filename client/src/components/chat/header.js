@@ -7,10 +7,9 @@ import ClipboardJS from "clipboard";
 import { Tooltip } from "antd";
 import { getYear } from "date-fns";
 
+import { useSocket } from "@/contexts/socket-context";
 import { chatContext } from "@/contexts/chat-context";
 import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
-
-import { users } from "@/dummy-data";
 
 import DisconnectBtn from "./disconnectButton";
 import ShareButton from "./shareButton";
@@ -47,8 +46,12 @@ export const ChatHeader = () => {
     setShowChatLeaveModal,
     setChatScreenNotification,
     sessionData,
+    setUsers,
+    setActiveUser,
+    users,
+    activeUser,
   } = chatContext();
-
+  const socket = useSocket();
   const currentYear = getYear(new Date());
   const { isMobileView } = useCheckIsMobileView();
 
@@ -127,8 +130,6 @@ export const ChatHeader = () => {
     );
   };
 
-  const activeUser = "Richard";
-
   useEffect(() => {
     if (showCopiedNotification) {
       setChatScreenNotification({
@@ -140,6 +141,24 @@ export const ChatHeader = () => {
       }, 2000);
     }
   }, [showCopiedNotification]);
+
+  // SOCKET INTEGRATION
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("updateUserList", (data) => {
+      setUsers(data.users);
+    });
+
+    socket.on("setActiveUser", (data) => {
+      setActiveUser(data.username);
+    });
+
+    return () => {
+      socket.off("updateUserList");
+      socket.off("setActiveUser");
+    };
+  }, []);
 
   return (
     <div className="header-cont">
@@ -205,7 +224,7 @@ export const ChatHeader = () => {
                       : ""
                   }`}
                 >
-                  <p className="chat-text">[{user}]</p>
+                  <p className="chat-text">{user}</p>
                   {user === activeUser && <div>*</div>}
                 </li>
               ))}
@@ -248,7 +267,7 @@ export const ChatHeader = () => {
                   Copyright © {currentYear} MessageMoment. All rights reserved.
                 </h3>
               </section>
-            </div> 
+            </div>
           </div>
         </div>
       </div>

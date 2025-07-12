@@ -1,4 +1,6 @@
 import ChatContextProvider from "@/contexts/chat-context";
+import { SocketProvider } from "@/contexts/socket-context";
+
 import "../../public/styles/main.scss";
 
 export const metadata = {
@@ -75,7 +77,9 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <ChatContextProvider>{children}</ChatContextProvider>
+        <ChatContextProvider>
+          <SocketProvider>{children}</SocketProvider>
+        </ChatContextProvider>
       </body>
     </html>
   );

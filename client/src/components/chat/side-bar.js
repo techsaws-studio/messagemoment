@@ -1,15 +1,19 @@
 import React from "react";
-import grey_logo from "@/assets/icons/chat/grey_logo.png";
-import heartIcon from "@/assets/icons/heart_white.svg";
 import Image from "next/image";
 import Link from "next/link";
 import { getYear } from "date-fns";
+
+import { chatContext } from "@/contexts/chat-context";
+
 import Button from "../button";
-import { users } from "@/dummy-data";
+
+import grey_logo from "@/assets/icons/chat/grey_logo.png";
+import heartIcon from "@/assets/icons/heart_white.svg";
 
 const SideBar = () => {
+  const { users, activeUser } = chatContext();
   const currentYear = getYear(new Date());
-  const activeUser = "Richard"; // Define active user dynamically
+
   return (
     <div className="sidebar-container">
       <div className="sidebar">
@@ -18,7 +22,8 @@ const SideBar = () => {
             <h3>Chat Group</h3>
             <p className="chat-text">{users.length}/10</p>
           </div>
-          {/* User list */}
+
+          {/* USER LIST */}
           <ul>
             {users.map((user, i) => (
               <li
@@ -29,12 +34,13 @@ const SideBar = () => {
                     : ""
                 }`}
               >
-                <p className="chat-text">[{user}]</p>
+                <p className="chat-text">{user}</p>
                 {user === activeUser && <div>*</div>}
               </li>
             ))}
           </ul>
-          {/* Advertisement section */}
+
+          {/* ADVERTISMENT SECTION */}
           <div className="footer">
             <section className="ads">
               <p className="chat-text">Advertisement</p>
