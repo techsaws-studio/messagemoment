@@ -22,9 +22,11 @@ export const LeaveSessionService = async (
     const normalizedUsername = username.toLowerCase();
     console.info(`User ${normalizedUsername} leaving session: ${sessionId}`);
 
-    // Handle username with brackets format like [user1]
-    const cleanUsername = username.replace(/[\[\]]/g, ''); // Remove brackets if present
-    const usernameRegex = new RegExp(`^\\[?${cleanUsername.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\]?$`, "i");
+    const cleanUsername = username.replace(/[\[\]]/g, "");
+    const usernameRegex = new RegExp(
+      `^\\[?${cleanUsername.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\]?$`,
+      "i"
+    );
 
     const participant = await ParticipantModel.findOne({
       sessionId,
@@ -35,7 +37,7 @@ export const LeaveSessionService = async (
       found: !!participant,
       isActive: participant?.isActive,
       hasLeftSession: participant?.hasLeftSession,
-      participantId: participant?._id
+      participantId: participant?._id,
     });
 
     let hasLockedSession = false;
@@ -46,7 +48,6 @@ export const LeaveSessionService = async (
     if (!participant) {
       console.warn(`Participant ${username} not found in session ${sessionId}`);
     } else {
-      // Calculate session duration if createdAt exists
       let sessionDurationSeconds = 0;
       if (participant.createdAt) {
         const leaveTime = new Date();
@@ -63,7 +64,9 @@ export const LeaveSessionService = async (
         );
       }
 
-      console.info(`Attempting to update participant ${username} with ID: ${participant._id}`);
+      console.info(
+        `Attempting to update participant ${username} with ID: ${participant._id}`
+      );
 
       const updatedParticipant = await ParticipantModel.updateOne(
         { _id: participant._id },
@@ -72,24 +75,23 @@ export const LeaveSessionService = async (
             isActive: false,
             sessionDuration: sessionDurationSeconds,
             hasLeftSession: true,
-
-          }
+          },
         },
-        { 
-          new: true, 
-          runValidators: true,
-          writeConcern: { w: 'majority', j: true }
+        {
+          writeConcern: { w: "majority", j: true },
         }
       ).catch((err) => {
         console.error(
           `Error updating participant ${username} leave status:`,
           err
         );
-        throw err; 
+        throw err;
       });
 
-      if (!updatedParticipant) {
-        console.error(`Failed to update participant ${username} - no document returned`);
+      if (updatedParticipant.matchedCount === 0) {
+        console.error(
+          `Failed to update participant ${username} - no document matched`
+        );
         throw new Error(`Failed to update participant ${username}`);
       }
 
@@ -97,7 +99,7 @@ export const LeaveSessionService = async (
       console.info(`Database verification for ${username}:`, {
         isActive: verifyUpdate?.isActive,
         hasLeftSession: verifyUpdate?.hasLeftSession,
-        sessionDuration: verifyUpdate?.sessionDuration
+        sessionDuration: verifyUpdate?.sessionDuration,
       });
     }
 
@@ -106,7 +108,7 @@ export const LeaveSessionService = async (
         await SessionModel.findOneAndUpdate(
           { sessionId },
           { sessionLocked: false },
-          { writeConcern: { w: 'majority', j: true } }
+          { writeConcern: { w: "majority", j: true } }
         );
 
         if (io) {
@@ -119,50 +121,57 @@ export const LeaveSessionService = async (
     }
 
     try {
-      // First, let's find the session to debug
-      const sessionBeforeUpdate = await SessionModel.findOne({ sessionId });
-      console.info(`Session before update - participantCount: ${sessionBeforeUpdate?.participantCount}, participants: ${JSON.stringify(sessionBeforeUpdate?.participants)}`);
-
-      // Find the exact participant to remove
-      const participantToRemove = sessionBeforeUpdate?.participants.find(
-        (p) => p.username.toLowerCase() === username.toLowerCase()
-      );
-      console.info(`Participant to remove: ${JSON.stringify(participantToRemove)}`);
-
-      // Try multiple approaches to remove the participant
-      let session = await SessionModel.findOne({ sessionId });
+      const session = await SessionModel.findOne({ sessionId });
       if (!session) {
         throw new Error(`Session ${sessionId} not found`);
       }
 
-      // Find the participant to remove
+      console.info(
+        `Session before update - participantCount: ${
+          session.participantCount
+        }, participants: ${JSON.stringify(session.participants)}`
+      );
+
       const participantIndex = session.participants.findIndex(
         (p) => p.username.toLowerCase() === username.toLowerCase()
       );
 
       if (participantIndex !== -1) {
-        // Remove the participant from the array
-        session.participants.splice(participantIndex, 1);
-        session.participantCount = Math.max(0, session.participantCount - 1);
-
-        // Save the updated session with write concern
-        session = await session.save({ writeConcern: { w: 'majority', j: true } });
-        console.info(`Successfully removed participant ${username} from session ${sessionId}`);
+        await SessionModel.updateOne(
+          { sessionId },
+          {
+            $pull: { participants: { username: { $regex: usernameRegex } } },
+            $inc: { participantCount: -1 },
+          },
+          { writeConcern: { w: "majority", j: true } }
+        );
+        console.info(
+          `Successfully removed participant ${username} from session ${sessionId}`
+        );
       } else {
-        console.warn(`Participant ${username} not found in session ${sessionId} participants array`);
-        // Still decrement the count if participant was not found in array but exists in DB
-        session.participantCount = Math.max(0, session.participantCount - 1);
-        session = await session.save({ writeConcern: { w: 'majority', j: true } });
+        console.warn(
+          `Participant ${username} not found in session ${sessionId} participants array`
+        );
+        await SessionModel.updateOne(
+          { sessionId },
+          { $inc: { participantCount: -1 } },
+          { writeConcern: { w: "majority", j: true } }
+        );
       }
 
-      console.info(`Session after update - participantCount: ${session?.participantCount}, participants: ${JSON.stringify(session?.participants)}`);
+      const updatedSession = await SessionModel.findOne({ sessionId });
+      console.info(
+        `Session after update - participantCount: ${
+          updatedSession?.participantCount
+        }, participants: ${JSON.stringify(updatedSession?.participants)}`
+      );
 
-      if (session && session.participantCount <= 0) {
+      if (updatedSession && updatedSession.participantCount <= 0) {
         console.info(`Session ${sessionId} is now empty, marking as expired`);
         await SessionModel.updateOne(
-          { sessionId }, 
+          { sessionId },
           { sessionExpired: true },
-          { writeConcern: { w: 'majority', j: true } }
+          { writeConcern: { w: "majority", j: true } }
         );
 
         const deletedCount =
@@ -181,9 +190,9 @@ export const LeaveSessionService = async (
       );
     }
 
-    // Final verification - check that both participant and session were updated correctly
-    const finalParticipantCheck = participant ? await ParticipantModel.findById(participant._id) : null;
-
+    const finalParticipantCheck = participant
+      ? await ParticipantModel.findById(participant._id)
+      : null;
     const finalSessionCheck = await SessionModel.findOne({ sessionId });
 
     console.info(`Final verification for ${username}:`, {
@@ -193,7 +202,7 @@ export const LeaveSessionService = async (
       participantsInArray: finalSessionCheck?.participants.length,
       userStillInArray: finalSessionCheck?.participants.some(
         (p) => p.username.toLowerCase() === username.toLowerCase()
-      )
+      ),
     });
 
     return {
