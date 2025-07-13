@@ -61,7 +61,7 @@ const ParticipantSchema: Schema = new Schema(
 
     fingerprint: { type: String },
 
-    createdAt: { type: Date, default: Date.now },
+    
   },
   { timestamps: true }
 );

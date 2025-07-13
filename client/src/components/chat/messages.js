@@ -140,15 +140,15 @@ const Message = ({
         >
           {(sessionData?.type == SessionTypeEnum.SECURE ||
             sessionData?.type == SessionTypeEnum.WALLET) && (
-            <>
-              Thank you!
-              <div id="dot-line">
-                <p>.</p>
-                <p>.</p>
-                <p>.</p>{" "}
-              </div>
-            </>
-          )}
+              <>
+                Thank you!
+                <div id="dot-line">
+                  <p>.</p>
+                  <p>.</p>
+                  <p>.</p>{" "}
+                </div>
+              </>
+            )}
           {">"} Please enter your Display Name to proceed:
           <br />
           <p className="chat-text msg_txt" style={{ marginTop: "10px" }}>
@@ -379,7 +379,7 @@ const Message = ({
           <p className="chat-text msg_txt">
             {">"} Please enter the Message Expiration Time (in seconds) between
             3 and 300. This can only be set once for all users, by any user, at
-            any time. If this value is is not defined, the default will be 30
+            any time. If this value is not defined, the default will be 30
             seconds.
           </p>
           <div id="dot-line">
@@ -389,6 +389,10 @@ const Message = ({
           </div>
           {"*"} Set it with the command{" "}
           <span id="blut-txt">/timer [seconds] </span>*
+          <div id="dot-line">
+            <p>&#8203;</p>
+          </div>
+          <span>{">"} Otherwise proceed by typing your first message.</span>
         </div>
       </>
     );
@@ -662,7 +666,7 @@ const Message = ({
           margin:
             (sessionData?.type == SessionTypeEnum.STANDARD ||
               sessionData?.type == SessionTypeEnum.SECURE) &&
-            type == messageType.MESSAGE_MOMENT
+              type == messageType.MESSAGE_MOMENT
               ? "15px 0px"
               : "",
         }}

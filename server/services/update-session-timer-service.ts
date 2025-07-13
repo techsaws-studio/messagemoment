@@ -13,7 +13,10 @@ export const UpdateSessionTimerService = async (
         timerSetBy: timerSetBy || "System",
         isExpirationTimeSet: true,
       },
-      { new: true }
+      { 
+        new: true,
+        writeConcern: { w: 'majority', j: true }
+      }
     );
 
     if (!updatedSession) {

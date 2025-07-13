@@ -64,6 +64,7 @@ const MessageBox = () => {
   const [selectedColor, setSelectedColor] = useState("");
   const [isDisabled, setIsDisabled] = useState(false);
   const [InputFieldDisabled, setInputFieldDisabled] = useState(false);
+  const hasShownExpiryTimeMessageRef = useRef(false);
   const { PhantomSessionApproved, isLoading } = usePhantomWallet();
   const [userlist, setUserList] = useState([]);
 
@@ -1227,7 +1228,7 @@ const MessageBox = () => {
 
   // SOCKET INTEGRATION
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !handlerName) return;
 
     socket.emit("joinRoom", {
       sessionId: sessionData.code,
@@ -1256,7 +1257,7 @@ const MessageBox = () => {
 
         if (isAlreadyAdded) return prevMessages;
 
-        return [
+        const newMessages = [
           ...prevMessages,
           {
             type: messageType.MM_NOTIFICATION,
@@ -1264,10 +1265,17 @@ const MessageBox = () => {
             handlerName: data.handlerName,
             handlerColor: USER_HANDERLS[data.handlerColor],
           },
-          {
-            type: messageType.ASK_TO_SET_EXPIRYTIME,
-          },
         ];
+
+        // Only add expiry time message if it hasn't been shown before
+        if (!hasShownExpiryTimeMessageRef.current) {
+          newMessages.push({
+            type: messageType.ASK_TO_SET_EXPIRYTIME,
+          });
+          hasShownExpiryTimeMessageRef.current = true;
+        }
+
+        return newMessages;
       });
     });
 

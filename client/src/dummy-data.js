@@ -314,7 +314,7 @@ export const DEFAULT_MESSAGES = {
   MESSAGE_MOMENT:
     "> Please enter your Display Name to proceed: ---  By proceeding, you agree that you are solely responsible for your actions and any content that you post or share during the chat session. MessageMoment does not assume any liability for the content posted by users or for any damages that may result from using this service.",
   ASK_TO_SET_EXPIRYTIME:
-    "> Please enter the Message Expiration Time (in seconds) between 3 and 300. This can only be set once for all users, by any user, at any time. If this value is is not defined, the default will be 30 seconds. ... * Set it with the command /timer [seconds] *",
+    "> Please enter the Message Expiration Time (in seconds) between 3 and 300. This can only be set once for all users, by any user, at any time. If this value is not defined, the default will be 30 seconds. ... * Set it with the command /timer [seconds] * > Otherwise proceed by typing your first message.",
   PROJECT_MODE_ENTRY:
     "Should you wish to exit Project Mode at any point, please use the /project off command. If you would like to save a transcript of your chat, you can do so by using the /download command. To interact with ChatGPT, use the /mm command.",
   PROJECT_MODE:

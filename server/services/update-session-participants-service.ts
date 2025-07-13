@@ -10,5 +10,5 @@ export const UpdateSessionParticipantsService = async (
   });
 
   session.participantCount += 1;
-  await session.save();
+  await session.save({ writeConcern: { w: 'majority', j: true } });
 };

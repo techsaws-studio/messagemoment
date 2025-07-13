@@ -23,9 +23,12 @@ export class MessageCleanupService {
         (session) => session.sessionId
       );
 
-      const result = await MessageModel.deleteMany({
-        sessionId: { $in: expiredSessionIds },
-      });
+      const result = await MessageModel.deleteMany(
+        {
+          sessionId: { $in: expiredSessionIds },
+        },
+        { writeConcern: { w: 'majority', j: true } }
+      );
 
       await CleanupLogger.logOperation("EXPIRED_SESSION_MESSAGES", {
         expiredSessionsFound: expiredSessionIds.length,
@@ -44,14 +47,17 @@ export class MessageCleanupService {
     try {
       const now = new Date();
 
-      const result = await MessageModel.deleteMany({
-        displayExpiresAt: { $lt: now },
-        $nor: [
-          { isSystemMessage: true },
-          { isAIMessage: true },
-          { isPermanent: true },
-        ],
-      });
+      const result = await MessageModel.deleteMany(
+        {
+          displayExpiresAt: { $lt: now },
+          $nor: [
+            { isSystemMessage: true },
+            { isAIMessage: true },
+            { isPermanent: true },
+          ],
+        },
+        { writeConcern: { w: 'majority', j: true } }
+      );
 
       await CleanupLogger.logOperation("INDIVIDUALLY_EXPIRED_MESSAGES", {
         messagesDeleted: result.deletedCount,
@@ -113,9 +119,12 @@ export class MessageCleanupService {
     sessionId: string
   ): Promise<number> {
     try {
-      const result = await MessageModel.deleteMany({
-        sessionId: sessionId,
-      });
+      const result = await MessageModel.deleteMany(
+        {
+          sessionId: sessionId,
+        },
+        { writeConcern: { w: 'majority', j: true } }
+      );
 
       await CleanupLogger.logOperation("SPECIFIC_SESSION_CLEANUP", {
         sessionId,

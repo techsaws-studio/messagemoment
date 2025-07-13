@@ -37,9 +37,12 @@ export class DataCleanupService {
     try {
       const cutoffDate = new Date(Date.now() - retentionPeriod);
 
-      const result = await SessionModel.deleteMany({
-        createdAt: { $lt: cutoffDate },
-      });
+      const result = await SessionModel.deleteMany(
+        {
+          createdAt: { $lt: cutoffDate },
+        },
+        { writeConcern: { w: 'majority', j: true } }
+      );
 
       await CleanupLogger.logOperation("OLD_SESSIONS_CLEANUP", {
         cutoffDate: cutoffDate.toISOString(),
@@ -60,9 +63,12 @@ export class DataCleanupService {
     try {
       const cutoffDate = new Date(Date.now() - retentionPeriod);
 
-      const result = await ParticipantModel.deleteMany({
-        createdAt: { $lt: cutoffDate },
-      });
+      const result = await ParticipantModel.deleteMany(
+        {
+          createdAt: { $lt: cutoffDate },
+        },
+        { writeConcern: { w: 'majority', j: true } }
+      );
 
       await CleanupLogger.logOperation("OLD_PARTICIPANTS_CLEANUP", {
         cutoffDate: cutoffDate.toISOString(),
