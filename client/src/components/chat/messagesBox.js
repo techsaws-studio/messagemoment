@@ -1263,11 +1263,10 @@ const MessageBox = () => {
             type: messageType.MM_NOTIFICATION,
             message: data.message,
             handlerName: data.handlerName,
-            handlerColor: USER_HANDERLS[data.handlerColor],
+            handlerColor: USER_HANDERLS[data.handlerColor] || USER_HANDERLS[0],
           },
         ];
 
-        // Only add expiry time message if it hasn't been shown before
         if (!hasShownExpiryTimeMessageRef.current) {
           newMessages.push({
             type: messageType.ASK_TO_SET_EXPIRYTIME,
@@ -1288,7 +1287,7 @@ const MessageBox = () => {
           type: messageType.MM_NOTIFICATION,
           message: data.message,
           handlerName: data.handlerName,
-          handlerColor: USER_HANDERLS[data.handlerColor],
+          handlerColor: USER_HANDERLS[data.handlerColor] || USER_HANDERLS[0],
         },
       ]);
     });
