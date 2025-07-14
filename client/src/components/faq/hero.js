@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import FaqIcon from "@/assets/icons/faqHero.svg";
 import IconSearch from "@/assets/icons/icon_search.svg";
 import RightArrow from "@/assets/icons/rightArrow.svg";
@@ -14,21 +14,21 @@ export const FaqsDisplayNameRef = createRef(null);
 /**
  * FaqHero is a React component that renders a FAQ hero section with a search functionality.
  * It allows users to search and filter through a list of FAQs, highlighting matching terms.
- * 
+ *
  * State Variables:
  * - openItems: Array of open FAQ item IDs.
  * - searchTerm: The current search term input by the user.
  * - filteredFaqs: The filtered list of FAQs based on the search term.
  * - isInitialSetValue: Boolean flag to track the initial setup.
- * 
+ *
  * Effects:
  * - Adjusts open items and scrolls to specific sections based on URL fragments.
  * - Updates the list of filtered FAQs as the search term changes.
- * 
+ *
  * Handlers:
  * - handleSearch: Updates the search term state based on user input.
  * - toggleItem: Toggles the open state of a FAQ item.
- * 
+ *
  * Utility Functions:
  * - stripHtmlTags: Removes HTML tags from text.
  * - getHighlightedText: Highlights search terms in text and replaces specific phrases with hyperlinks.
@@ -69,29 +69,30 @@ function FaqHero() {
     return text.replace(/<\/?[^>]+(>|$)/g, "");
   };
 
-
-// * Filters the FAQs based on the search term.
-// * Checks if the search term is empty.
-// * If empty, updates the filtered FAQs state with the original FAQs list and resets the open items state.
-// * If not empty, converts the search term to lowercase for case-insensitive matching.
-// * Removes HTML tags from FAQ descriptions, headings, and points.
-// * Checks if the search term matches the FAQ description, top description, headings, points, footer description, paragraphs, and paragraph subtitles.
-// * Filters the FAQs based on the search term matches.
-// * Updates the filtered FAQs state with the filtered list.
-// * Updates the open items state with the IDs of the filtered FAQs.
+  // * Filters the FAQs based on the search term.
+  // * Checks if the search term is empty.
+  // * If empty, updates the filtered FAQs state with the original FAQs list and resets the open items state.
+  // * If not empty, converts the search term to lowercase for case-insensitive matching.
+  // * Removes HTML tags from FAQ descriptions, headings, and points.
+  // * Checks if the search term matches the FAQ description, top description, headings, points, footer description, paragraphs, and paragraph subtitles.
+  // * Filters the FAQs based on the search term matches.
+  // * Updates the filtered FAQs state with the filtered list.
+  // * Updates the open items state with the IDs of the filtered FAQs.
 
   useEffect(() => {
-    if(!isInitialSetValue) {
+    if (!isInitialSetValue) {
       if (searchTerm === "") {
         setFilteredFaqs(Faqs);
         setOpenItems([]);
       } else {
         const searchTermLower = searchTerm.toLowerCase();
-  
+
         const filtered = Faqs.filter((item) => {
           // Apply the stripHtmlTags function to remove <strong> tags and other HTML
           const desc = item?.desc ? stripHtmlTags(item.desc).toLowerCase() : "";
-          const matchesTitle=item?.title ? stripHtmlTags(item?.title).toLowerCase() : "";
+          const matchesTitle = item?.title
+            ? stripHtmlTags(item?.title).toLowerCase()
+            : "";
           const matchesTitleSearch = matchesTitle.includes(searchTermLower);
           const topDesc = item?.top_desc
             ? stripHtmlTags(item.top_desc).toLowerCase()
@@ -102,22 +103,22 @@ function FaqHero() {
           const heading2 = item?.heading2
             ? stripHtmlTags(item.heading2).toLowerCase()
             : "";
-  
+
           const matchesDesc = desc.includes(searchTermLower);
           const matchesTopDesc = topDesc.includes(searchTermLower);
           const matchesHeading1 = heading1.includes(searchTermLower);
           const matchesHeading2 = heading2.includes(searchTermLower);
-          
+
           // Check for matches in the points array after removing HTML tags
           const matchesPoints = item?.points?.some((point) =>
             stripHtmlTags(point).toLowerCase().includes(searchTermLower)
           );
-  
+
           const footerDesc = item?.footer_desc
             ? stripHtmlTags(item.footer_desc).toLowerCase()
             : "";
           const matchesFooterDesc = footerDesc.includes(searchTermLower);
-  
+
           const matchesParagraph =
             item?.paragraph &&
             item?.paragraph?.some(
@@ -130,7 +131,7 @@ function FaqHero() {
                     ?.toLowerCase()
                     .includes(searchTermLower))
             );
-  
+
           const matchesParagraphSub =
             item?.paragraphSub &&
             item?.paragraphSub?.some(
@@ -139,17 +140,19 @@ function FaqHero() {
                   ?.toLowerCase()
                   .includes(searchTermLower) ||
                 para.content?.some((content) =>
-                  stripHtmlTags(content)?.toLowerCase().includes(searchTermLower)
+                  stripHtmlTags(content)
+                    ?.toLowerCase()
+                    .includes(searchTermLower)
                 )
             );
-  
+
           const matchesHeadingPoints1 = item?.headingPoints1?.some((point) =>
             stripHtmlTags(point).toLowerCase().includes(searchTermLower)
           );
           const matchesHeadingPoints2 = item?.headingPoints2?.some((point) =>
             stripHtmlTags(point).toLowerCase().includes(searchTermLower)
           );
-  
+
           return (
             matchesDesc ||
             matchesTitleSearch ||
@@ -234,12 +237,12 @@ function FaqHero() {
     );
   };
 
-/**
- * Renders a set of bulleted points, with top and bottom descriptions
- * and support for highlighting search terms.
- * @param {object} item The FAQ item containing the points.
- * @returns {JSX.Element} A JSX element with the rendered points.
- */
+  /**
+   * Renders a set of bulleted points, with top and bottom descriptions
+   * and support for highlighting search terms.
+   * @param {object} item The FAQ item containing the points.
+   * @returns {JSX.Element} A JSX element with the rendered points.
+   */
   const renderBulletsPoints = (item) => {
     return (
       <>
@@ -257,7 +260,11 @@ function FaqHero() {
         <ul className="custom-list-faq">
           {item?.points.length > 0 &&
             item?.points.map((point, index) => (
-              <li key={`renderBulletsPoints-point-${index.toString() + `${new Date().getMilliseconds()}`}`}>
+              <li
+                key={`renderBulletsPoints-point-${
+                  index.toString() + `${new Date().getMilliseconds()}`
+                }`}
+              >
                 {getHighlightedText(point, searchTerm, item.id)}
               </li>
             ))}
@@ -271,22 +278,24 @@ function FaqHero() {
       </>
     );
   };
-/**
- * Renders a list of paragraphs, with top and bottom descriptions
- * and support for highlighting search terms.
- * @param {object} item The FAQ item containing the paragraphs.
- * @returns {JSX.Element} A JSX element with the rendered paragraphs.
- */
+  /**
+   * Renders a list of paragraphs, with top and bottom descriptions
+   * and support for highlighting search terms.
+   * @param {object} item The FAQ item containing the paragraphs.
+   * @returns {JSX.Element} A JSX element with the rendered paragraphs.
+   */
   const renderParagraph = (item) => {
     return (
       <>
         <ul className="custom-list-faq">
           {item?.paragraph.length > 0 &&
             item?.paragraph.map((val, index) => (
-              < React.Fragment key={`renderParagraph-${index.toString() + `${new Date().getMilliseconds()}`}`}>
-                <li>
-                  {getHighlightedText(val?.title, searchTerm, item.id)}
-                </li>
+              <React.Fragment
+                key={`renderParagraph-${
+                  index.toString() + `${new Date().getMilliseconds()}`
+                }`}
+              >
+                <li>{getHighlightedText(val?.title, searchTerm, item.id)}</li>
                 <p className="small" id="paragraph_style">
                   {getHighlightedText(val?.content, searchTerm, item.id)}
                 </p>
@@ -296,13 +305,13 @@ function FaqHero() {
       </>
     );
   };
-/**
- * Renders a multi-heading structure for an FAQ item with optional top description.
- * Each heading is followed by a list of points, and supports highlighting search terms.
- * 
- * @param {object} item - The FAQ item containing headings and points.
- * @returns {JSX.Element} A JSX element with rendered headings and points.
- */
+  /**
+   * Renders a multi-heading structure for an FAQ item with optional top description.
+   * Each heading is followed by a list of points, and supports highlighting search terms.
+   *
+   * @param {object} item - The FAQ item containing headings and points.
+   * @returns {JSX.Element} A JSX element with rendered headings and points.
+   */
 
   const renderMultiHeading = (item) => {
     return (
@@ -321,7 +330,11 @@ function FaqHero() {
         <ul className="custom-list-faq">
           {item?.points.length > 0 &&
             item?.points.map((point, index) => (
-              <li key={`renderMultiHeading-point-${index.toString() + `${new Date().getMilliseconds()}`}`}>
+              <li
+                key={`renderMultiHeading-point-${
+                  index.toString() + `${new Date().getMilliseconds()}`
+                }`}
+              >
                 {getHighlightedText(point, searchTerm, item.id)}
               </li>
             ))}
@@ -333,7 +346,11 @@ function FaqHero() {
         <ul className="custom-list-faq">
           {item?.headingPoints1.length > 0 &&
             item?.headingPoints1.map((point, index) => (
-              <li key={`renderMultiHeading-1point-${index.toString() + `${new Date().getMilliseconds()}`}`}>
+              <li
+                key={`renderMultiHeading-1point-${
+                  index.toString() + `${new Date().getMilliseconds()}`
+                }`}
+              >
                 {getHighlightedText(point, searchTerm, item.id)}
               </li>
             ))}
@@ -345,7 +362,11 @@ function FaqHero() {
         <ul className="custom-list-faq">
           {item?.headingPoints2.length > 0 &&
             item?.headingPoints2.map((point, index) => (
-              <li key={`renderMultiHeading-2-${index.toString() + `${new Date().getMilliseconds()}`}`}>
+              <li
+                key={`renderMultiHeading-2-${
+                  index.toString() + `${new Date().getMilliseconds()}`
+                }`}
+              >
                 {getHighlightedText(point, searchTerm, item.id)}
               </li>
             ))}
@@ -353,12 +374,12 @@ function FaqHero() {
       </>
     );
   };
-/**
- * Renders a FAQ list item with sub-content.
- *
- * @param {Object} item - The current FAQ item.
- * @returns {ReactElement} A React element representing the rendered list item.
- */
+  /**
+   * Renders a FAQ list item with sub-content.
+   *
+   * @param {Object} item - The current FAQ item.
+   * @returns {ReactElement} A React element representing the rendered list item.
+   */
   const renderListwithSubContent = (item) => {
     return (
       <>
@@ -377,14 +398,27 @@ function FaqHero() {
         <ul className="custom-list-faq">
           {item?.paragraphSub.length > 0 &&
             item?.paragraphSub.map((point, index) => (
-              <li key={`renderListwithSubContent-point-${index +`${new Date().getMilliseconds()}`}`}>
+              <li
+                key={`renderListwithSubContent-point-${
+                  index + `${new Date().getMilliseconds()}`
+                }`}
+              >
                 {getHighlightedText(point?.title, searchTerm, item.id)}
                 {point?.content &&
                   point?.content.length > 0 &&
                   point?.content.map((val, i) => (
-                    <ul key={`sub-list-${i.toString() + new Date().getUTCSeconds()}`}>
+                    <ul
+                      key={`sub-list-${
+                        i.toString() + new Date().getUTCSeconds()
+                      }`}
+                    >
                       {" "}
-                      <li key={`sub-list-${i.toString() + new Date().getUTCSeconds()}`} style={{ margin: "10px 0px" }}>
+                      <li
+                        key={`sub-list-${
+                          i.toString() + new Date().getUTCSeconds()
+                        }`}
+                        style={{ margin: "10px 0px" }}
+                      >
                         {getHighlightedText(val, searchTerm, item.id)}
                       </li>
                     </ul>
@@ -399,7 +433,7 @@ function FaqHero() {
   return (
     <>
       <div className="faq-wrapper">
-        <Image src={FaqIcon} className="faq-icon" alt="faq-icon"/>
+        <Image src={FaqIcon} className="faq-icon" alt="faq-icon" />
         <h3>How can we help you?</h3>
         <div className="faq-search">
           <input
@@ -407,7 +441,7 @@ function FaqHero() {
             value={searchTerm}
             onChange={handleSearch}
           />
-          <Image src={IconSearch} className="search-icon" alt="IconSearch"/>
+          <Image src={IconSearch} className="search-icon" alt="IconSearch" />
         </div>
         <p>
           You can also browse the topics below to find what you are looking for:
@@ -480,7 +514,10 @@ function FaqHero() {
                         renderListwithSubContent(item)
                       ) : (
                         <>
-                          <p className="small">
+                          <p
+                            className="small"
+                            style={{ whiteSpace: "pre-line" }}
+                          >
                             {getHighlightedText(item.desc, searchTerm, item.id)}
                           </p>
                         </>

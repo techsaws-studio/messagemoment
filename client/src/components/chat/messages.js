@@ -120,6 +120,7 @@ const Message = ({
       </>
     );
   };
+
   const renderMessageMoment = () => {
     return (
       <>
@@ -162,6 +163,7 @@ const Message = ({
       </>
     );
   };
+
   const renderMessageMomentAlert = () => {
     return (
       <>
@@ -175,6 +177,7 @@ const Message = ({
       </>
     );
   };
+
   const renderMessageMomentAlertRemoveUser = () => {
     return (
       <>
@@ -389,6 +392,7 @@ const Message = ({
       </>
     );
   };
+
   const renderProjectMode = () => {
     return (
       <>
@@ -644,7 +648,7 @@ const Message = ({
           {handlerName}
         </p>
 
-        {/* This will be used for sender message without slow typing effect: <p className="chat-text msg_txt" >
+        {/* This will be used for sender message without live typing effect: <p className="chat-text msg_txt" >
               {message}
             </p> */}
         <p className="chat-text msg_txt" ref={el}></p>

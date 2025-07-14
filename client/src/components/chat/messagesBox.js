@@ -407,18 +407,13 @@ const MessageBox = () => {
       if (input.trim() !== "" && !input.startsWith("/")) {
         setSelectedCommands("");
         if (showAttachment) {
-          // with attachment message
           checkIsFileAttachment();
         } else {
-          // normal message
-          setChatMessages([
-            ...chatMessage,
-            {
-              type: messageType.DEFAULT,
-              message: input,
-              handlerName: handlerName,
-            },
-          ]);
+          socket.emit("sendMessage", {
+            sessionId: sessionData.code,
+            username: handlerName,
+            message: input.trim(),
+          });
           setinput("");
           scrollToBottom();
         }
@@ -1231,6 +1226,12 @@ const MessageBox = () => {
   useEffect(() => {
     if (!socket || !handlerName) return;
 
+    console.log("🔍 Attempting to join room with:", {
+      sessionId: sessionData.code,
+      username: handlerName,
+      handlerName: handlerName,
+    });
+
     setIsJoining(true);
 
     setChatMessages((prevMessages) => [
@@ -1248,6 +1249,7 @@ const MessageBox = () => {
     });
 
     socket.on("joinedRoom", (data) => {
+      console.log("✅ Successfully joined room:", data);
       setIsJoining(false);
 
       setChatMessages((prevMessages) =>
@@ -1260,6 +1262,7 @@ const MessageBox = () => {
       const formattedList = data.participants.map((user) => ({
         name: user.username,
         color: USER_HANDERLS[user.assignedColor] ?? USER_HANDERLS[0],
+        assignedColor: user.assignedColor,
       }));
 
       setUserList(formattedList);
@@ -1359,6 +1362,48 @@ const MessageBox = () => {
       socket.off("error");
     };
   }, [socket, sessionData, handlerName]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("receiveMessage", (data) => {
+      console.log("📨 Received message:", data);
+
+      const user = userlist.find(
+        (user) =>
+          user.name.replace(/[\[\]]/g, "").toLowerCase() ===
+          data.sender.replace(/[\[\]]/g, "").toLowerCase()
+      );
+
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          type: messageType.DEFAULT,
+          message: data.message,
+          handlerName: data.sender,
+          handlerColor: user ? user.color : USER_HANDERLS[0],
+          timestamp: data.timestamp,
+        },
+      ]);
+      scrollToBottom();
+    });
+
+    socket.on("error", (error) => {
+      console.error("❌ Socket error:", error);
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          type: messageType.MM_ERROR_MSG,
+          message: error,
+        },
+      ]);
+    });
+
+    return () => {
+      socket.off("receiveMessage");
+      socket.off("error");
+    };
+  }, [socket, userlist]);
 
   return (
     <>

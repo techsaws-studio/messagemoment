@@ -139,14 +139,14 @@ export const Faqs = [
   {
     id: 8,
     title: "How long will my chat data be available for?",
-    desc: `Chat data will be available for as long as the chat link remains active however this is subject to the Message Expiry time which will determine the length of time in which each user’s entered message will appear until it is no longer visible to anyone in the chat session. The Message Expiry time is set once by one user and applies to all users. Once it is set, it will appear inactive (grayed out) for all users indicating it has been set and what it has been set to. It cannot be changed for the remainder of chat session. It is the responsibility of the users to capture or save any information they want to retain, as the platform is provided on an "as is" and "as available" basis. Whilst not essential, for additional peace of mind, consider launching your browser in its private mode. This way, your visit to our site will not be recorded in your browser history.`,
+    desc: `Chat data will remain available for as long as the chat link is active; however, this is subject to the Message Expiry time, which determines how long each user's message will remain visible before it is no longer accessible to anyone in the chat session. The Message Expiry time is set once by a single user and applies to all users. Once set, the control will appear grayed out for all users to indicate that the expiry time has been locked and to display the selected duration. It cannot be changed for the remainder of the chat session. \n\n The Message Expiry timer will begin once the full message has finished appearing, after the simulated typing effect has completed. It is the responsibility of users to capture or save any information they wish to retain, as the platform is provided on an "as is" and "as available" basis. \n\n Whilst not essential, for additional peace of mind, consider launching your browser in private mode. This will ensure your visit to our site is not recorded in your browser history.`,
   },
 
   {
     id: 10,
     title:
       "What if I or someone else accidently sets the wrong Message Expiry time?",
-    desc: "Once the Message Expiry time is set, it cannot be changed. In order to reset it, a new chat session needs to be established and the old chat link/session will be disregarded. By default, the Message Expiry time is set to 10 seconds however it can range from 3 second up to 5 minutes. Anyone that arrives at the chat session can choose to set it (first).",
+    desc: "Once the Message Expiry time is set, it cannot be changed. In order to reset it, a new chat session needs to be established and the old chat link/session will be disregarded. By default, the Message Expiry time is set to 30 seconds however it can range from 3 seconds up to 5 minutes. Anyone that arrives at the chat session can choose to set it (first).",
   },
   {
     id: 52,
