@@ -146,7 +146,7 @@ export const Faqs = [
     id: 10,
     title:
       "What if I or someone else accidently sets the wrong Message Expiry time?",
-    desc: "Once the Message Expiry time is set, it cannot be changed. In order to reset it, a new chat session needs to be established and the old chat link/session will be disregarded. By default, the Message Expiry time is set to 30 seconds however it can range from 3 seconds up to 5 minutes. Anyone that arrives at the chat session can choose to set it (first).",
+    desc: "Once the Message Expiry time is set, it cannot be changed. In order to reset it, a new chat session needs to be established and the old chat link/session will be disregarded. By default, the Message Expiry time is set to 30 seconds however it can range from 3 seconds up to 5 minutes. Anyone that arrives at the chat session can choose to set it (first) however this is purely optional.",
   },
   {
     id: 52,
