@@ -1,4 +1,18 @@
-import blue_alert from "@/assets/icons/chat/blue_alert.svg";
+import { useEffect, useRef } from "react";
+import Typed from "typed.js";
+import Image from "next/image";
+
+import { SessionTypeEnum } from "@/enums/session-type-enum";
+
+import { chatContext } from "@/contexts/chat-context";
+import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
+
+import { messageType, scrollToBottom, USER_HANDERLS } from "@/dummy-data";
+
+import ChatJoiningLoader from "./chat-joining-loader";
+import { getMessageClass } from "./chat-messages-utils";
+import { messageContainerRef } from "./messagesBox";
+
 import chatgptIcon from "@/assets/icons/chat/chatgpt.svg";
 import circulartick from "@/assets/icons/chat/circular-tick.svg";
 import imguploadIcon from "@/assets/icons/chat/files-icons/imgupload.svg";
@@ -6,29 +20,7 @@ import lock_grey from "@/assets/icons/chat/lock_grey.svg";
 import pin from "@/assets/icons/chat/pin.svg";
 import alert from "@/assets/icons/chat/red_alert.svg";
 import warning_sign from "@/assets/icons/chat/warning_sign.svg";
-import { chatContext } from "@/contexts/chat-context";
-import { messageType, scrollToBottom, USER_HANDERLS } from "@/dummy-data";
-import Image from "next/image";
-import { useEffect, useRef } from "react";
-import Typed from "typed.js";
-import { getMessageClass } from "./chat-messages-utils";
-import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
-import { messageContainerRef } from "./messagesBox";
-import { SessionTypeEnum } from "@/enums/session-type-enum";
-
-/**
- * Renders a chat message with various types and styles based on the message type.
- *
- * @param {Object} props - The properties for the message component.
- * @param {string} [props.type=messageType.GREETING] - The type of the message, determines the rendering style.
- * @param {Object} [props.attachmentFile={}] - The file attached to the message, if any.
- * @param {string} [props.handlerName="[MessageMoment.com]"] - The name of the handler displaying the message.
- * @param {string} [props.message="Welcome to MessageMoment.com, where your message only lasts a moment!"] - The message text to display.
- * @param {string} [props.handlerColor=USER_HANDERLS[3]] - The color used for the handler name text.
- * @param {string} [props.userNameColor=USER_HANDERLS[3]] - The color used for the user name text in certain message types.
- *
- * @returns {JSX.Element} - The rendered message component.
- */
+import blue_alert from "@/assets/icons/chat/blue_alert.svg";
 
 const Message = ({
   type = messageType.GREETING,
@@ -140,15 +132,15 @@ const Message = ({
         >
           {(sessionData?.type == SessionTypeEnum.SECURE ||
             sessionData?.type == SessionTypeEnum.WALLET) && (
-              <>
-                Thank you!
-                <div id="dot-line">
-                  <p>.</p>
-                  <p>.</p>
-                  <p>.</p>{" "}
-                </div>
-              </>
-            )}
+            <>
+              Thank you!
+              <div id="dot-line">
+                <p>.</p>
+                <p>.</p>
+                <p>.</p>{" "}
+              </div>
+            </>
+          )}
           {">"} Please enter your Display Name to proceed:
           <br />
           <p className="chat-text msg_txt" style={{ marginTop: "10px" }}>
@@ -641,6 +633,7 @@ const Message = ({
       [messageType.MM_NOTIFICATION_REMOVE_USER]:
         renderMessageMomentAlertRemoveUser,
       [messageType.PHANTOM_WALLET]: renderPhantomPrompt,
+      [messageType.JOINING_LOADER]: () => <ChatJoiningLoader />,
     };
 
     return renderMap[type] ? (
@@ -666,7 +659,7 @@ const Message = ({
           margin:
             (sessionData?.type == SessionTypeEnum.STANDARD ||
               sessionData?.type == SessionTypeEnum.SECURE) &&
-              type == messageType.MESSAGE_MOMENT
+            type == messageType.MESSAGE_MOMENT
               ? "15px 0px"
               : "",
         }}

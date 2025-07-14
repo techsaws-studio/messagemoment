@@ -150,7 +150,7 @@ export const Faqs = [
   },
   {
     id: 52,
-    title:"Can the chat session be locked?",
+    title: "Can the chat session be locked?",
     desc: "Yes, locking the chat session will prevent new users from joining. Any user can lock the chat session at any time using the /lock command. However, only the user who locked it, can unlock it. If they leave the session, the chat will automatically unlock, allowing another user to lock it again.",
   },
   //======== project Mode =======
@@ -289,6 +289,7 @@ export const messageType = {
   MM_NOTIFICATION: "MM_NOTIFICATION", //MM_NOTIFICATION, MM_ERROR_MSG HAS SAME DESIGN JUST COLOR DIFFERENCE
   MM_ERROR_MSG: "MM_ERROR_MSG",
   MM_ALERT: "MM_ALERT",
+  JOINING_LOADER: "JOINING_LOADER",
   SECURITY_CODE: "SECURITY_CODE",
   ASK_TO_SET_EXPIRYTIME: "ASK_TO_SET_EXPIRYTIME",
   EXPIRY_TIME_HAS_SET: "EXPIRY_TIME_HAS_SET",
@@ -759,14 +760,13 @@ export const ShareLink = (type, sessionData, url) => {
   return null;
 };
 
-
- export const scrollToBottom = () => {
-    if (messageContainerRef.current) {
-      setTimeout(() => {
-        messageContainerRef.current?.scrollTo({
-          top: messageContainerRef.current.scrollHeight,
-          behavior: "smooth",
-        });
-      }, 20);
-    }
-  };
+export const scrollToBottom = () => {
+  if (messageContainerRef.current) {
+    setTimeout(() => {
+      messageContainerRef.current?.scrollTo({
+        top: messageContainerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }, 20);
+  }
+};

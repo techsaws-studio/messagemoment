@@ -67,6 +67,7 @@ const MessageBox = () => {
   const hasShownExpiryTimeMessageRef = useRef(false);
   const { PhantomSessionApproved, isLoading } = usePhantomWallet();
   const [userlist, setUserList] = useState([]);
+  const [isJoining, setIsJoining] = useState(false);
 
   const {
     setShowUploadModal,
@@ -1230,10 +1231,28 @@ const MessageBox = () => {
   useEffect(() => {
     if (!socket || !handlerName) return;
 
+    setIsJoining(true);
+
+    setChatMessages((prevMessages) => [
+      ...prevMessages,
+      {
+        type: messageType.JOINING_LOADER,
+        tempId: "joining-loader",
+      },
+    ]);
+
     socket.emit("joinRoom", {
       sessionId: sessionData.code,
       username: handlerName,
       sessionSecurityCode: sessionData.secureCode || "",
+    });
+
+    socket.on("joinedRoom", (data) => {
+      setIsJoining(false);
+
+      setChatMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.tempId !== "joining-loader")
+      );
     });
 
     // USER LIST
@@ -1307,20 +1326,27 @@ const MessageBox = () => {
     // NOTIFICATIONS LOGIC (ENDS)
 
     socket.on("usernameError", (message) => {
-      console.error("Username Error:", message);
+      setIsJoining(false);
 
       setChatMessages((prevMessages) => [
-        ...prevMessages,
+        ...prevMessages.filter((msg) => msg.tempId !== "joining-loader"),
         {
           type: messageType.MM_ALERT,
           message: message,
         },
       ]);
+
       setHandlerName("");
       setAskHandlerName(true);
     });
 
     socket.on("error", (message) => {
+      setIsJoining(false);
+
+      setChatMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.tempId !== "joining-loader")
+      );
+
       console.error("Join Room Error:", message);
     });
 
