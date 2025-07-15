@@ -1,9 +1,9 @@
 import React from "react";
+
 import SideBar from "../side-bar";
 import Message from "../messages";
 import ChatNotification from "../chat-components/chat-notification";
 import Notification from "@/components/notification";
-
 
 const MessageContainer = ({
   showAttachment,
@@ -20,10 +20,9 @@ const MessageContainer = ({
     <div className="chat-section">
       <div
         className={
-          showAttachment ? "message-cont-withAttachment" : "message-cont" 
+          showAttachment ? "message-cont-withAttachment" : "message-cont"
         }
       >
-       
         <div className="fixedMessages-cont">
           {!(isMobileView && handlerName.trim() !== "") && (
             <Message isPinMessage />
@@ -62,6 +61,9 @@ const MessageContainer = ({
                 i === 0 ||
                 chatMessage[i - 1]?.handlerName !== item?.handlerName ||
                 chatMessage[i - 1]?.type === messageType.EXPIRY_TIME_HAS_SET;
+
+              const isOwnMessage = item?.handlerName === handlerName;
+
               return (
                 <Message
                   key={`chat-index-${i.toString()}`}
@@ -72,11 +74,12 @@ const MessageContainer = ({
                       ? showUsername
                         ? item?.handlerName
                         : ""
-                      : "[Richard]"
+                      : "[Unknown]"
                   }
                   message={item?.message}
                   attachmentFile={item?.attachmentFile}
                   handlerColor={item?.handlerColor}
+                  isOwnMessage={isOwnMessage}
                 />
               );
             })}

@@ -28,6 +28,7 @@ const Message = ({
   message = "Welcome to MessageMoment.com, where your message only lasts a moment!",
   handlerColor = USER_HANDERLS[3],
   userNameColor = USER_HANDERLS[3],
+  isOwnMessage = false,
 }) => {
   const el = useRef(null);
   const { isMessageMobileView: isMobileView } = useCheckIsMobileView();
@@ -592,9 +593,6 @@ const Message = ({
           {handlerName}
         </p>
 
-        {/* This will be used for sender message without live typing effect: <p className="chat-text msg_txt" >
-              {message}
-            </p> */}
         <p className="chat-text msg_txt" ref={el}></p>
       </>
     );
@@ -623,27 +621,34 @@ const Message = ({
     }
 
     if (el.current) {
-      typed = new Typed(el.current, {
-        strings: [message],
-        typeSpeed: 25,
-        showCursor: false,
-      });
-
-      observer = new MutationObserver(() => {
-        const currentContent = el.current?.innerHTML;
-        if (currentContent && currentContent !== lastContent) {
-          lastContent = currentContent;
-          if (!userScrolled) {
-            scrollToBottom?.();
-          }
+      if (isOwnMessage) {
+        el.current.innerHTML = message;
+        if (!userScrolled) {
+          scrollToBottom?.();
         }
-      });
+      } else {
+        typed = new Typed(el.current, {
+          strings: [message],
+          typeSpeed: 25,
+          showCursor: false,
+        });
 
-      observer.observe(el.current, {
-        childList: true,
-        characterData: true,
-        subtree: true,
-      });
+        observer = new MutationObserver(() => {
+          const currentContent = el.current?.innerHTML;
+          if (currentContent && currentContent !== lastContent) {
+            lastContent = currentContent;
+            if (!userScrolled) {
+              scrollToBottom?.();
+            }
+          }
+        });
+
+        observer.observe(el.current, {
+          childList: true,
+          characterData: true,
+          subtree: true,
+        });
+      }
     }
 
     return () => {
@@ -652,7 +657,7 @@ const Message = ({
       if (container) container.removeEventListener("scroll", handleUserScroll);
       clearTimeout(scrollPauseTimeout);
     };
-  }, []);
+  }, [message, isOwnMessage]);
 
   return (
     <div className="chat-msg-cont">
