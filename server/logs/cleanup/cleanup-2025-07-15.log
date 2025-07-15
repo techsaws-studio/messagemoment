@@ -9,3 +9,4 @@
 {"timestamp":"2025-07-15T07:51:38.192Z","level":"INFO","operation":"DATA_RETENTION_CLEANUP_STATISTICS","details":{"statistics":{"oldMessages":0,"oldSessions":0,"oldParticipants":0,"oldTimerChanges":0,"totalRecordsRemoved":0},"totalRecords":0,"executionTimeMs":1279,"executionTimeSec":1},"environment":"development"}
 {"timestamp":"2025-07-15T07:51:38.193Z","level":"INFO","operation":"SCHEDULE_SETUP","details":{"service":"MessageCleanup","schedule":"every 4 hours","nextRun":"2025-07-15T11:51:38.193Z"},"environment":"development"}
 {"timestamp":"2025-07-15T07:51:38.194Z","level":"INFO","operation":"SCHEDULE_SETUP","details":{"service":"DataRetentionCleanup","schedule":"daily at midnight","nextRun":"2025-07-15T19:00:00.000Z"},"environment":"development"}
+{"timestamp":"2025-07-15T10:58:08.113Z","level":"INFO","operation":"SPECIFIC_SESSION_CLEANUP","details":{"sessionId":"Y68ih72w4DQtVG","messagesDeleted":0},"environment":"development"}

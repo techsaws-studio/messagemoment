@@ -32,6 +32,7 @@ import { validateDisplayName } from "./chat-messages-utils";
 import MessagesModals from "./message-box-components/messagesModals";
 import MessageInput from "./message-box-components/message-input";
 import MessageContainer from "./message-box-components/message-container";
+import ChatJoiningLoader from "./chat-joining-loader";
 
 import sendBtn from "@/assets/icons/chat/sendBtn.svg";
 import sendBtnGrey from "@/assets/icons/chat/send_grey.svg";
@@ -1237,7 +1238,10 @@ const MessageBox = () => {
     setChatMessages((prevMessages) => [
       ...prevMessages,
       {
-        type: messageType.JOINING_LOADER,
+        type: messageType.MM_NOTIFICATION,
+        message: <ChatJoiningLoader />,
+        handlerName: "[MessageMoment.com]",
+        handlerColor: "#494AF8",
         tempId: "joining-loader",
       },
     ]);

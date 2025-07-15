@@ -9,7 +9,6 @@ import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
 
 import { messageType, scrollToBottom, USER_HANDERLS } from "@/dummy-data";
 
-import ChatJoiningLoader from "./chat-joining-loader";
 import { getMessageClass } from "./chat-messages-utils";
 import { messageContainerRef } from "./messagesBox";
 
@@ -583,7 +582,6 @@ const Message = ({
       [messageType.MM_NOTIFICATION_REMOVE_USER]:
         renderMessageMomentAlertRemoveUser,
       [messageType.PHANTOM_WALLET]: renderPhantomPrompt,
-      [messageType.JOINING_LOADER]: () => <ChatJoiningLoader />,
     };
 
     return renderMap[type] ? (

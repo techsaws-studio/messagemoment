@@ -14,14 +14,7 @@ const ChatJoiningLoader = () => {
     return () => clearInterval(interval);
   }, []);
 
-  return (
-    <>
-      <p className={"chat-text handlertext"} style={{ color: "#494AF8" }}>
-        [MessageMoment.com]
-      </p>
-      <p className="chat-text msg_txt">Requesting{dots}</p>
-    </>
-  );
+  return <>Requesting{dots}</>;
 };
 
 export default ChatJoiningLoader;
