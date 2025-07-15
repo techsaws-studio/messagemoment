@@ -524,7 +524,8 @@ const MessageBox = () => {
   };
 
   const handleKeyUpAndDown = (e) => {
-    if (!showCommands) return; // Do nothing if the command list is not visible
+    if (!showCommands) return;
+
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setSelectedIndex((prevIndex) =>
@@ -592,7 +593,6 @@ const MessageBox = () => {
 
   const verifySecurityCode = () => {
     if (sessionData?.type === SessionTypeEnum.SECURE && !isVerifiedCode) {
-      // const numberOnlyRegex = /^[0-9]{4}$/;
       const numberOnlyRegex = /^(?!.*[.eE])[0-9]{4}$/;
 
       if (!numberOnlyRegex.test(input)) return;

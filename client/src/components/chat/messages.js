@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Typed from "typed.js";
 import Image from "next/image";
 
@@ -32,59 +32,6 @@ const Message = ({
 }) => {
   const el = useRef(null);
   const { isMessageMobileView: isMobileView } = useCheckIsMobileView();
-  useEffect(() => {
-    let typed;
-    let observer;
-    let lastContent = "";
-    let userScrolled = false;
-    let scrollPauseTimeout;
-    const container = messageContainerRef.current;
-
-    const handleUserScroll = () => {
-      if (!userScrolled) {
-        userScrolled = true;
-      }
-      clearTimeout(scrollPauseTimeout);
-      scrollPauseTimeout = setTimeout(() => {
-        userScrolled = false; // Resume auto-scroll after 3 seconds of inactivity
-      }, 3000);
-    };
-
-    if (container) {
-      container.addEventListener("scroll", handleUserScroll);
-    }
-
-    if (el.current) {
-      typed = new Typed(el.current, {
-        strings: [message],
-        typeSpeed: 25,
-        showCursor: false,
-      });
-
-      observer = new MutationObserver(() => {
-        const currentContent = el.current?.innerHTML;
-        if (currentContent && currentContent !== lastContent) {
-          lastContent = currentContent;
-          if (!userScrolled) {
-            scrollToBottom?.(); // Only scroll if user isn't actively scrolling
-          }
-        }
-      });
-
-      observer.observe(el.current, {
-        childList: true,
-        characterData: true,
-        subtree: true,
-      });
-    }
-
-    return () => {
-      if (typed) typed.destroy();
-      if (observer) observer.disconnect();
-      if (container) container.removeEventListener("scroll", handleUserScroll);
-      clearTimeout(scrollPauseTimeout);
-    };
-  }, []);
   const {
     setShowReportfileModal,
     sessionData,
@@ -93,7 +40,6 @@ const Message = ({
     isWalletExist,
   } = chatContext();
 
-  // UI
   const renderAdertisment = () => {
     return (
       <>
@@ -616,7 +562,7 @@ const Message = ({
     );
   };
 
-  // MessageContent
+  // MESSAGES CONTENT
   const renderMessageContent = (type) => {
     const renderMap = {
       [messageType.ADVERTISEMENT]: renderAdertisment,
@@ -655,6 +601,60 @@ const Message = ({
       </>
     );
   };
+
+  useEffect(() => {
+    let typed;
+    let observer;
+    let lastContent = "";
+    let userScrolled = false;
+    let scrollPauseTimeout;
+    const container = messageContainerRef.current;
+
+    const handleUserScroll = () => {
+      if (!userScrolled) {
+        userScrolled = true;
+      }
+      clearTimeout(scrollPauseTimeout);
+      scrollPauseTimeout = setTimeout(() => {
+        userScrolled = false;
+      }, 3000);
+    };
+
+    if (container) {
+      container.addEventListener("scroll", handleUserScroll);
+    }
+
+    if (el.current) {
+      typed = new Typed(el.current, {
+        strings: [message],
+        typeSpeed: 25,
+        showCursor: false,
+      });
+
+      observer = new MutationObserver(() => {
+        const currentContent = el.current?.innerHTML;
+        if (currentContent && currentContent !== lastContent) {
+          lastContent = currentContent;
+          if (!userScrolled) {
+            scrollToBottom?.();
+          }
+        }
+      });
+
+      observer.observe(el.current, {
+        childList: true,
+        characterData: true,
+        subtree: true,
+      });
+    }
+
+    return () => {
+      if (typed) typed.destroy();
+      if (observer) observer.disconnect();
+      if (container) container.removeEventListener("scroll", handleUserScroll);
+      clearTimeout(scrollPauseTimeout);
+    };
+  }, []);
 
   return (
     <div className="chat-msg-cont">

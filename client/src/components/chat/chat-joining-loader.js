@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const ChatJoiningLoader = () => {
   const [dots, setDots] = useState("");
@@ -16,10 +16,10 @@ const ChatJoiningLoader = () => {
 
   return (
     <>
-      <p className={"chat-text handlertext"}>[MessageMoment.com]</p>
-      <div className="chat-text msg_txt">
-        <p className="chat-text msg_txt">Requesting{dots}</p>
-      </div>
+      <p className={"chat-text handlertext"} style={{ color: "#494AF8" }}>
+        [MessageMoment.com]
+      </p>
+      <p className="chat-text msg_txt">Requesting{dots}</p>
     </>
   );
 };
