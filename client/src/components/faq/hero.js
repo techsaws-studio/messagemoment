@@ -1,39 +1,19 @@
 "use client";
+import React, { createRef, useEffect, useState } from "react";
+import Image from "next/image";
+
+import { Faqcommandlist, Faqs } from "@/dummy-data";
+
+import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
+
+import NoFaqFound from "./no-faq-found";
+
 import FaqIcon from "@/assets/icons/faqHero.svg";
 import IconSearch from "@/assets/icons/icon_search.svg";
 import RightArrow from "@/assets/icons/rightArrow.svg";
-import { Faqcommandlist, Faqs } from "@/dummy-data";
-import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
-import Image from "next/image";
-import React, { createRef, useEffect, useState } from "react";
-import NoFaqFound from "./no-faq-found";
 
 export const FaqsRef = createRef(null);
 export const FaqsDisplayNameRef = createRef(null);
-
-/**
- * FaqHero is a React component that renders a FAQ hero section with a search functionality.
- * It allows users to search and filter through a list of FAQs, highlighting matching terms.
- *
- * State Variables:
- * - openItems: Array of open FAQ item IDs.
- * - searchTerm: The current search term input by the user.
- * - filteredFaqs: The filtered list of FAQs based on the search term.
- * - isInitialSetValue: Boolean flag to track the initial setup.
- *
- * Effects:
- * - Adjusts open items and scrolls to specific sections based on URL fragments.
- * - Updates the list of filtered FAQs as the search term changes.
- *
- * Handlers:
- * - handleSearch: Updates the search term state based on user input.
- * - toggleItem: Toggles the open state of a FAQ item.
- *
- * Utility Functions:
- * - stripHtmlTags: Removes HTML tags from text.
- * - getHighlightedText: Highlights search terms in text and replaces specific phrases with hyperlinks.
- * - renderBulletsPoints, renderParagraph, renderMultiHeading, renderListwithSubContent: Render different FAQ content types.
- */
 
 function FaqHero() {
   const [openItems, setOpenItems] = useState([]);
@@ -65,19 +45,8 @@ function FaqHero() {
   }, [isMobileView]);
 
   const stripHtmlTags = (text) => {
-    // Remove all HTML tags
     return text.replace(/<\/?[^>]+(>|$)/g, "");
   };
-
-  // * Filters the FAQs based on the search term.
-  // * Checks if the search term is empty.
-  // * If empty, updates the filtered FAQs state with the original FAQs list and resets the open items state.
-  // * If not empty, converts the search term to lowercase for case-insensitive matching.
-  // * Removes HTML tags from FAQ descriptions, headings, and points.
-  // * Checks if the search term matches the FAQ description, top description, headings, points, footer description, paragraphs, and paragraph subtitles.
-  // * Filters the FAQs based on the search term matches.
-  // * Updates the filtered FAQs state with the filtered list.
-  // * Updates the open items state with the IDs of the filtered FAQs.
 
   useEffect(() => {
     if (!isInitialSetValue) {
@@ -172,16 +141,10 @@ function FaqHero() {
       }
     }
   }, [searchTerm]);
+
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
-
-  /**
-   * Replaces specific text in a given string with a hyperlink or a highlighted span.
-   * @param {string} text The text to be modified.
-   * @param {string} highlight The text to be highlighted. If not set, no highlighting is done.
-   * @returns {JSX.Element} A JSX element with the modified text.
-   */
 
   const getHighlightedText = (text, highlight) => {
     const escapeRegex = (string) =>
@@ -237,12 +200,6 @@ function FaqHero() {
     );
   };
 
-  /**
-   * Renders a set of bulleted points, with top and bottom descriptions
-   * and support for highlighting search terms.
-   * @param {object} item The FAQ item containing the points.
-   * @returns {JSX.Element} A JSX element with the rendered points.
-   */
   const renderBulletsPoints = (item) => {
     return (
       <>
@@ -278,12 +235,7 @@ function FaqHero() {
       </>
     );
   };
-  /**
-   * Renders a list of paragraphs, with top and bottom descriptions
-   * and support for highlighting search terms.
-   * @param {object} item The FAQ item containing the paragraphs.
-   * @returns {JSX.Element} A JSX element with the rendered paragraphs.
-   */
+
   const renderParagraph = (item) => {
     return (
       <>
@@ -305,13 +257,6 @@ function FaqHero() {
       </>
     );
   };
-  /**
-   * Renders a multi-heading structure for an FAQ item with optional top description.
-   * Each heading is followed by a list of points, and supports highlighting search terms.
-   *
-   * @param {object} item - The FAQ item containing headings and points.
-   * @returns {JSX.Element} A JSX element with rendered headings and points.
-   */
 
   const renderMultiHeading = (item) => {
     return (
@@ -374,12 +319,7 @@ function FaqHero() {
       </>
     );
   };
-  /**
-   * Renders a FAQ list item with sub-content.
-   *
-   * @param {Object} item - The current FAQ item.
-   * @returns {ReactElement} A React element representing the rendered list item.
-   */
+
   const renderListwithSubContent = (item) => {
     return (
       <>

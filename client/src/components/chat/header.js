@@ -81,6 +81,13 @@ export const ChatHeader = () => {
     }
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   const onClickReadMore = () => {
     window.open("/faqs#project_mode", "_blank");
   };
@@ -128,6 +135,11 @@ export const ChatHeader = () => {
         />
       </div>
     );
+  };
+
+  const handleNavClick = (path) => {
+    scrollToTop();
+    window.open(path, "_blank");
   };
 
   useEffect(() => {
@@ -235,9 +247,12 @@ export const ChatHeader = () => {
               <section className="mads">
                 <Image src={ads} alt="ads-img" />
               </section>
+
               <div id="divider_m" />
+
               <section className="side-footer">
                 <Image src={grey_logo} alt="gre_Logo" />
+
                 <div className="side-footer-links">
                   <Link href="/about" target="_blank">
                     <p>About MessageMoment</p>
@@ -252,6 +267,7 @@ export const ChatHeader = () => {
                     <p>Privacy</p>
                   </Link>
                 </div>
+
                 <div className="supportus-btn">
                   <Button
                     icon={heartIcon}
@@ -263,6 +279,7 @@ export const ChatHeader = () => {
                     }
                   />
                 </div>
+
                 <h3 className="chat-text">
                   Copyright © {currentYear} MessageMoment. All rights reserved.
                 </h3>

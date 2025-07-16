@@ -14,6 +14,18 @@ const SideBar = () => {
   const { users, activeUser } = chatContext();
   const currentYear = getYear(new Date());
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  const handleNavClick = (path) => {
+    scrollToTop();
+    window.open(path, "_blank");
+  };
+
   return (
     <div className="sidebar-container">
       <div className="sidebar">
