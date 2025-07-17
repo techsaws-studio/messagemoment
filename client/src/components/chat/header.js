@@ -370,7 +370,7 @@ export const ChatHeader = () => {
             {isMobileView ? (
               <>
                 <div className="timer-block">
-                  <p className={`small ${expiryTime && "hasactive"}`}>
+                  <p className={`small ${!expiryTime && "hasactive"}`}>
                     {expiryTime ? expiryTime : "30"}
                   </p>
                 </div>
