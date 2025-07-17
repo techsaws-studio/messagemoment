@@ -382,7 +382,7 @@ export const ChatHeader = () => {
                   title={<Image src={expiry_tooltip} alt="copy-tooltip" />}
                 >
                   <div className="timer-block">
-                    <p className={`small ${expiryTime && "hasactive"}`}>
+                    <p className={`small ${!expiryTime && "hasactive"}`}>
                       {expiryTime ? expiryTime : "30"}
                     </p>
                   </div>

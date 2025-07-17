@@ -75,7 +75,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      cursor: pointer;
+      cursor: default;
       p {
         font-size: 14px;
         color: rgba(204, 204, 204, 1);
@@ -233,7 +233,7 @@
     }
   }
 
-  @media screen and (max-width: 1000px){
+  @media screen and (max-width: 1000px) {
     .copyNotification {
       right: 0;
     }
@@ -242,7 +242,7 @@
     .copyNotification {
       max-width: 90%;
       width: fit-content;
-      p{
+      p {
         text-align: center;
       }
     }
