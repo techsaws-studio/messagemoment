@@ -53,7 +53,6 @@ const MessageBox = () => {
   const { isMobileView } = useCheckIsMobileView();
   const [removeUserName, setRemoveUserName] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [isExpiryTimeExist, setIsExpiryTimeExist] = useState(false);
   const [isLandscape, setIsLandscape] = useState(false);
   const [isTimerCommand, setIsTimerCommand] = useState(false);
   const [spaceAdded, setSpaceAdded] = useState(false);
@@ -87,6 +86,8 @@ const MessageBox = () => {
     setIsWalletConnected,
     isWalletConnected,
     setIsWalletExist,
+    isExpiryTimeExist,
+    setIsExpiryTimeExist,
   } = chatContext();
   const fileInputRef = useRef(null);
   const commandModalRef = useRef();
@@ -915,22 +916,17 @@ const MessageBox = () => {
 
   const handleTimerCommand = (value) => {
     const timer = value.replace("/timer", "").trim();
+
     if (timer && !isExpiryTimeExist) {
       if (timer >= 3 && timer <= 300) {
-        setChatMessages([
-          ...chatMessage,
-          {
-            type: messageType.EXPIRY_TIME_HAS_SET,
-            handlerName,
-            message: `* Message Expiration Time set for ${timer} secs *`,
-            handlerColor: "white",
-          },
-        ]);
-        setExpiryTime(timer);
-        scrollToBottom();
+        socket.emit("timer", {
+          sessionId: sessionData.code,
+          username: handlerName,
+          seconds: parseInt(timer),
+        });
+
         setinput("");
         setShowCommands(false);
-        setIsExpiryTimeExist(true);
       } else {
         setinput("");
         setChatMessages([
@@ -1256,9 +1252,31 @@ const MessageBox = () => {
       console.log("✅ Successfully joined room:", data);
       setIsJoining(false);
 
-      setChatMessages((prevMessages) =>
-        prevMessages.filter((msg) => msg.tempId !== "joining-loader")
-      );
+      setChatMessages((prevMessages) => {
+        const filteredMessages = prevMessages.filter(
+          (msg) => msg.tempId !== "joining-loader"
+        );
+
+        if (data.session && data.session.isExpirationTimeSet) {
+          setIsExpiryTimeExist(true);
+          setExpiryTime(data.session.sessionTimer);
+          hasShownExpiryTimeMessageRef.current = true;
+          return filteredMessages;
+        } else {
+          setIsExpiryTimeExist(false);
+          setExpiryTime(30);
+          hasShownExpiryTimeMessageRef.current = false;
+
+          if (!hasShownExpiryTimeMessageRef.current) {
+            filteredMessages.push({
+              type: messageType.ASK_TO_SET_EXPIRYTIME,
+            });
+            hasShownExpiryTimeMessageRef.current = true;
+          }
+
+          return filteredMessages;
+        }
+      });
     });
 
     // USER LIST
@@ -1292,13 +1310,6 @@ const MessageBox = () => {
             handlerColor: USER_HANDERLS[data.handlerColor] || USER_HANDERLS[0],
           },
         ];
-
-        if (!hasShownExpiryTimeMessageRef.current) {
-          newMessages.push({
-            type: messageType.ASK_TO_SET_EXPIRYTIME,
-          });
-          hasShownExpiryTimeMessageRef.current = true;
-        }
 
         return newMessages;
       });
@@ -1392,6 +1403,37 @@ const MessageBox = () => {
       scrollToBottom();
     });
 
+    socket.on("timerUpdate", (data) => {
+      console.log("⏰ Timer updated:", data);
+
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          type: messageType.EXPIRY_TIME_HAS_SET,
+          handlerName: data.setBy,
+          message: `* Message Expiration Time set for ${data.seconds} secs *`,
+          handlerColor: "white",
+        },
+      ]);
+
+      setExpiryTime(data.seconds);
+      setIsExpiryTimeExist(true);
+      hasShownExpiryTimeMessageRef.current = true;
+      scrollToBottom();
+    });
+
+    socket.on("info", (message) => {
+      console.log("ℹ️ Info message:", message);
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          type: messageType.MM_ALERT,
+          message: message,
+        },
+      ]);
+      scrollToBottom();
+    });
+
     socket.on("error", (error) => {
       console.error("❌ Socket error:", error);
       setChatMessages((prevMessages) => [
@@ -1405,6 +1447,8 @@ const MessageBox = () => {
 
     return () => {
       socket.off("receiveMessage");
+      socket.off("timerUpdate");
+      socket.off("info");
       socket.off("error");
     };
   }, [socket, userlist]);

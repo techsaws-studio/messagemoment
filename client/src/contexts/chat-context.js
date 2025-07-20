@@ -22,6 +22,7 @@ const ChatContextProvider = ({ children }) => {
   const [isLoadingGenerateLink, setIsLoadingGenerateLink] = useState(false);
   const [users, setUsers] = useState([]);
   const [activeUser, setActiveUser] = useState("");
+  const [isExpiryTimeExist, setIsExpiryTimeExist] = useState(false);
   const [connectWalletFunction, setConnectWalletFunction] = useState(
     () => () => {}
   );
@@ -111,6 +112,9 @@ const ChatContextProvider = ({ children }) => {
     setUsers,
     activeUser,
     setActiveUser,
+
+    isExpiryTimeExist,
+    setIsExpiryTimeExist,
   };
 
   return <ChatContext.Provider value={data}>{children}</ChatContext.Provider>;

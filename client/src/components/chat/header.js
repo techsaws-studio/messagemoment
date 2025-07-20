@@ -50,6 +50,7 @@ export const ChatHeader = () => {
     setActiveUser,
     users,
     activeUser,
+    isExpiryTimeExist,
   } = chatContext();
   const socket = useSocket();
   const currentYear = getYear(new Date());
@@ -370,7 +371,7 @@ export const ChatHeader = () => {
             {isMobileView ? (
               <>
                 <div className="timer-block">
-                  <p className={`small ${!expiryTime && "hasactive"}`}>
+                  <p className={`small ${!isExpiryTimeExist && "hasactive"}`}>
                     {expiryTime ? expiryTime : "30"}
                   </p>
                 </div>
@@ -382,7 +383,7 @@ export const ChatHeader = () => {
                   title={<Image src={expiry_tooltip} alt="copy-tooltip" />}
                 >
                   <div className="timer-block">
-                    <p className={`small ${!expiryTime && "hasactive"}`}>
+                    <p className={`small ${!isExpiryTimeExist && "hasactive"}`}>
                       {expiryTime ? expiryTime : "30"}
                     </p>
                   </div>

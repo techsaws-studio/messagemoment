@@ -159,13 +159,21 @@ const JoinRoom = (io: Server, socket: Socket): void => {
           assignedColor: participant.assignedColor,
           sessionType: session.sessionType,
         },
+        session: {
+          sessionTimer: session.sessionTimer,
+          isExpirationTimeSet: session.isExpirationTimeSet,
+          timerSetBy: session.timerSetBy,
+          isProjectModeOn: session.isProjectModeOn,
+          sessionLocked: session.sessionLocked,
+          participantCount: session.participantCount,
+        },
       });
 
-      socket.emit("timerUpdate", {
-        seconds: session.sessionTimer,
-        setBy: session.timerSetBy || "System",
-        isProjectMode: session.isProjectModeOn,
-      });
+      // socket.emit("timerUpdate", {
+      //   seconds: session.sessionTimer,
+      //   setBy: session.timerSetBy || "System",
+      //   isProjectMode: session.isProjectModeOn,
+      // });
 
       try {
         const messages = await FetchSessionMessagesService(
