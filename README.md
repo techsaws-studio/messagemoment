@@ -1,3 +1,3 @@
 # MessageMoment
 
-"The real meaning to personal!" Real-time communication chat application.
+"The real meaning to personal!" Real-time communication chat web application.

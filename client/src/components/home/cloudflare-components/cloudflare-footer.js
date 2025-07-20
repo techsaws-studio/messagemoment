@@ -17,6 +17,8 @@ const CloudflareFooter = ({
   IsCfVerified,
   router,
 }) => {
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
   const {
     setSessionData,
     sessionData,
@@ -26,6 +28,10 @@ const CloudflareFooter = ({
   } = chatContext();
 
   const handleOnGenerateLink = async () => {
+    if (isLoadingGenerateLink || isRedirecting) {
+      return;
+    }
+
     if (!url) {
       try {
         setIsLoadingGenerateLink(true);
@@ -56,8 +62,36 @@ const CloudflareFooter = ({
         setIsLoadingGenerateLink(false);
       }
     } else {
-      router.push(`/chat/${sessionData?.code}`);
+      try {
+        setIsRedirecting(true);
+
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
+        router.push(`/chat/${sessionData?.code}`);
+      } catch (error) {
+        console.error("Error during redirect:", error);
+        setIsRedirecting(false);
+        setShowLinkNotification({
+          message: "Navigation error. Please try again.",
+          visible: true,
+        });
+      }
     }
+  };
+
+  const isButtonDisabled =
+    !IsCfVerified || isLoadingGenerateLink || isRedirecting;
+
+  const getButtonContent = () => {
+    if (isLoadingGenerateLink) {
+      return <Spin indicator={<LoadingOutlined spin />} size="default" />;
+    }
+
+    if (isRedirecting) {
+      return <Spin indicator={<LoadingOutlined spin />} size="default" />;
+    }
+
+    return url ? "Open Chat" : "Generate Link";
   };
 
   return (
@@ -69,17 +103,11 @@ const CloudflareFooter = ({
         />
 
         <button
-          disabled={IsCfVerified ? false : true}
+          disabled={isButtonDisabled}
           onClick={handleOnGenerateLink}
-          className={`text-blue ${!IsCfVerified && "inactive"}`}
+          className={`text-blue ${isButtonDisabled && "inactive"}`}
         >
-          {isLoadingGenerateLink ? (
-            <Spin indicator={<LoadingOutlined spin />} size="default" />
-          ) : url ? (
-            "Open Chat"
-          ) : (
-            "Generate Link"
-          )}
+          {getButtonContent()}
         </button>
       </div>
       <p className="note text-white text-center">
