@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import { Spin } from "antd";
 
 import { chatContext } from "@/contexts/chat-context";
