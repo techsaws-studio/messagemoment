@@ -165,6 +165,7 @@ const JoinRoom = (io: Server, socket: Socket): void => {
           timerSetBy: session.timerSetBy,
           isProjectModeOn: session.isProjectModeOn,
           sessionLocked: session.sessionLocked,
+          sessionLockedBy: session.sessionLockedBy,
           participantCount: session.participantCount,
         },
       });

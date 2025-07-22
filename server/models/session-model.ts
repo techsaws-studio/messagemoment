@@ -36,6 +36,8 @@ const SessionSchema: Schema<ISession> = new Schema(
 
     sessionLocked: { type: Boolean, default: false },
 
+    sessionLockedBy: { type: String, default: null },
+
     sessionExpired: { type: Boolean, default: false },
 
     projectModeEnabledAt: { type: Number, default: null },

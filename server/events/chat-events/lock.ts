@@ -21,38 +21,28 @@ const LockEvent = (io: Server, socket: Socket): void => {
         return;
       }
 
-      // Check session state
       if (session.sessionExpired) {
         socket.emit("error", "Session is expired.");
         return;
       }
 
-      // Handle session lock state
       if (session.sessionLocked) {
-        const lockedByUser = await ParticipantModel.findOne({
-          sessionId,
-          hasLockedSession: true,
-        });
-
-        // Handle lock request on already locked session
         if (isLocking) {
           socket.emit(
             "error",
             `Session is already locked by ${
-              lockedByUser?.username || "another user"
+              session.sessionLockedBy || "another user"
             }.`
           );
           return;
         }
 
-        // Handle unlock request when not the user who locked it
         if (!isLocking) {
-          if (!lockedByUser) {
-            // Continue with unlock as a recovery mechanism
-          } else if (!SameUsernameChecker(lockedByUser.username, username)) {
+          if (!session.sessionLockedBy) {
+          } else if (!SameUsernameChecker(session.sessionLockedBy, username)) {
             socket.emit(
               "error",
-              `Only ${lockedByUser.username} can unlock this session.`
+              `Only ${session.sessionLockedBy} can unlock this session.`
             );
             return;
           }
@@ -62,40 +52,38 @@ const LockEvent = (io: Server, socket: Socket): void => {
         return;
       }
 
-      // Update session lock status in DB
       await SessionModel.updateOne(
         { sessionId },
-        { $set: { sessionLocked: isLocking } }
+        {
+          $set: {
+            sessionLocked: isLocking,
+            sessionLockedBy: isLocking ? username : null,
+          },
+        }
       );
 
-      // Update participant lock status
       if (isLocking) {
         await ParticipantModel.updateMany(
           { sessionId },
           { $set: { hasLockedSession: false } }
         );
 
-        // Set current user as lock holder (case-insensitive username match)
         await ParticipantModel.updateOne(
           { sessionId, username: { $regex: new RegExp(`^${username}$`, "i") } },
           { $set: { hasLockedSession: true } }
         );
       } else {
-        // Clear lock status on unlock
         await ParticipantModel.updateMany(
           { sessionId, hasLockedSession: true },
           { $set: { hasLockedSession: false } }
         );
       }
 
-      // Notify all session participants (only one notification)
       io.to(sessionId).emit("lockStatusUpdate", {
         locked: isLocking,
         lockedBy: isLocking ? username : null,
         unlockedBy: !isLocking ? username : null,
       });
-
-      // Don't send a separate system message - the client will handle this from lockStatusUpdate
     } catch (error: any) {
       console.error("Error handling lock/unlock command:", error);
       socket.emit(

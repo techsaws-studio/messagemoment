@@ -164,6 +164,7 @@ export const FetchInitialChatLoadDataFunction = CatchAsyncErrors(
             isExpirationTimeSet: session.isExpirationTimeSet || false,
             isProjectModeOn: session.isProjectModeOn || false,
             sessionLocked: session.sessionLocked || false,
+            sessionLockedBy: session.sessionLockedBy || null,
           };
         }
       }

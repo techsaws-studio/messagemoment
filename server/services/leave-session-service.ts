@@ -8,6 +8,7 @@ import { SessionUnlockedNotification } from "../notifications/session-unlocked-n
 import { MessageCleanupService } from "./message-cleanup-service.js";
 
 import { FormatDuration } from "../utils/format-duration.js";
+import { SameUsernameChecker } from "../utils/same-username-checker.js";
 
 export const LeaveSessionService = async (
   sessionId: string,
@@ -43,6 +44,16 @@ export const LeaveSessionService = async (
     let hasLockedSession = false;
     if (participant && participant.hasLockedSession) {
       hasLockedSession = true;
+    }
+
+    // CHECK IF LEAVING USER IS THE ONE WHO LOCKED THE SESSION
+    const session = await SessionModel.findOne({ sessionId });
+    let wasSessionLocker = false;
+    if (session && session.sessionLocked && session.sessionLockedBy) {
+      wasSessionLocker = SameUsernameChecker(
+        session.sessionLockedBy,
+        cleanUsername
+      );
     }
 
     if (!participant) {
@@ -103,25 +114,61 @@ export const LeaveSessionService = async (
       });
     }
 
-    if (hasLockedSession) {
+    // AUTO-UNLOCK IF SESSION LOCKER LEAVES
+    if (wasSessionLocker) {
       try {
         await SessionModel.findOneAndUpdate(
           { sessionId },
-          { sessionLocked: false },
+          {
+            sessionLocked: false,
+            sessionLockedBy: null, // CLEAR THE LOCKER
+          },
+          { writeConcern: { w: "majority", j: true } }
+        );
+
+        // EMIT UNLOCK NOTIFICATION
+        if (io) {
+          io.to(sessionId).emit("lockStatusUpdate", {
+            locked: false,
+            lockedBy: null,
+            unlockedBy: cleanUsername,
+            autoUnlocked: true, // ADD THIS FLAG
+          });
+        }
+        console.info(
+          `Session ${sessionId} auto-unlocked because locker ${username} left`
+        );
+      } catch (unlockError) {
+        console.error(
+          `Error auto-unlocking session ${sessionId}:`,
+          unlockError
+        );
+      }
+    } else if (hasLockedSession) {
+      // FALLBACK: Use old logic if sessionLockedBy wasn't set
+      try {
+        await SessionModel.findOneAndUpdate(
+          { sessionId },
+          {
+            sessionLocked: false,
+            sessionLockedBy: null,
+          },
           { writeConcern: { w: "majority", j: true } }
         );
 
         if (io) {
           await SessionUnlockedNotification(io, sessionId, normalizedUsername);
         }
-        console.info(`Session ${sessionId} unlocked because ${username} left`);
+        console.info(
+          `Session ${sessionId} unlocked because ${username} left (fallback logic)`
+        );
       } catch (unlockError) {
         console.error(`Error unlocking session ${sessionId}:`, unlockError);
       }
     }
 
+    // REST OF YOUR EXISTING CODE FOR REMOVING FROM SESSION...
     try {
-      const session = await SessionModel.findOne({ sessionId });
       if (!session) {
         throw new Error(`Session ${sessionId} not found`);
       }

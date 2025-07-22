@@ -62,6 +62,7 @@ export interface ISession extends Document {
   timerSetBy?: string;
   isProjectModeOn: boolean;
   sessionLocked: boolean;
+  sessionLockedBy?: string;
   participants: Array<{
     userId: string;
     username: string;
