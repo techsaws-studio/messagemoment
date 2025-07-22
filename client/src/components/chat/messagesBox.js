@@ -222,6 +222,10 @@ const MessageBox = () => {
   };
 
   const handleSelectedCommand = (text) => {
+    if (text === "/transfer") {
+      return;
+    }
+
     setSelectedCommands(text);
     setinput(text);
 
@@ -427,9 +431,9 @@ const MessageBox = () => {
           // timer command handler
           if (!isProjectModeOn && input.includes("/timer")) {
             handleTimerCommand(input);
-          } else if (input == "/transfer") {
-            setShowCommands(false);
-            openFilePopup();
+            // } else if (input == "/transfer") {
+            //   setShowCommands(false);
+            //   openFilePopup();
           } else if (!isProjectModeOn && input == "/project on") {
             setAskprojectMode(true);
             handleProjectAskMode();
@@ -490,9 +494,9 @@ const MessageBox = () => {
             if (!isProjectModeOn && input.includes("/timer")) {
               handleTimerCommand(input);
               setSpaceAdded(false);
-            } else if (input == "/transfer") {
-              openFilePopup();
-              setShowCommands(false);
+              // } else if (input == "/transfer") {
+              //   openFilePopup();
+              //   setShowCommands(false);
             } else if (!isProjectModeOn && input == "/project on") {
               setAskprojectMode(true);
               handleProjectAskMode();

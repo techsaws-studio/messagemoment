@@ -339,7 +339,7 @@ export const commandlist = [
   "/leave",
   "/lock",
   "/timer",
-  "/transfer",
+  "/transfer (future)",
   "/project on",
   "/remove",
 ];
@@ -347,7 +347,7 @@ export const Faqcommandlist = [
   "/leave",
   "/lock",
   "/timer",
-  "/transfer",
+  "/transfer (future)",
   "/project on",
   "/project off",
   "/download",
