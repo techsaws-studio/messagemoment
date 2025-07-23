@@ -13,9 +13,13 @@ export async function middleware(req) {
     }
 
     const sessionId = sessionIdMatch[1];
-    const response = await ApiRequest(`/validate-session/${sessionId}`);
 
-    if (!response || !response.redirect) {
+    const cacheBuster = Date.now();
+    const response = await ApiRequest(
+      `/validate-session/${sessionId}?t=${cacheBuster}`
+    );
+
+    if (!response || response.redirect === undefined) {
       throw new Error("Invalid API response structure");
     }
 
@@ -26,6 +30,8 @@ export async function middleware(req) {
     let redirectUrl = response.redirect;
     if (redirectUrl === "/expired-session") {
       redirectUrl = `/expired-session?sessionId=${sessionId}`;
+    } else if (redirectUrl === "/locked-session") {
+      redirectUrl = `/locked-session?sessionId=${sessionId}`;
     }
 
     return NextResponse.redirect(new URL(redirectUrl, req.nextUrl.origin));

@@ -8,7 +8,6 @@ import { SessionUnlockedNotification } from "../notifications/session-unlocked-n
 import { MessageCleanupService } from "./message-cleanup-service.js";
 
 import { FormatDuration } from "../utils/format-duration.js";
-import { SameUsernameChecker } from "../utils/same-username-checker.js";
 
 export const LeaveSessionService = async (
   sessionId: string,
@@ -50,10 +49,8 @@ export const LeaveSessionService = async (
     const session = await SessionModel.findOne({ sessionId });
     let wasSessionLocker = false;
     if (session && session.sessionLocked && session.sessionLockedBy) {
-      wasSessionLocker = SameUsernameChecker(
-        session.sessionLockedBy,
-        cleanUsername
-      );
+      wasSessionLocker =
+        session.sessionLockedBy?.toLowerCase() === username.toLowerCase();
     }
 
     if (!participant) {
@@ -121,7 +118,7 @@ export const LeaveSessionService = async (
           { sessionId },
           {
             sessionLocked: false,
-            sessionLockedBy: null, // CLEAR THE LOCKER
+            sessionLockedBy: null,
           },
           { writeConcern: { w: "majority", j: true } }
         );
@@ -131,8 +128,8 @@ export const LeaveSessionService = async (
           io.to(sessionId).emit("lockStatusUpdate", {
             locked: false,
             lockedBy: null,
-            unlockedBy: cleanUsername,
-            autoUnlocked: true, // ADD THIS FLAG
+            unlockedBy: username,
+            autoUnlocked: true,
           });
         }
         console.info(

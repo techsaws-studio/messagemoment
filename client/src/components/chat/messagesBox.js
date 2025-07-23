@@ -838,41 +838,25 @@ const MessageBox = () => {
   };
 
   const handleLockChatCommand = () => {
-    const list = commandlist.filter((item) => item != "/lock");
-    list.push("/unlock");
-    setCommandsList(list);
-    setChatMessages([
-      ...chatMessage,
-      {
-        type: messageType.EXPIRY_TIME_HAS_SET,
-        handlerName,
-        message: `* This chat session is now locked *`,
-        handlerColor: "white",
-      },
-    ]);
-    setIsChatLock(true);
+    socket.emit("lockSession", {
+      sessionId: sessionData.code,
+      username: handlerName,
+      isLocking: true,
+    });
+
     setinput("");
     setShowCommands(false);
-    scrollToBottom();
   };
 
   const handleUnLockChatCommand = () => {
-    const list = commandlist.filter((item) => item != "/unlock");
-    list.push("/lock");
-    setCommandsList(list);
-    setChatMessages([
-      ...chatMessage,
-      {
-        type: messageType.EXPIRY_TIME_HAS_SET,
-        handlerName,
-        message: `* This chat session is now unlocked *`,
-        handlerColor: "white",
-      },
-    ]);
-    setIsChatLock(false);
+    socket.emit("lockSession", {
+      sessionId: sessionData.code,
+      username: handlerName,
+      isLocking: false,
+    });
+
     setinput("");
     setShowCommands(false);
-    scrollToBottom();
   };
 
   const handleClearCommand = () => {
@@ -996,13 +980,23 @@ const MessageBox = () => {
   };
 
   const handleProjectOnCommand = () => {
+    const currentLockCommands = commandlist.filter(
+      (item) => item === "/lock" || item === "/unlock"
+    );
     const list = commandlist.filter(
       (item) => item != "/project on" && item != "/timer"
     );
+
     list.push("/project off");
     list.push("/download");
     list.push("/mm");
     list.push("/clear");
+
+    currentLockCommands.forEach((cmd) => {
+      if (!list.includes(cmd)) {
+        list.push(cmd);
+      }
+    });
 
     setCommandsList(list);
     setIsProjectModeOn(true);
@@ -1023,6 +1017,9 @@ const MessageBox = () => {
   };
 
   const handleProjectModeOfff = () => {
+    const currentLockCommands = commandlist.filter(
+      (item) => item === "/lock" || item === "/unlock"
+    );
     const list = commandlist.filter(
       (item) =>
         item != "/project off" &&
@@ -1032,6 +1029,13 @@ const MessageBox = () => {
     );
     list.push("/timer");
     list.push("/project on");
+
+    currentLockCommands.forEach((cmd) => {
+      if (!list.includes(cmd)) {
+        list.push(cmd);
+      }
+    });
+
     setChatMessages([
       ...chatMessage,
       {
@@ -1040,6 +1044,7 @@ const MessageBox = () => {
         handlerColor: "#494AF8",
       },
     ]);
+
     setCommandsList(list);
     setIsProjectModeOn(false);
     setAskExistProjectMode(false);
@@ -1223,16 +1228,21 @@ const MessageBox = () => {
     }
   }, [sessionData, isVerifiedCode]);
 
-  // SOCKET INTEGRATION
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatMessage]);
+
+  // SOCKET INTEGRATION -- START
+
   useEffect(() => {
     if (!socket || !handlerName) return;
 
     console.log("🔍 Attempting to join room with:", {
       sessionId: sessionData.code,
       username: handlerName,
-      handlerName: handlerName,
     });
 
+    // ROOM JOIN INITIALIZATION
     setIsJoining(true);
 
     setChatMessages((prevMessages) => [
@@ -1252,7 +1262,11 @@ const MessageBox = () => {
       sessionSecurityCode: sessionData.secureCode || "",
     });
 
-    socket.on("joinedRoom", (data) => {
+    // =======================
+    // SUCCESS EVENT HANDLERS
+    // =======================
+
+    const handleJoinedRoom = (data) => {
       console.log("✅ Successfully joined room:", data);
       setIsJoining(false);
 
@@ -1261,7 +1275,7 @@ const MessageBox = () => {
           (msg) => msg.tempId !== "joining-loader"
         );
 
-        if (data.session && data.session.isExpirationTimeSet) {
+        if (data.session?.isExpirationTimeSet) {
           setIsExpiryTimeExist(true);
           setExpiryTime(data.session.sessionTimer);
           hasShownExpiryTimeMessageRef.current = true;
@@ -1271,6 +1285,7 @@ const MessageBox = () => {
           setExpiryTime(30);
           hasShownExpiryTimeMessageRef.current = false;
 
+          // Add expiry time message if not shown
           if (!hasShownExpiryTimeMessageRef.current) {
             filteredMessages.push({
               type: messageType.ASK_TO_SET_EXPIRYTIME,
@@ -1281,10 +1296,37 @@ const MessageBox = () => {
           return filteredMessages;
         }
       });
-    });
 
-    // USER LIST
-    socket.on("userList", (data) => {
+      setCommandsList((prevList) => {
+        let newList = [...prevList];
+        if (data.session?.sessionLocked) {
+          setIsChatLock(true);
+          newList = newList.filter((item) => item !== "/lock");
+          if (
+            data.session.sessionLockedBy &&
+            handlerName === data.session.sessionLockedBy
+          ) {
+            if (!newList.includes("/unlock")) {
+              newList.push("/unlock");
+            }
+          }
+        } else {
+          setIsChatLock(false);
+          newList = newList.filter((item) => item !== "/unlock");
+          if (!newList.includes("/lock")) {
+            newList.push("/lock");
+          }
+        }
+        return newList;
+      });
+    };
+
+    const handleUserList = (data) => {
+      if (!data?.participants) {
+        console.warn("⚠️ Invalid user list data received:", data);
+        return;
+      }
+
       const formattedList = data.participants.map((user) => ({
         name: user.username,
         color: USER_HANDERLS[user.assignedColor] ?? USER_HANDERLS[0],
@@ -1292,100 +1334,9 @@ const MessageBox = () => {
       }));
 
       setUserList(formattedList);
-    });
-
-    // NOTIFICATIONS LOGIC (STARTS)
-    socket.on("userJoined", (data) => {
-      console.log("New User Joined:", data);
-
-      setChatMessages((prevMessages) => {
-        const isAlreadyAdded = prevMessages.some(
-          (msg) => msg.handlerName === data.handlerName
-        );
-
-        if (isAlreadyAdded) return prevMessages;
-
-        const newMessages = [
-          ...prevMessages,
-          {
-            type: messageType.MM_NOTIFICATION,
-            message: data.message,
-            handlerName: data.handlerName,
-            handlerColor: USER_HANDERLS[data.handlerColor] || USER_HANDERLS[0],
-          },
-        ];
-
-        return newMessages;
-      });
-    });
-
-    socket.on("userLeft", (data) => {
-      console.log("User Left:", data);
-
-      setChatMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          type: messageType.MM_NOTIFICATION,
-          message: data.message,
-          handlerName: data.handlerName,
-          handlerColor: USER_HANDERLS[data.handlerColor] || USER_HANDERLS[0],
-        },
-      ]);
-    });
-
-    socket.on("sessionFull", (data) => {
-      console.log("Session Full:", data);
-
-      setChatMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          type: messageType.MM_ERROR_MSG,
-          message: data.message,
-        },
-      ]);
-    });
-
-    // NOTIFICATIONS LOGIC (ENDS)
-
-    socket.on("usernameError", (message) => {
-      setIsJoining(false);
-
-      setChatMessages((prevMessages) => [
-        ...prevMessages.filter((msg) => msg.tempId !== "joining-loader"),
-        {
-          type: messageType.MM_ALERT,
-          message: message,
-        },
-      ]);
-
-      setHandlerName("");
-      setAskHandlerName(true);
-    });
-
-    socket.on("error", (message) => {
-      setIsJoining(false);
-
-      setChatMessages((prevMessages) =>
-        prevMessages.filter((msg) => msg.tempId !== "joining-loader")
-      );
-
-      console.error("Join Room Error:", message);
-    });
-
-    return () => {
-      socket.off("joinedRoom");
-      socket.off("userJoined");
-      socket.off("userLeft");
-      socket.off("sessionFull");
-      socket.off("usernameError");
-      socket.off("error");
     };
-  }, [socket, sessionData, handlerName]);
 
-  useEffect(() => {
-    if (!socket) return;
-
-    socket.on("receiveMessage", (data) => {
+    const handleReceiveMessage = (data) => {
       console.log("📨 Received message:", data);
 
       const user = userlist.find(
@@ -1404,11 +1355,15 @@ const MessageBox = () => {
           timestamp: data.timestamp,
         },
       ]);
-      scrollToBottom();
-    });
+    };
 
-    socket.on("timerUpdate", (data) => {
+    const handleTimerUpdate = (data) => {
       console.log("⏰ Timer updated:", data);
+
+      if (!data?.seconds || !data?.setBy) {
+        console.warn("⚠️ Invalid timer data received:", data);
+        return;
+      }
 
       setChatMessages((prevMessages) => [
         ...prevMessages,
@@ -1423,39 +1378,215 @@ const MessageBox = () => {
       setExpiryTime(data.seconds);
       setIsExpiryTimeExist(true);
       hasShownExpiryTimeMessageRef.current = true;
-      scrollToBottom();
-    });
+    };
 
-    socket.on("info", (message) => {
-      console.log("ℹ️ Info message:", message);
+    const handleLockStatusUpdate = (data) => {
+      console.log("🔒 Lock status updated:", data);
+      console.log("🔍 Data details:", {
+        locked: data.locked,
+        lockedBy: data.lockedBy,
+        unlockedBy: data.unlockedBy,
+        autoUnlocked: data.autoUnlocked,
+      });
+
+      if (!data) {
+        console.warn("⚠️ Invalid lock status data received:", data);
+        return;
+      }
+
+      setCommandsList((prevList) => {
+        let newList = prevList.filter(
+          (item) => item !== "/lock" && item !== "/unlock"
+        );
+
+        if (data.locked) {
+          setIsChatLock(true);
+          if (data.lockedBy && handlerName === data.lockedBy) {
+            newList.push("/unlock");
+          }
+        } else {
+          setIsChatLock(false);
+          newList.push("/lock");
+        }
+
+        return newList;
+      });
+
+      const message = data.locked
+        ? `* This chat session is now locked *`
+        : data.autoUnlocked
+        ? `* This chat session is now unlocked *`
+        : `* This chat session is now unlocked *`;
+
       setChatMessages((prevMessages) => [
         ...prevMessages,
         {
-          type: messageType.MM_ALERT,
+          type: messageType.EXPIRY_TIME_HAS_SET,
+          handlerName: data.locked ? data.lockedBy : data.unlockedBy,
           message: message,
+          handlerColor: "white",
         },
       ]);
-      scrollToBottom();
-    });
+    };
 
-    socket.on("error", (error) => {
-      console.error("❌ Socket error:", error);
+    // ============================
+    // NOTIFICATION EVENT HANDLERS
+    // ============================
+
+    const handleUserJoined = (data) => {
+      console.log("👤 New User Joined:", data);
+
+      if (!data?.handlerName || !data?.message) {
+        console.warn("⚠️ Invalid user joined data received:", data);
+        return;
+      }
+
+      setChatMessages((prevMessages) => {
+        const isAlreadyAdded = prevMessages.some(
+          (msg) =>
+            msg.handlerName === data.handlerName &&
+            msg.type === messageType.MM_NOTIFICATION &&
+            msg.message === data.message
+        );
+
+        if (isAlreadyAdded) return prevMessages;
+
+        return [
+          ...prevMessages,
+          {
+            type: messageType.MM_NOTIFICATION,
+            message: data.message,
+            handlerName: data.handlerName,
+            handlerColor: USER_HANDERLS[data.handlerColor] || USER_HANDERLS[0],
+          },
+        ];
+      });
+    };
+
+    const handleUserLeft = (data) => {
+      console.log("👤 User Left:", data);
+
+      if (!data?.handlerName || !data?.message) {
+        console.warn("⚠️ Invalid user left data received:", data);
+        return;
+      }
+
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          type: messageType.MM_NOTIFICATION,
+          message: data.message,
+          handlerName: data.handlerName,
+          handlerColor: USER_HANDERLS[data.handlerColor] || USER_HANDERLS[0],
+        },
+      ]);
+    };
+
+    const handleSessionFull = (data) => {
+      console.log("🚫 Session Full:", data);
+
       setChatMessages((prevMessages) => [
         ...prevMessages,
         {
           type: messageType.MM_ERROR_MSG,
-          message: error,
+          message: data?.message || "Session is full",
         },
       ]);
-    });
-
-    return () => {
-      socket.off("receiveMessage");
-      socket.off("timerUpdate");
-      socket.off("info");
-      socket.off("error");
     };
-  }, [socket, userlist]);
+
+    const handleInfoMessage = (message) => {
+      console.log("ℹ️ Info message:", message);
+
+      if (!message || typeof message !== "string") {
+        console.warn("⚠️ Invalid info message received:", message);
+        return;
+      }
+    };
+
+    // =====================
+    // ERROR EVENT HANDLERS
+    // =====================
+
+    const handleUsernameError = (message) => {
+      console.error("👤 Username Error:", message);
+      setIsJoining(false);
+
+      const errorMessage = message || "Username error occurred";
+
+      setChatMessages((prevMessages) => [
+        ...prevMessages.filter((msg) => msg.tempId !== "joining-loader"),
+        {
+          type: messageType.MM_ALERT,
+          message: errorMessage,
+        },
+      ]);
+
+      setHandlerName("");
+      setAskHandlerName(true);
+    };
+
+    const handleSocketError = (error) => {
+      console.error("❌ Socket Error:", error);
+      setIsJoining(false);
+
+      setChatMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.tempId !== "joining-loader")
+      );
+    };
+
+    const handleLockError = (error) => {
+      console.error("🔒 Lock Error:", error);
+    };
+
+    // ============================
+    // EVENT LISTENER REGISTRATION
+    // ============================
+
+    // SUCCESS EVENTS
+    socket.on("joinedRoom", handleJoinedRoom);
+    socket.on("userList", handleUserList);
+    socket.on("receiveMessage", handleReceiveMessage);
+    socket.on("timerUpdate", handleTimerUpdate);
+    socket.on("lockStatusUpdate", handleLockStatusUpdate);
+
+    // NOTIFICATION EVENTS
+    socket.on("userJoined", handleUserJoined);
+    socket.on("userLeft", handleUserLeft);
+    socket.on("sessionFull", handleSessionFull);
+    socket.on("info", handleInfoMessage);
+
+    // ERROR EVENTS
+    socket.on("usernameError", handleUsernameError);
+    socket.on("error", handleSocketError);
+    socket.on("lockError", handleLockError);
+
+    // =================
+    // CLEANUP FUNCTION
+    // =================
+    return () => {
+      console.log("🧹 Cleaning up socket event listeners");
+
+      // SUCCESS EVENTS CLEANUP
+      socket.off("joinedRoom", handleJoinedRoom);
+      socket.off("userList", handleUserList);
+      socket.off("receiveMessage", handleReceiveMessage);
+      socket.off("timerUpdate", handleTimerUpdate);
+      socket.off("lockStatusUpdate", handleLockStatusUpdate);
+
+      // NOTIFICATION EVENTS CLEANUP
+      socket.off("userJoined", handleUserJoined);
+      socket.off("userLeft", handleUserLeft);
+      socket.off("sessionFull", handleSessionFull);
+      socket.off("info", handleInfoMessage);
+
+      // ERROR EVENTS CLEANUP
+      socket.off("usernameError", handleUsernameError);
+      socket.off("error", handleSocketError);
+      socket.off("lockError", handleLockError);
+    };
+  }, [socket, sessionData, handlerName]);
+
+  // SOCKET INTEGRATION -- END
 
   return (
     <>
