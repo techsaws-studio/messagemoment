@@ -187,13 +187,16 @@ export const ChatHeader = () => {
           <div className="logo">
             <MMLogo onClick={() => window.open("/", "_blank")} />
           </div>
+
           <div id={"flex-chat-row"}>
             <div className="chat-m-timerClock">
-              <p className={`small ${expiryTime && "hasactive"}`}>
+              <p className={`small ${isExpiryTimeExist && "hasactive"}`}>
                 {expiryTime ? expiryTime : "30"}
               </p>
             </div>
+
             <div id="chat-vt-divider-m" />
+            
             <div>
               <Image
                 src={upload_m}
