@@ -330,14 +330,12 @@ const MessageBox = () => {
       // Check if the input starts with "/"
       if (value.startsWith("/") && handlerName.trim() !== "") {
         verifyInputCommand(value);
-        // Handle the timer command
         if (value.startsWith("/timer")) {
           setIsTimerCommand(true);
 
-          // Only add space if it’s exactly "/timer" and space hasn’t been added yet
           if (value === "/timer" && !spaceAdded) {
             setinput("/timer ");
-            setSpaceAdded(true); // Indicate that the space has been added
+            setSpaceAdded(true);
             setShowCommands(false);
             return;
           }
@@ -351,14 +349,13 @@ const MessageBox = () => {
 
         if (value.startsWith("/remove")) {
           setIsTimerCommand(true);
-          // Only add space if it’s exactly "/timer" and space hasn’t been added yet
+
           if (value === "/remove" && !spaceAdded) {
             setinput("/remove ");
             setTimeout(() => {
               setIsRemoveCommand(true);
             }, 200);
-            //
-            setSpaceAdded(true); // Indicate that the space has been added
+            setSpaceAdded(true);
             setShowCommands(false);
             return;
           } else if (value.startsWith("/remove ")) {
@@ -368,7 +365,6 @@ const MessageBox = () => {
             setSpaceAdded(true);
           }
 
-          // If the user removes space, reset the spaceAdded flag
           if (value === "/remove" && spaceAdded) {
             setinput(value);
             setSpaceAdded(false);
@@ -381,15 +377,13 @@ const MessageBox = () => {
         // Handle the CHATGPT command
         if (isProjectModeOn && value.startsWith("/mm")) {
           setShowCommands(false);
-          // Only add space if it’s exactly "/timer" and space hasn’t been added yet
           if (value === "/mm" && !spaceAdded) {
             setinput("/mm ");
-            setSpaceAdded(true); // Indicate that the space has been added
+            setSpaceAdded(true);
             setShowCommands(false);
             return;
           }
 
-          // If the user removes space, reset the spaceAdded flag
           if (value === "/mm" && spaceAdded) {
             setinput(value);
             setSpaceAdded(false);
@@ -400,10 +394,9 @@ const MessageBox = () => {
       setTimeout(() => {
         setIsRemoveCommand(false);
       }, 200);
-      // Reset state if input is empty
       setSelectedCommands("");
       setinput("");
-      setSpaceAdded(false); // Reset the flag when input is cleared
+      setSpaceAdded(false);
       if (showCommands) setShowCommands(false);
     }
   };
@@ -663,10 +656,12 @@ const MessageBox = () => {
   const handleAskRemoveUserQuestion = () => {
     const username = input.split(" ")[1];
     if (!username) return;
+
     const hasFindUser = userlist.find(
       (item) =>
         item.name.replace(/\[|\]/g, "").toLowerCase() == username.toLowerCase()
     );
+
     if (username !== "" && hasFindUser) {
       setAskRemoveUser(true);
       setChatMessages([
@@ -823,16 +818,16 @@ const MessageBox = () => {
   };
 
   const handleRemoveUser = () => {
-    setChatMessages([
-      ...chatMessage,
-      {
-        type: messageType.EXPIRY_TIME_HAS_SET,
-        handlerName,
-        message: `* ${removeUserName} has been removed *`,
-        handlerColor: "white",
-      },
-    ]);
+    const targetUsername = removeUserName;
+
+    socket.emit("removeUser", {
+      sessionId: sessionData.code,
+      username: handlerName,
+      targetUsername: targetUsername,
+    });
+
     setinput("");
+    setAskRemoveUser(false);
     setShowCommands(false);
     scrollToBottom();
   };
@@ -1429,6 +1424,26 @@ const MessageBox = () => {
       ]);
     };
 
+    const handleUserRemoved = (data) => {
+      console.log("🚫 User Removed:", data);
+
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          type: messageType.EXPIRY_TIME_HAS_SET,
+          handlerName: data.removedBy,
+          message: `* ${data.removedUser} has been removed *`,
+          handlerColor: "white",
+        },
+      ]);
+    };
+
+    const handleYouWereRemoved = (data) => {
+      console.log("🚫 You were removed:", data);
+
+      window.location.href = "/removed-user";
+    };
+
     // ============================
     // NOTIFICATION EVENT HANDLERS
     // ============================
@@ -1538,6 +1553,13 @@ const MessageBox = () => {
       console.error("🔒 Lock Error:", error);
     };
 
+    const handleRemoveError = (error) => {
+      console.error("🚫 Remove Error:", error);
+
+      setAskRemoveUser(false);
+      setinput("");
+    };
+
     // ============================
     // EVENT LISTENER REGISTRATION
     // ============================
@@ -1548,6 +1570,8 @@ const MessageBox = () => {
     socket.on("receiveMessage", handleReceiveMessage);
     socket.on("timerUpdate", handleTimerUpdate);
     socket.on("lockStatusUpdate", handleLockStatusUpdate);
+    socket.on("userRemoved", handleUserRemoved);
+    socket.on("youWereRemoved", handleYouWereRemoved);
 
     // NOTIFICATION EVENTS
     socket.on("userJoined", handleUserJoined);
@@ -1559,6 +1583,7 @@ const MessageBox = () => {
     socket.on("usernameError", handleUsernameError);
     socket.on("error", handleSocketError);
     socket.on("lockError", handleLockError);
+    socket.on("removeError", handleRemoveError);
 
     // =================
     // CLEANUP FUNCTION
@@ -1572,6 +1597,8 @@ const MessageBox = () => {
       socket.off("receiveMessage", handleReceiveMessage);
       socket.off("timerUpdate", handleTimerUpdate);
       socket.off("lockStatusUpdate", handleLockStatusUpdate);
+      socket.off("userRemoved", handleUserRemoved);
+      socket.off("youWereRemoved", handleYouWereRemoved);
 
       // NOTIFICATION EVENTS CLEANUP
       socket.off("userJoined", handleUserJoined);
@@ -1583,6 +1610,7 @@ const MessageBox = () => {
       socket.off("usernameError", handleUsernameError);
       socket.off("error", handleSocketError);
       socket.off("lockError", handleLockError);
+      socket.off("removeError", handleRemoveError);
     };
   }, [socket, sessionData, handlerName]);
 

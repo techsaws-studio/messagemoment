@@ -118,11 +118,11 @@ const RemoveUserEvent = (io: Server, socket: Socket): void => {
       });
 
       // Send system message
-      io.to(sessionId).emit("receiveMessage", {
-        sender: "System",
-        message: `${targetUsername} has been removed from the session by ${username}.`,
-        timestamp: Date.now(),
-      });
+      // io.to(sessionId).emit("receiveMessage", {
+      //   sender: "System",
+      //   message: `${targetUsername} has been removed from the session by ${username}.`,
+      //   timestamp: Date.now(),
+      // });
 
       // Update the user list for everyone
       io.to(sessionId).emit("getUserList", { sessionId });
