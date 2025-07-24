@@ -130,14 +130,17 @@ const SendMessage = (io: Server, socket: Socket): void => {
         isPermanent: session.isProjectModeOn,
         assignedColor: participant ? participant.assignedColor : 0,
       };
+      
       console.log(
         `Publishing to Redis channel chatRoom:${sessionId}:`,
         messageData
       );
+
       await PublishToRedisChannel(
         `chatRoom:${sessionId}`,
         JSON.stringify(messageData)
       );
+      
       console.info(
         `Message from ${username} published to chatRoom:${sessionId}`
       );
