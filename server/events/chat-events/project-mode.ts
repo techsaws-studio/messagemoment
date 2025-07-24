@@ -30,7 +30,10 @@ const ProjectModeEvent = (io: Server, socket: Socket): void => {
       }
 
       if (session.sessionExpired) {
-        socket.emit("error", "Session is expired.");
+        socket.emit(
+          "error",
+          "This chat session has expired. Return to the homepage to generate a new chat session."
+        );
         return;
       }
 

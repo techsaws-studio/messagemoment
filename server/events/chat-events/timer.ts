@@ -41,7 +41,10 @@ const TimerEvent = (io: Server, socket: Socket): void => {
       }
 
       if (session.sessionExpired || session.sessionLocked) {
-        socket.emit("error", "Session is expired or locked.");
+        socket.emit(
+          "error",
+          "This chat session has expired or locked. Return to the homepage to generate a new chat session."
+        );
         return;
       }
 

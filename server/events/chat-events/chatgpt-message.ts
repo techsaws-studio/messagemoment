@@ -36,7 +36,9 @@ const ChatGPTMessageEvent = (io: Server, socket: Socket): void => {
 
       // Check if session is active
       if (session.sessionExpired) {
-        throw new Error("Session is expired.");
+        throw new Error(
+          "This chat session has expired. Return to the homepage to generate a new chat session."
+        );
       }
 
       // Check if project mode is enabled
