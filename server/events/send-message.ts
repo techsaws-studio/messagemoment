@@ -125,6 +125,7 @@ const SendMessage = (io: Server, socket: Socket): void => {
         isSystem: isSystemMessage,
         isAI: isAIMessage,
         isPermanent: session.isProjectModeOn,
+        assignedColor: participant ? participant.assignedColor : 0,
       };
       console.log(
         `Publishing to Redis channel chatRoom:${sessionId}:`,
@@ -150,6 +151,7 @@ const SendMessage = (io: Server, socket: Socket): void => {
         isAI: isAIMessage,
         isPermanent: session.isProjectModeOn,
         timerValue: session.sessionTimer,
+        assignedColor: participant ? participant.assignedColor : 0,
       });
     } catch (error: any) {
       console.error("Error sending message:", error);

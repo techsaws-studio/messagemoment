@@ -1340,13 +1340,19 @@ const MessageBox = () => {
           data.sender.replace(/[\[\]]/g, "").toLowerCase()
       );
 
+      const userColor = user
+        ? user.color
+        : data.assignedColor !== undefined
+        ? USER_HANDERLS[data.assignedColor]
+        : USER_HANDERLS[0];
+
       setChatMessages((prevMessages) => [
         ...prevMessages,
         {
           type: messageType.DEFAULT,
           message: data.message,
           handlerName: data.sender,
-          handlerColor: user ? user.color : USER_HANDERLS[0],
+          handlerColor: userColor,
           timestamp: data.timestamp,
         },
       ]);
