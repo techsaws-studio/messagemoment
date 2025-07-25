@@ -1266,9 +1266,18 @@ const MessageBox = () => {
       setIsJoining(false);
 
       setChatMessages((prevMessages) => {
-        const filteredMessages = prevMessages.filter(
-          (msg) => msg.tempId !== "joining-loader"
-        );
+        const filteredMessages = prevMessages.map((msg) => {
+          if (msg.tempId === "joining-loader") {
+            return {
+              type: messageType.MM_NOTIFICATION,
+              message: "Joined",
+              handlerName: handlerName,
+              handlerColor:
+                USER_HANDERLS[data.assignedColor] || USER_HANDERLS[0],
+            };
+          }
+          return msg;
+        });
 
         if (data.session?.isExpirationTimeSet) {
           setIsExpiryTimeExist(true);
@@ -1280,7 +1289,6 @@ const MessageBox = () => {
           setExpiryTime(30);
           hasShownExpiryTimeMessageRef.current = false;
 
-          // Add expiry time message if not shown
           if (!hasShownExpiryTimeMessageRef.current) {
             filteredMessages.push({
               type: messageType.ASK_TO_SET_EXPIRYTIME,
@@ -1459,6 +1467,11 @@ const MessageBox = () => {
 
       if (!data?.handlerName || !data?.message) {
         console.warn("⚠️ Invalid user joined data received:", data);
+        return;
+      }
+
+      if (data.handlerName === handlerName) {
+        console.log("🔄 Skipping own join notification - already handled");
         return;
       }
 

@@ -9,7 +9,7 @@ const ChatJoiningLoader = () => {
         if (prev === "...") return "";
         return prev + ".";
       });
-    }, 500);
+    }, 400);
 
     return () => clearInterval(interval);
   }, []);
