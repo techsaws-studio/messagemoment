@@ -73,9 +73,11 @@ const CommandModal = ({
                 <li
                   key={`command-list-${index}`}
                   onClick={() => handleSelectedCommand(item)}
-                  className={
-                    selectedIndex === index ? "commands_highlight" : ""
-                  }
+                  className={`${
+                    selectedIndex === index && item !== "/transfer (future)"
+                      ? "commands_highlight"
+                      : ""
+                  } ${item === "/transfer (future)" && "future-command"}`}
                 >
                   <p
                     className={`chat-text ${

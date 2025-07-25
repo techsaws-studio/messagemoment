@@ -12,3 +12,5 @@
 {"timestamp":"2025-07-25T03:57:25.461Z","level":"INFO","operation":"DATA_RETENTION_CLEANUP_STATISTICS","details":{"statistics":{"oldMessages":0,"oldSessions":0,"oldParticipants":0,"oldTimerChanges":0,"totalRecordsRemoved":0},"totalRecords":0,"executionTimeMs":1080,"executionTimeSec":1},"environment":"development"}
 {"timestamp":"2025-07-25T03:57:25.463Z","level":"INFO","operation":"SCHEDULE_SETUP","details":{"service":"MessageCleanup","schedule":"every 4 hours","nextRun":"2025-07-25T07:57:25.463Z"},"environment":"development"}
 {"timestamp":"2025-07-25T03:57:25.463Z","level":"INFO","operation":"SCHEDULE_SETUP","details":{"service":"DataRetentionCleanup","schedule":"daily at midnight","nextRun":"2025-07-25T19:00:00.000Z"},"environment":"development"}
+{"timestamp":"2025-07-25T06:04:56.675Z","level":"INFO","operation":"SPECIFIC_SESSION_CLEANUP","details":{"sessionId":"XpZqR5Pnh7vKjm","messagesDeleted":0},"environment":"development"}
+{"timestamp":"2025-07-25T06:09:13.586Z","level":"INFO","operation":"SPECIFIC_SESSION_CLEANUP","details":{"sessionId":"qQ0ad61VtlkyWS","messagesDeleted":0},"environment":"development"}

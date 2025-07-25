@@ -378,3 +378,11 @@
     z-index: 100;
   }
 }
+
+.future-command {
+  cursor: default !important;
+}
+
+.future-command:hover {
+  background-color: transparent !important;
+}
