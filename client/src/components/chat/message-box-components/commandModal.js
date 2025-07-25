@@ -72,7 +72,11 @@ const CommandModal = ({
             : commandlist.map((item, index) => (
                 <li
                   key={`command-list-${index}`}
-                  onClick={() => handleSelectedCommand(item)}
+                  onClick={() => {
+                    if (item !== "/transfer (future)") {
+                      handleSelectedCommand(item);
+                    }
+                  }}
                   className={`${
                     selectedIndex === index && item !== "/transfer (future)"
                       ? "commands_highlight"

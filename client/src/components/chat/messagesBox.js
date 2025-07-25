@@ -545,16 +545,21 @@ const MessageBox = () => {
       const selectedItem = isRemoveCommand
         ? userlist[selectedIndex]
         : commandlist[selectedIndex];
+
       if (isRemoveCommand) {
         handleSelectedUser(selectedItem?.name.replace(/\[|\]/g, ""));
         setSelectedColor(selectedItem?.color);
         setSelectedIndex(-1);
+        setShowCommands(false);
       } else {
+        if (selectedItem === "/transfer (future)") {
+          return;
+        }
+
         handleSelectedCommand(selectedItem);
         setSelectedIndex(-1);
+        setShowCommands(false);
       }
-      // setIsCommandSelected(true); // Mark as selected
-      setShowCommands(false); // Close command list
     }
 
     // Auto-complete with Tab
@@ -563,7 +568,6 @@ const MessageBox = () => {
       const inputValue = e.target.value.trim();
 
       if (isRemoveCommand) {
-        // User TAB
         const userInput = inputValue.split(" ")[1].toLowerCase();
         const matchingUser = userlist.find((item) =>
           item?.name
@@ -577,11 +581,14 @@ const MessageBox = () => {
           setSelectedIndex(-1);
         }
       } else {
-        // Command TAB
         const matchingCommand = commandlist.find((item) =>
           item?.startsWith(inputValue)
         );
         if (matchingCommand) {
+          if (matchingCommand === "/transfer (future)") {
+            return;
+          }
+
           handleSelectedCommand(matchingCommand);
           setSelectedIndex(-1);
           setShowCommands(false);
@@ -1185,6 +1192,14 @@ const MessageBox = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
+      const isTransferCommand =
+        event.target.closest("li")?.textContent?.trim() ===
+        "/transfer (future)";
+
+      if (isTransferCommand) {
+        return;
+      }
+
       if (
         commandModalRef.current &&
         !commandModalRef.current.contains(event.target)

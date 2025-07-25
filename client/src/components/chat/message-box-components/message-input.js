@@ -33,24 +33,24 @@ const MessageInput = ({
   const inputRef = useRef(null);
   const pageRef = useRef(null);
 
-  const handleClickOutside = (e) => {
-    if (
-      document.activeElement === inputRef.current &&
-      pageRef.current &&
-      !pageRef.current.contains(e.target)
-    ) {
-      if (!showCommands) {
-        inputRef.current.blur();
-      }
-    }
-  };
+  // const handleClickOutside = (e) => {
+  //   if (
+  //     document.activeElement === inputRef.current &&
+  //     pageRef.current &&
+  //     !pageRef.current.contains(e.target)
+  //   ) {
+  //     if (!showCommands) {
+  //       inputRef.current.blur();
+  //     }
+  //   }
+  // };
 
-  useEffect(() => {
-    document.addEventListener("touchstart", handleClickOutside);
-    return () => {
-      document.removeEventListener("touchstart", handleClickOutside);
-    };
-  }, [showCommands]);
+  // useEffect(() => {
+  //   document.addEventListener("touchstart", handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener("touchstart", handleClickOutside);
+  //   };
+  // }, [showCommands]);
 
   const combinedRef = (node) => {
     commandModalRef.current = node;
@@ -59,6 +59,7 @@ const MessageInput = ({
 
   return (
     <div
+      ref={combinedRef}
       className={
         showAttachment ? "chat-input-cont-no-flex " : "chat-input-cont"
       }
@@ -79,7 +80,7 @@ const MessageInput = ({
         key={"command-modal"}
       />
 
-      <div className="input-cont" ref={combinedRef} id="chat-input-cont">
+      <div className="input-cont" id="chat-input-cont">
         <Image src={arrow} id="arrow-icon" alt="arrow" />
         <input
           value={input}
