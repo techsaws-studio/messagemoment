@@ -1,1 +1,5 @@
 {"timestamp":"2025-07-26T00:57:06.493Z","level":"INFO","operation":"SPECIFIC_SESSION_CLEANUP","details":{"sessionId":"VAzJoTgUqoQ1lG","messagesDeleted":0},"environment":"development"}
+{"timestamp":"2025-07-26T01:38:24.178Z","level":"INFO","operation":"SPECIFIC_SESSION_CLEANUP","details":{"sessionId":"Q7SCly537Dsbxg","messagesDeleted":0},"environment":"development"}
+{"timestamp":"2025-07-26T01:44:31.114Z","level":"INFO","operation":"SPECIFIC_SESSION_CLEANUP","details":{"sessionId":"5qxtWAmnBvavWX","messagesDeleted":14},"environment":"development"}
+{"timestamp":"2025-07-26T01:44:31.163Z","level":"INFO","operation":"SPECIFIC_SESSION_CLEANUP","details":{"sessionId":"5qxtWAmnBvavWX","messagesDeleted":0},"environment":"development"}
+{"timestamp":"2025-07-26T01:58:31.936Z","level":"INFO","operation":"SPECIFIC_SESSION_CLEANUP","details":{"sessionId":"o6uosV63EvuNDC","messagesDeleted":9},"environment":"development"}

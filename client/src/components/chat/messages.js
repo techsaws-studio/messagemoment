@@ -599,11 +599,12 @@ const Message = ({
   };
 
   useEffect(() => {
-    let typed;
+    let typingInterval;
     let observer;
     let lastContent = "";
     let userScrolled = false;
     let scrollPauseTimeout;
+    let animationFrameId;
     const container = messageContainerRef.current;
 
     const handleUserScroll = () => {
@@ -627,32 +628,49 @@ const Message = ({
           scrollToBottom?.();
         }
       } else {
-        typed = new Typed(el.current, {
-          strings: [message],
-          typeSpeed: 25,
-          showCursor: false,
-        });
+        // ⭐ INSTANT SCROLL - Scroll immediately when message starts
+        if (!userScrolled) {
+          scrollToBottom?.();
+        }
 
-        observer = new MutationObserver(() => {
-          const currentContent = el.current?.innerHTML;
-          if (currentContent && currentContent !== lastContent) {
-            lastContent = currentContent;
-            if (!userScrolled) {
-              scrollToBottom?.();
-            }
+        let currentIndex = 0;
+        let startTime = performance.now();
+        const typeSpeed = 30;
+
+        const typeMessage = (currentTime) => {
+          if (!el.current || currentIndex >= message.length) return;
+
+          const elapsed = currentTime - startTime;
+          const targetIndex = Math.floor(elapsed / typeSpeed);
+
+          if (targetIndex > currentIndex) {
+            currentIndex = Math.min(targetIndex, message.length);
+            el.current.innerHTML = message.substring(0, currentIndex);
+
+            // Optional: Keep scrolling during typing (remove if you only want initial scroll)
+            // if (!userScrolled) {
+            //   scrollToBottom?.();
+            // }
           }
-        });
 
-        observer.observe(el.current, {
-          childList: true,
-          characterData: true,
-          subtree: true,
-        });
+          if (currentIndex < message.length) {
+            animationFrameId = requestAnimationFrame(typeMessage);
+
+            typingInterval = setTimeout(() => {
+              if (currentIndex < message.length) {
+                typeMessage(performance.now());
+              }
+            }, typeSpeed);
+          }
+        };
+
+        animationFrameId = requestAnimationFrame(typeMessage);
       }
     }
 
     return () => {
-      if (typed) typed.destroy();
+      if (typingInterval) clearTimeout(typingInterval);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
       if (observer) observer.disconnect();
       if (container) container.removeEventListener("scroll", handleUserScroll);
       clearTimeout(scrollPauseTimeout);
