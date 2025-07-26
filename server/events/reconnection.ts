@@ -325,7 +325,7 @@ export const ReconnectionEvent = (io: Server, socket: Socket): void => {
           );
           socket.emit("reconnectionFailed", {
             message:
-              "Cannot reconnect with this username from a different device",
+              "The Display Name you entered was previously used in this session and cannot be reused.",
             redirectTo: "/join-session",
           });
           return;

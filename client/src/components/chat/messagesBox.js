@@ -34,6 +34,8 @@ import MessageInput from "./message-box-components/message-input";
 import MessageContainer from "./message-box-components/message-container";
 import ChatJoiningLoader from "./chat-joining-loader";
 
+import { getDeviceFingerprint } from "@/utils/device-fingerprint";
+
 import sendBtn from "@/assets/icons/chat/sendBtn.svg";
 import sendBtnGrey from "@/assets/icons/chat/send_grey.svg";
 
@@ -759,38 +761,6 @@ const MessageBox = () => {
 
     if (isValidate !== "All Good!") return;
 
-    // To hanle duplicate display name scenario
-    if (username.toLowerCase() == "Timothy".toLowerCase()) {
-      setChatMessages([
-        ...chatMessage,
-        {
-          type: messageType.MM_ALERT,
-          message:
-            "The Display Name you entered was previously used in this session and cannot be reused.",
-        },
-      ]);
-      setinput("");
-      scrollToBottom();
-      return;
-    }
-
-    const isExist = userlist.find(
-      (item) =>
-        item.name.replace(/\[|\]/g, "").toLowerCase() == username.toLowerCase()
-    );
-    if (isExist) {
-      setChatMessages([
-        ...chatMessage,
-        {
-          type: messageType.MM_ALERT,
-          message:
-            "The Display Name you entered is already in use. Please choose something else.",
-        },
-      ]);
-      setinput("");
-      scrollToBottom();
-      return;
-    }
     if (input.trim() != "" && input.length >= 15) {
       setHandlerName(`[${input.trim().slice(0, 15)}]`);
     } else {
@@ -1098,6 +1068,15 @@ const MessageBox = () => {
     URL.revokeObjectURL(url);
   };
 
+  const safeGetFingerprint = () => {
+    try {
+      return getDeviceFingerprint();
+    } catch (error) {
+      console.error("Failed to get fingerprint:", error);
+      return "session_" + Math.random().toString(36).substring(2, 15);
+    }
+  };
+
   useEffect(() => {
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     if (!isSafari) return;
@@ -1257,6 +1236,11 @@ const MessageBox = () => {
     // ROOM JOIN INITIALIZATION
     setIsJoining(true);
 
+    const fingerprint = safeGetFingerprint();
+    console.log("🔑 Using fingerprint:", fingerprint);
+    console.log("🔑 Fingerprint type:", typeof fingerprint);
+    console.log("🔑 Fingerprint length:", fingerprint.length);
+
     setChatMessages((prevMessages) => [
       ...prevMessages,
       {
@@ -1272,6 +1256,7 @@ const MessageBox = () => {
       sessionId: sessionData.code,
       username: handlerName,
       sessionSecurityCode: sessionData.secureCode || "",
+      fingerprint: fingerprint,
     });
 
     // =======================
@@ -1562,13 +1547,11 @@ const MessageBox = () => {
       console.error("👤 Username Error:", message);
       setIsJoining(false);
 
-      const errorMessage = message || "Username error occurred";
-
       setChatMessages((prevMessages) => [
         ...prevMessages.filter((msg) => msg.tempId !== "joining-loader"),
         {
           type: messageType.MM_ALERT,
-          message: errorMessage,
+          message: message,
         },
       ]);
 
