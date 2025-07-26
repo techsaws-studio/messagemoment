@@ -244,6 +244,8 @@ const MessageBox = () => {
       setTimeout(() => {
         setIsRemoveCommand(true);
       }, 200);
+    } else {
+      setShowCommands(false);
     }
   };
 
