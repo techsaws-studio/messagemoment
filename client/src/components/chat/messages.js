@@ -12,7 +12,7 @@ import { messageType, scrollToBottom, USER_HANDERLS } from "@/dummy-data";
 import { getMessageClass } from "./chat-messages-utils";
 import { messageContainerRef } from "./messagesBox";
 
-import chatgptIcon from "@/assets/icons/chat/chatgpt.svg";
+import aiResearchCompanionIcon from "@/assets/icons/chat/ai-research-companion.svg";
 import circulartick from "@/assets/icons/chat/circular-tick.svg";
 import imguploadIcon from "@/assets/icons/chat/files-icons/imgupload.svg";
 import lock_grey from "@/assets/icons/chat/lock_grey.svg";
@@ -153,7 +153,7 @@ const Message = ({
           className="chat-text msg_txt"
           style={{ display: "flex", alignItems: "center", gap: "10px" }}
         >
-          <Image src={chatgptIcon} alt="AI Research Companion" />{" "}
+          <Image src={aiResearchCompanionIcon} alt="AI Research Companion" />{" "}
           <span ref={el}></span>
         </p>
       </>
@@ -391,7 +391,7 @@ const Message = ({
             by using the <span id="blut-txt">/download</span> command.{" "}
           </p>
           <p className="chat-text msg_txt mb-10">
-            To interact with AI Research Companion, use the{" "}
+            To interact with our AI Research Companion, use the{" "}
             <span id="blut-txt">/mm</span> command.
           </p>
           <p className="chat-text msg_txt">
