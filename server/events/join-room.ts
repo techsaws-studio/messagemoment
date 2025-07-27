@@ -53,12 +53,18 @@ const JoinRoom = (io: Server, socket: Socket): void => {
       }
 
       if (!session) {
-        socket.emit("redirect", "/expired-session");
+        socket.emit("sessionExpired", {
+          message:
+            "This chat session has expired. Return to the homepage to generate a new chat session.",
+        });
         return;
       }
 
       if (session.sessionExpired) {
-        socket.emit("redirect", "/expired-session");
+        socket.emit("sessionExpired", {
+          message:
+            "This chat session has expired. Return to the homepage to generate a new chat session.",
+        });
         return;
       }
 

@@ -1237,9 +1237,6 @@ const MessageBox = () => {
     setIsJoining(true);
 
     const fingerprint = safeGetFingerprint();
-    console.log("🔑 Using fingerprint:", fingerprint);
-    console.log("🔑 Fingerprint type:", typeof fingerprint);
-    console.log("🔑 Fingerprint length:", fingerprint.length);
 
     setChatMessages((prevMessages) => [
       ...prevMessages,
@@ -1539,6 +1536,24 @@ const MessageBox = () => {
       }
     };
 
+    const handleSessionExpired = (data) => {
+      console.log("⏰ Session Expired:", data);
+      setIsJoining(false);
+
+      setChatMessages((prevMessages) => [
+        ...prevMessages.filter((msg) => msg.tempId !== "joining-loader"),
+        {
+          type: messageType.MM_ERROR_MSG,
+          message:
+            data?.message ||
+            "This chat session has expired. Return to the homepage to generate a new chat session.",
+        },
+      ]);
+
+      setHandlerName("");
+      setAskHandlerName(true);
+    };
+
     // =====================
     // ERROR EVENT HANDLERS
     // =====================
@@ -1597,6 +1612,7 @@ const MessageBox = () => {
     socket.on("userLeft", handleUserLeft);
     socket.on("sessionFull", handleSessionFull);
     socket.on("info", handleInfoMessage);
+    socket.on("sessionExpired", handleSessionExpired);
 
     // ERROR EVENTS
     socket.on("usernameError", handleUsernameError);
@@ -1624,6 +1640,7 @@ const MessageBox = () => {
       socket.off("userLeft", handleUserLeft);
       socket.off("sessionFull", handleSessionFull);
       socket.off("info", handleInfoMessage);
+      socket.off("sessionExpired", handleSessionExpired);
 
       // ERROR EVENTS CLEANUP
       socket.off("usernameError", handleUsernameError);
