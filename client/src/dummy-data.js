@@ -157,7 +157,7 @@ export const Faqs = [
   {
     id: 15,
     title: "What is Project Mode?",
-    desc: "Project Mode is a special feature in MessageMoment designed for collaborative, long-term discussions. It introduces persistent messaging, advanced tools our like AI Research Companion integration, and the ability to download transcripts.",
+    desc: "Project Mode is a special feature in MessageMoment designed for collaborative, long-term discussions. It introduces persistent messaging, advanced tools like our AI Research Companion integration, and the ability to download transcripts.",
   },
   {
     id: 16,

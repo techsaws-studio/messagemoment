@@ -153,7 +153,7 @@ const Message = ({
           className="chat-text msg_txt"
           style={{ display: "flex", alignItems: "center", gap: "10px" }}
         >
-          <Image src={aiResearchCompanionIcon} alt="AI Research Companion" />{" "}
+          <Image src={aiResearchCompanionIcon} alt="AI Research Companion Icon" />{" "}
           <span ref={el}></span>
         </p>
       </>
