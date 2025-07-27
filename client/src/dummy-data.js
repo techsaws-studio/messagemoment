@@ -157,7 +157,7 @@ export const Faqs = [
   {
     id: 15,
     title: "What is Project Mode?",
-    desc: "Project Mode is a special feature in MessageMoment designed for collaborative, long-term discussions. It introduces persistent messaging, advanced tools like ChatGPT integration, and the ability to download transcripts.",
+    desc: "Project Mode is a special feature in MessageMoment designed for collaborative, long-term discussions. It introduces persistent messaging, advanced tools like AI Research Companion integration, and the ability to download transcripts.",
   },
   {
     id: 16,
@@ -200,9 +200,9 @@ export const Faqs = [
           "No message expiry time. Messages remain visible throughout the session.",
       },
       {
-        title: "ChatGPT Integration",
+        title: "AI Research Companion Integration",
         content:
-          "Use /mm to ask ChatGPT questions or get assistance with your project directly within the chat.",
+          "Use /mm to ask AI Research Companion questions or get assistance with your project directly within the chat.",
       },
       {
         title: "Downloadable Transcripts",
@@ -296,8 +296,8 @@ export const messageType = {
   PROJECT_MODE: "PROJECT_MODE",
   PROJECT_MODE_ENTRY: "PROJECT_MODE_ENTRY",
   ATTACHMENT_MESSAGE: "ATTACHMENT_MESSAGE",
-  CHATGPT_INPUT: "CHATGPT_INPUT",
-  CHATGPT_RESPONSE: "CHATGPT_RESPONSE",
+  AI_RESEARCH_COMPANION_INPUT: "AI_RESEARCH_COMPANION_INPUT",
+  AI_RESEARCH_COMPANION_RESPONSE: "AI_RESEARCH_COMPANION_RESPONSE",
   MM_NOTIFICATION_REMOVE_USER: "MM_NOTIFICATION_REMOVE_USER",
   PHANTOM_WALLET: "PHANTOM_WALLET",
 };
@@ -317,7 +317,7 @@ export const DEFAULT_MESSAGES = {
   ASK_TO_SET_EXPIRYTIME:
     "> Please enter the Message Expiration Time (in seconds) between 3 and 300. This can only be set once for all users, by any user, at any time. If this value is not defined, the default will be 30 seconds. ... * Set it with the command /timer [seconds] * > Otherwise proceed by typing your first message.",
   PROJECT_MODE_ENTRY:
-    "Should you wish to exit Project Mode at any point, please use the /project off command. If you would like to save a transcript of your chat, you can do so by using the /download command. To interact with ChatGPT, use the /mm command.",
+    "Should you wish to exit Project Mode at any point, please use the /project off command. If you would like to save a transcript of your chat, you can do so by using the /download command. To interact with AI Research Companion, use the /mm command.",
   PROJECT_MODE:
     "You are about to enter Project Mode. Are you sure you want to proceed? Type 'y' for Yes, 'n' for No  ---. By proceeding, you are confirming your understanding and agreement to these conditions:1. The Message Expiry Time will be paused, meaning no messages will be auto-deleted.2. From this point forward, all chat messages can be saved.3. To safeguard previous conversations, all existing chat will be cleared upon activation of Project Mode.4. You and all fellow participants agree to these conditions.",
 };

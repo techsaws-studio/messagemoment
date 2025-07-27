@@ -17,10 +17,10 @@ import { messageType } from "@/dummy-data";
       case messageType.MM_ERROR_MSG:
         return "msg-error";
       case messageType.DEFAULT:
-      case messageType.CHATGPT_INPUT:
+      case messageType.AI_RESEARCH_COMPANION_INPUT:
         return "msg-default";
       case messageType.MM_NOTIFICATION:
-      case messageType.CHATGPT_RESPONSE:
+      case messageType.AI_RESEARCH_COMPANION_RESPONSE:
       case messageType.MM_NOTIFICATION_REMOVE_USER:
         return "msg-noti";
       case messageType.ADVERTISEMENT:

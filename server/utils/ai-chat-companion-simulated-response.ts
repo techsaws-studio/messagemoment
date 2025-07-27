@@ -1,5 +1,9 @@
-export function handleChatGPTError(error: any, io: any, sessionId: string) {
-  console.error("[ChatGPT] Error:", {
+export function handleAIResearchCompanionError(
+  error: any,
+  io: any,
+  sessionId: string
+) {
+  console.error("[AI Research Companion] Error:", {
     name: error.name,
     message: error.message,
     stack: error.stack,
@@ -8,7 +12,7 @@ export function handleChatGPTError(error: any, io: any, sessionId: string) {
 
   io.to(sessionId).emit("receiveMessage", {
     sender: "System",
-    message: `ChatGpt Error: ${
+    message: `AI Research Companion Error: ${
       error.response?.data?.error?.message || error.message
     }`,
     timestamp: Date.now(),

@@ -143,7 +143,7 @@ const Message = ({
     );
   };
 
-  const renderChatgptResponse = () => {
+  const renderAIResearchCompanionResponse = () => {
     return (
       <>
         <p className={"chat-text handlertext"} style={{ color: "#494AF8" }}>
@@ -153,13 +153,14 @@ const Message = ({
           className="chat-text msg_txt"
           style={{ display: "flex", alignItems: "center", gap: "10px" }}
         >
-          <Image src={chatgptIcon} alt="chatgptIcon" /> <span ref={el}></span>
+          <Image src={chatgptIcon} alt="AI Research Companion" />{" "}
+          <span ref={el}></span>
         </p>
       </>
     );
   };
 
-  const renderChatgptInput = () => {
+  const renderAIResearchCompanionInput = () => {
     return (
       <>
         <p className={"chat-text handlertext"} style={{ color: handlerColor }}>
@@ -390,8 +391,8 @@ const Message = ({
             by using the <span id="blut-txt">/download</span> command.{" "}
           </p>
           <p className="chat-text msg_txt mb-10">
-            To interact with ChatGPT, use the <span id="blut-txt">/mm</span>{" "}
-            command.
+            To interact with AI Research Companion, use the{" "}
+            <span id="blut-txt">/mm</span> command.
           </p>
           <p className="chat-text msg_txt">
             To clear all messages in Project Mode, use the{" "}
@@ -578,8 +579,9 @@ const Message = ({
       [messageType.PROJECT_MODE]: renderProjectMode,
       [messageType.PROJECT_MODE_ENTRY]: renderProjectModeEntry,
       [messageType.ATTACHMENT_MESSAGE]: renderAttachmentMessage,
-      [messageType.CHATGPT_RESPONSE]: renderChatgptResponse,
-      [messageType.CHATGPT_INPUT]: renderChatgptInput,
+      [messageType.AI_RESEARCH_COMPANION_RESPONSE]:
+        renderAIResearchCompanionResponse,
+      [messageType.AI_RESEARCH_COMPANION_INPUT]: renderAIResearchCompanionInput,
       [messageType.MM_NOTIFICATION_REMOVE_USER]:
         renderMessageMomentAlertRemoveUser,
       [messageType.PHANTOM_WALLET]: renderPhantomPrompt,

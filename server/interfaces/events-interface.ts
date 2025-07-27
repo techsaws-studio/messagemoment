@@ -1,4 +1,4 @@
-export interface ChatGPTMessagePayload {
+export interface AIResearchCompanionMessagePayload {
   sessionId: string;
   username: string;
   message: string;

@@ -95,7 +95,7 @@ const SendMessage = (io: Server, socket: Socket): void => {
         : new Date(timestamp + session.sessionTimer * 1000);
 
       const isSystemMessage = username === "System";
-      const isAIMessage = username === "ChatGPT";
+      const isAIMessage = username === "AI_RESEARCH_COMPANION";
 
       try {
         await new MessageModel({

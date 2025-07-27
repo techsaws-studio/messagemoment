@@ -378,7 +378,7 @@ const MessageBox = () => {
           }
         }
 
-        // Handle the CHATGPT command
+        // Handle the AI Research Companion command
         if (isProjectModeOn && value.startsWith("/mm")) {
           setShowCommands(false);
           if (value === "/mm" && !spaceAdded) {
@@ -441,7 +441,7 @@ const MessageBox = () => {
           } else if (input == "/leave") {
             handleChatLeaveCommand();
           } else if (isProjectModeOn && input.includes("/mm")) {
-            handleChatgptCommand();
+            handleAIResearchCompanionCommand();
           } else if (!isChatLock && input == "/lock") {
             handleLockChatCommand();
           } else if (isChatLock && input == "/unlock") {
@@ -503,7 +503,7 @@ const MessageBox = () => {
             } else if (input == "/leave") {
               handleChatLeaveCommand();
             } else if (isProjectModeOn && input.includes("/mm")) {
-              handleChatgptCommand();
+              handleAIResearchCompanionCommand();
             } else if (!isChatLock && input == "/lock") {
               handleLockChatCommand();
             } else if (isChatLock && input == "/unlock") {
@@ -852,7 +852,7 @@ const MessageBox = () => {
     scrollToBottom();
   };
 
-  const handleChatgptCommand = () => {
+  const handleAIResearchCompanionCommand = () => {
     const msg = input.replace("/mm", "").trim();
     if (msg == "") {
       return;
@@ -860,12 +860,12 @@ const MessageBox = () => {
     setChatMessages([
       ...chatMessage,
       {
-        type: messageType.CHATGPT_INPUT,
+        type: messageType.AI_RESEARCH_COMPANION_INPUT,
         handlerName,
         message: msg,
       },
       {
-        type: messageType.CHATGPT_RESPONSE,
+        type: messageType.AI_RESEARCH_COMPANION_RESPONSE,
         handlerName: messageType.MESSAGE_MOMENT,
         message:
           "Today is March 10, 2023. So there are 19 days until March 29, 2023.",

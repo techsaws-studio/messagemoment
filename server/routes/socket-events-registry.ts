@@ -6,7 +6,7 @@ import { LeaveRoom } from "../events/leave-room.js";
 import { RemoveUserEvent } from "../events/chat-events/remove.js";
 import { TimerEvent } from "../events/chat-events/timer.js";
 import { LockEvent } from "../events/chat-events/lock.js";
-import { ChatGPTMessageEvent } from "../events/chat-events/chatgpt-message.js";
+import { AIResearchCompanionMessageEvent } from "../events/chat-events/ai-chat-companion-message.js";
 import { ClearMessagesEvent } from "../events/chat-events/clear.js";
 import { ProjectModeEvent } from "../events/chat-events/project-mode.js";
 import { GetUserListEvent } from "../events/get-user-list.js";
@@ -26,7 +26,7 @@ export const SocketEventsRegistry = (io: Server, socket: Socket): void => {
   register("removeUser", RemoveUserEvent);
   register("timer", TimerEvent);
   register("lockSession", LockEvent);
-  register("gptMessage", ChatGPTMessageEvent);
+  register("gptMessage", AIResearchCompanionMessageEvent);
   register("clearMessages", ClearMessagesEvent);
   register("toggleProjectMode", ProjectModeEvent);
   register("getUserList", GetUserListEvent);

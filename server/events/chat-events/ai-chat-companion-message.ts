@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import { Server, Socket } from "socket.io";
 import axios from "axios";
 
-import { ChatGPTMessagePayload } from "../../interfaces/events-interface.js";
+import { AIResearchCompanionMessagePayload } from "../../interfaces/events-interface.js";
 
 import MessageModel from "../../models/message-model.js";
 
@@ -12,17 +12,17 @@ import { FetchSessionService } from "../../services/fetch-session-service.js";
 
 import {
   generateSimulatedResponse,
-  handleChatGPTError,
-} from "../../utils/chatgpt-simulated-response.js";
+  handleAIResearchCompanionError,
+} from "../../utils/ai-chat-companion-simulated-response.js";
 
 dotenv.config();
 
-const ChatGPTMessageEvent = (io: Server, socket: Socket): void => {
-  socket.on("gptMessage", async (data: ChatGPTMessagePayload) => {
+const AIResearchCompanionMessageEvent = (io: Server, socket: Socket): void => {
+  socket.on("gptMessage", async (data: AIResearchCompanionMessagePayload) => {
     try {
       const { sessionId, username, message } = data;
       console.info(
-        `[ChatGPT] User ${username} sent message in session: ${sessionId}`
+        `[AI Research Companion] User ${username} sent message in session: ${sessionId}`
       );
 
       if (!sessionId || !username || !message) {
@@ -59,25 +59,26 @@ const ChatGPTMessageEvent = (io: Server, socket: Socket): void => {
       const processingMsgTime = Date.now();
       io.to(sessionId).emit("receiveMessage", {
         sender: "System",
-        message: "Processing your request with ChatGpt...",
+        message: "Processing your request with AI Research Companion...",
         timestamp: processingMsgTime,
         isSystem: true,
       });
 
       // Configuration
       const USE_SIMULATION = false;
-      const API_URL = process.env.CHATGPT_API_URL;
-      const API_KEY = process.env.CHATGPT_API_KEY;
+      const API_URL = process.env.AI_RESEARCH_COMPANION_API_URL;
+      const API_KEY = process.env.AI_RESEARCH_COMPANION_API_KEY;
 
       if (USE_SIMULATION) {
         setTimeout(() => {
           try {
-            const ChatGPTResponse = generateSimulatedResponse(message);
+            const AIResearchCompanionResponse =
+              generateSimulatedResponse(message);
             const timestamp = Date.now();
 
             io.to(sessionId).emit("receiveMessage", {
-              sender: "ChatGPT",
-              message: ChatGPTResponse,
+              sender: "AI_RESEARCH_COMPANION",
+              message: AIResearchCompanionResponse,
               timestamp,
               isAI: true,
             });
@@ -85,8 +86,8 @@ const ChatGPTMessageEvent = (io: Server, socket: Socket): void => {
             try {
               new MessageModel({
                 sessionId,
-                username: "ChatGPT",
-                message: ChatGPTResponse,
+                username: "AI_RESEARCH_COMPANION",
+                message: AIResearchCompanionResponse,
                 timestamp,
                 displayExpiresAt: null,
                 isAIMessage: true,
@@ -94,29 +95,29 @@ const ChatGPTMessageEvent = (io: Server, socket: Socket): void => {
                 .save()
                 .then(() => {
                   console.log(
-                    `[ChatGPT] Saved simulated AI response to database for session ${sessionId}`
+                    `[AI Research Companion] Saved simulated AI response to database for session ${sessionId}`
                   );
                 })
                 .catch((saveError: any) => {
                   console.error(
-                    "[ChatGPT] Failed to save simulated AI message to database:",
+                    "[AI Research Companion] Failed to save simulated AI message to database:",
                     saveError
                   );
                 });
             } catch (dbError) {
               console.error(
-                "[ChatGPT] Failed to save simulated AI message to database:",
+                "[AI Research Companion] Failed to save simulated AI message to database:",
                 dbError
               );
             }
           } catch (error) {
-            handleChatGPTError(error, io, sessionId);
+            handleAIResearchCompanionError(error, io, sessionId);
           }
         }, 1500);
       } else {
         try {
           console.log(
-            "[ChatGPT] Making API request with key:",
+            "[AI Research Companion] Making API request with key:",
             API_KEY ? "***REDACTED***" : "MISSING"
           );
 
@@ -151,23 +152,25 @@ const ChatGPTMessageEvent = (io: Server, socket: Socket): void => {
             }
           );
 
-          console.log("[ChatGPT] API Response:", {
+          console.log("[AI Research Companion] API Response:", {
             status: response.status,
             data: response.data,
           });
 
           if (!response.data?.candidates?.[0]?.content?.parts?.[0]?.text) {
-            throw new Error("Unexpected response format from ChatGPT");
+            throw new Error(
+              "Unexpected response format from AI Research Companion"
+            );
           }
 
-          const ChatGPTResponse =
+          const AIResearchCompanionResponse =
             response.data.candidates[0].content.parts[0].text;
           const timestamp = Date.now();
 
           // Send to all clients
           io.to(sessionId).emit("receiveMessage", {
-            sender: "ChatGPT",
-            message: ChatGPTResponse,
+            sender: "AI_RESEARCH_COMPANION",
+            message: AIResearchCompanionResponse,
             timestamp,
             isAI: true,
           });
@@ -176,24 +179,24 @@ const ChatGPTMessageEvent = (io: Server, socket: Socket): void => {
           try {
             await new MessageModel({
               sessionId,
-              username: "ChatGPT",
-              message: ChatGPTResponse,
+              username: "AI_RESEARCH_COMPANION",
+              message: AIResearchCompanionResponse,
               timestamp,
               displayExpiresAt: null,
               isAIMessage: true,
             }).save();
 
             console.log(
-              `[ChatGPT] Saved AI response to database for session ${sessionId}`
+              `[AI Research Companion] Saved AI response to database for session ${sessionId}`
             );
           } catch (dbError) {
             console.error(
-              "[ChatGPT] Failed to save AI message to database:",
+              "[AI Research Companion] Failed to save AI message to database:",
               dbError
             );
           }
         } catch (apiError: any) {
-          console.error("[ChatGPT] Full Error Details:", {
+          console.error("[AI Research Companion] Full Error Details:", {
             timestamp: new Date().toISOString(),
             error: {
               name: apiError.name,
@@ -214,7 +217,8 @@ const ChatGPTMessageEvent = (io: Server, socket: Socket): void => {
             },
           });
 
-          let errorMessage = "Failed to get response from ChatGPT";
+          let errorMessage =
+            "Failed to get response from AI Research Companion";
 
           if (apiError.response?.data?.error?.message) {
             errorMessage = apiError.response.data.error.message;
@@ -224,20 +228,21 @@ const ChatGPTMessageEvent = (io: Server, socket: Socket): void => {
 
           io.to(sessionId).emit("receiveMessage", {
             sender: "System",
-            message: `ChatGPT Error: ${errorMessage}`,
+            message: `AI Research Companion Error: ${errorMessage}`,
             timestamp: Date.now(),
             isSystem: true,
           });
         }
       }
     } catch (error: any) {
-      console.error("[ChatGPT] Message Processing Error:", error);
+      console.error("[AI Research Companion] Message Processing Error:", error);
       socket.emit(
         "error",
-        error.message || "Server error while processing ChatGPT message."
+        error.message ||
+          "Server error while processing AI Research Companion message."
       );
     }
   });
 };
 
-export { ChatGPTMessageEvent };
+export { AIResearchCompanionMessageEvent };
