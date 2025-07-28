@@ -1,6 +1,12 @@
 "use client";
 
-import React, { createRef, useEffect, useRef, useState } from "react";
+import React, {
+  createRef,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   isSafari as isSAF,
   isAndroid,
@@ -35,13 +41,14 @@ import MessageContainer from "./message-box-components/message-container";
 import ChatJoiningLoader from "./chat-joining-loader";
 
 import { getDeviceFingerprint } from "@/utils/device-fingerprint";
+import { ApiRequest } from "@/utils/api-request";
 
 import sendBtn from "@/assets/icons/chat/sendBtn.svg";
 import sendBtnGrey from "@/assets/icons/chat/send_grey.svg";
 
 export const messageContainerRef = createRef(null);
 
-const MessageBox = () => {
+const MessageBox = ({ isSessionExpired = false }) => {
   const [input, setinput] = useState("");
   const [commandlist, setCommandsList] = useState(listcommands);
   const [selectedCommands, setSelectedCommands] = useState("");
@@ -70,6 +77,8 @@ const MessageBox = () => {
   const { PhantomSessionApproved, isLoading } = usePhantomWallet();
   const [userlist, setUserList] = useState([]);
   const [isJoining, setIsJoining] = useState(false);
+  const [isSessionExpiredRealTime, setIsSessionExpiredRealTime] =
+    useState(false);
 
   const {
     setShowUploadModal,
@@ -94,6 +103,35 @@ const MessageBox = () => {
   const fileInputRef = useRef(null);
   const commandModalRef = useRef();
   const socket = useSocket();
+
+  const checkSessionValidity = useCallback(async () => {
+    if (!sessionData?.code) return;
+
+    try {
+      const response = await ApiRequest(
+        `/validate-session/${sessionData.code}`,
+        "GET"
+      );
+
+      if (!response.success) {
+        setIsSessionExpiredRealTime(true);
+
+        setChatMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            type: messageType.MM_ERROR_MSG,
+            message:
+              "This chat session has expired. Return to the homepage to generate a new chat session.",
+          },
+        ]);
+
+        setAskHandlerName(false);
+        setinput("");
+      }
+    } catch (error) {
+      console.error("Session validation error:", error);
+    }
+  }, [sessionData?.code]);
 
   const WalletChatUtils = () => {
     if (isMobileView) {
@@ -286,10 +324,10 @@ const MessageBox = () => {
   };
 
   const handleInputChange = (e) => {
-    if (InputFieldDisabled) return;
+    if (InputFieldDisabled || isSessionExpiredRealTime) return;
+
     let value = e.target.value;
     if (value !== "") {
-      // Reset command selections
       if (value.startsWith("/")) {
         if (handlerName.trim() !== "") {
           setinput(value);
@@ -301,9 +339,7 @@ const MessageBox = () => {
         setSelectedCommands("");
         setIsTimerCommand(false);
       }
-      // Validate Secure Code
       if (sessionData?.type === SessionTypeEnum.SECURE && !isVerifiedCode) {
-        // const numberOnlyRegex = /^[0-9]{4}$/;
         const numberOnlyRegex = /^(?!.*[.eE])[0-9]{4}$/;
 
         if (numberOnlyRegex.test(value.slice(0, 4))) {
@@ -315,9 +351,6 @@ const MessageBox = () => {
         }
       }
 
-      // Validate Secure Code
-
-      // Display Name
       if (askHanderName && value.trim() !== "" && value.slice(0, 15)) {
         const isValidate = validateDisplayName(value.slice(0, 15));
         if (isValidate == "All Good!") {
@@ -329,9 +362,6 @@ const MessageBox = () => {
         }
       }
 
-      // Validate DisplayName
-
-      // Check if the input starts with "/"
       if (value.startsWith("/") && handlerName.trim() !== "") {
         verifyInputCommand(value);
         if (value.startsWith("/timer")) {
@@ -344,7 +374,6 @@ const MessageBox = () => {
             return;
           }
 
-          // If the user removes space, reset the spaceAdded flag
           if (value === "/timer" && spaceAdded) {
             setinput(value);
             setSpaceAdded(false);
@@ -378,7 +407,6 @@ const MessageBox = () => {
           }
         }
 
-        // Handle the AI Research Companion command
         if (isProjectModeOn && value.startsWith("/mm")) {
           setShowCommands(false);
           if (value === "/mm" && !spaceAdded) {
@@ -602,6 +630,8 @@ const MessageBox = () => {
   };
 
   const verifySecurityCode = () => {
+    if (isSessionExpiredRealTime) return false;
+
     if (sessionData?.type === SessionTypeEnum.SECURE && !isVerifiedCode) {
       const numberOnlyRegex = /^(?!.*[.eE])[0-9]{4}$/;
 
@@ -644,10 +674,8 @@ const MessageBox = () => {
         ]);
         setinput("");
         scrollToBottom();
-        // return false
       }
     } else {
-      // handle questions
       if (askHanderName) {
         if (input.trim() !== "") handleUserName();
       } else if (askProjectMode) {
@@ -756,6 +784,8 @@ const MessageBox = () => {
   };
 
   const handleUserName = () => {
+    if (isSessionExpiredRealTime) return;
+
     const username = input.trim();
     const isValidate = validateDisplayName(username);
 
@@ -1077,6 +1107,28 @@ const MessageBox = () => {
     }
   };
 
+  const isExpiredState = isSessionExpired || isSessionExpiredRealTime;
+
+  useEffect(() => {
+    if (!sessionData?.code || isSessionExpiredRealTime) return;
+
+    const interval = setInterval(checkSessionValidity, 30000);
+
+    return () => clearInterval(interval);
+  }, [sessionData?.code, checkSessionValidity, isSessionExpiredRealTime]);
+
+  useEffect(() => {
+    if (isSessionExpiredRealTime) {
+      console.log("🚨 Session expired while user was on page");
+
+      setShowCommands(false);
+      setSelectedCommands("");
+      setSpaceAdded(false);
+      setAskHandlerName(false);
+      setinput("");
+    }
+  }, [isSessionExpiredRealTime]);
+
   useEffect(() => {
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     if (!isSafari) return;
@@ -1196,6 +1248,7 @@ const MessageBox = () => {
 
   useEffect(() => {
     checkIsConnected();
+
     if (!isLoading && !PhantomSessionApproved) {
       InitialChatLoad();
     }
@@ -1537,8 +1590,9 @@ const MessageBox = () => {
     };
 
     const handleSessionExpired = (data) => {
-      console.log("⏰ Session Expired:", data);
+      console.log("⏰ Session Expired from socket:", data);
       setIsJoining(false);
+      setIsSessionExpiredRealTime(true);
 
       setChatMessages((prevMessages) => [
         ...prevMessages.filter((msg) => msg.tempId !== "joining-loader"),
@@ -1550,8 +1604,10 @@ const MessageBox = () => {
         },
       ]);
 
+      // Reset states
       setHandlerName("");
-      setAskHandlerName(true);
+      setAskHandlerName(false);
+      setinput("");
     };
 
     // =====================
@@ -1675,14 +1731,14 @@ const MessageBox = () => {
       />
 
       <MessageInput
-        InputFieldDisabled={InputFieldDisabled}
+        InputFieldDisabled={InputFieldDisabled || isExpiredState}
         showAttachment={showAttachment}
         input={input}
         handleInputChange={handleInputChange}
         handleClickSendBtn={handleClickSendBtn}
         sendBtn={sendBtn}
         sendBtnGrey={sendBtnGrey}
-        isDisabled={isDisabled}
+        isDisabled={isDisabled || isExpiredState}
         KeyboardType={KeyboardType}
         showCommands={showCommands}
         selectedCommands={selectedCommands}

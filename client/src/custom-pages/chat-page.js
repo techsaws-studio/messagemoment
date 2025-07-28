@@ -14,12 +14,24 @@ import { ApiRequest } from "@/utils/api-request";
 
 function ChatPage() {
   const [isLoading, setIsLoading] = useState(true);
+  const [isSessionExpired, setIsSessionExpired] = useState(false);
 
   const { sessionId } = useParams();
   const { setSessionData } = chatContext();
 
   const fetchSessionData = async (sessionId) => {
     try {
+      const validationResponse = await ApiRequest(
+        `/validate-session/${sessionId}`,
+        "GET"
+      );
+
+      if (!validationResponse.success) {
+        setIsSessionExpired(true);
+        setIsLoading(false);
+        return;
+      }
+
       const response = await ApiRequest(
         `/fetch-initial-chat-load-data/${sessionId}`,
         "GET"
@@ -57,7 +69,7 @@ function ChatPage() {
   return (
     <>
       <ChatHeader />
-      <MessageBox />
+      <MessageBox isSessionExpired={isSessionExpired} />
       <SideCookieModal />
     </>
   );
