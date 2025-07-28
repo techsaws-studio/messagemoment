@@ -70,6 +70,7 @@ const Sliders = () => {
           <h2 className="text-center text-white header">
             Discover more from <br /> MessageMoment
           </h2>
+          
           <div className="slider-content">
             <Swiper
               slidesPerView={isMediumScreen ? 3 : 4}
