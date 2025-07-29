@@ -6,7 +6,7 @@ import "../../public/styles/main.scss";
 export const metadata = {
   title: "MessageMoment – Your Message Only Lasts a Moment",
   description:
-    "MessageMoment is a secure, private, and temporary chat platform. Share conversations with trusted friends that disappear after the moment passes.",
+    "MessageMoment is a secure, private, and temporary real-time chat platform. Share conversations with trusted friends that disappear after the moment passes.",
 };
 
 export default function RootLayout({ children }) {
@@ -24,7 +24,7 @@ export default function RootLayout({ children }) {
         />
         <meta
           name="description"
-          content="MessageMoment is a secure, private, and temporary chat platform. Share conversations with trusted friends that disappear after the moment passes."
+          content="MessageMoment is a secure, private, and temporary real-time chat platform. Share conversations with trusted friends that disappear after the moment passes."
         />
 
         <meta name="application-name" content="MessageMoment" />
@@ -38,7 +38,7 @@ export default function RootLayout({ children }) {
         />
         <meta
           property="og:description"
-          content="MessageMoment is a secure, private, and temporary chat platform. Share conversations with trusted friends that disappear after the moment passes."
+          content="MessageMoment is a secure, private, and temporary real-time chat platform. Share conversations with trusted friends that disappear after the moment passes."
         />
         <meta
           property="og:url"
