@@ -1,9 +1,11 @@
 import React, { useEffect, useRef } from "react";
-import projectmodeTooltip from "@/assets/icons/chat/chat_mobile_icon/projectmodeTooltip2.svg";
 import Image from "next/image";
-import crossIcon from "@/assets/icons/chat/chat_mobile_icon/cross.svg";
+
 import { chatContext } from "@/contexts/chat-context";
 import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
+
+import projectmodeTooltip from "@/assets/icons/chat/chat_mobile_icon/projectmodeTooltip2.svg";
+import crossIcon from "@/assets/icons/chat/chat_mobile_icon/cross.svg";
 
 const ProjectModeTooltip = ({ isAttachment }) => {
   const { showProjectModeTooltip, setShowProjectModeTooltip } = chatContext();

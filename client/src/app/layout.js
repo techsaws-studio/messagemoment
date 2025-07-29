@@ -4,8 +4,9 @@ import { SocketProvider } from "@/contexts/socket-context";
 import "../../public/styles/main.scss";
 
 export const metadata = {
-  title: "MessageMoment - The real meaning to personal!",
-  description: "MessageMoment - The real meaning to personal!",
+  title: "MessageMoment – Your Message Only Lasts a Moment",
+  description:
+    "MessageMoment is a secure, private, and temporary chat platform. Share conversations with trusted friends that disappear after the moment passes.",
 };
 
 export default function RootLayout({ children }) {
@@ -18,12 +19,12 @@ export default function RootLayout({ children }) {
           content="width=device-width, initial-scale=1.0, viewport-fit=cover"
         />
         <meta
-          name="description"
-          content="MessageMoment - The real meaning to personal!"
+          name="title"
+          content="MessageMoment – Your Message Only Lasts a Moment"
         />
         <meta
-          name="title"
-          content="MessageMoment - The real meaning to personal!"
+          name="description"
+          content="MessageMoment is a secure, private, and temporary chat platform. Share conversations with trusted friends that disappear after the moment passes."
         />
 
         <meta name="application-name" content="MessageMoment" />
@@ -33,11 +34,11 @@ export default function RootLayout({ children }) {
         <meta property="og:type" content="website" />
         <meta
           property="og:title"
-          content="MessageMoment - The real meaning to personal!"
+          content="MessageMoment – Your Message Only Lasts a Moment"
         />
         <meta
           property="og:description"
-          content="MessageMoment - The real meaning to personal!"
+          content="MessageMoment is a secure, private, and temporary chat platform. Share conversations with trusted friends that disappear after the moment passes."
         />
         <meta
           property="og:url"
