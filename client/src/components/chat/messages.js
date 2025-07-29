@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import Typed from "typed.js";
 import Image from "next/image";
 
 import { SessionTypeEnum } from "@/enums/session-type-enum";
