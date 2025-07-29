@@ -1,3 +1,3 @@
-# MessageMoment
+# MessageMoment – Your Message Only Lasts a Moment
 
-"The real meaning to personal!" Real-time communication chat web application.
+"MessageMoment is a secure, private, and temporary chat platform. Share conversations with trusted friends that disappear after the moment passes". A real-time communication chat web application.
