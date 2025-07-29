@@ -157,7 +157,7 @@ export const Faqs = [
   {
     id: 15,
     title: "What is Project Mode?",
-    desc: "Project Mode is a special feature in MessageMoment designed for collaborative, long-term discussions. It introduces persistent messaging, advanced tools like our AI Research Companion integration, and the ability to download transcripts.",
+    desc: "Project Mode is a special feature in MessageMoment designed for collaborative, long-term discussions. It introduces persistent messaging, advanced tools like our AI Research Companion, and the ability to download transcripts.",
   },
   {
     id: 16,
@@ -200,7 +200,7 @@ export const Faqs = [
           "No message expiry time. Messages remain visible throughout the session.",
       },
       {
-        title: "AI Research Companion Integration",
+        title: "AI Research Companion",
         content:
           "Use /mm to ask our AI Research Companion questions or get assistance with your project directly within the chat.",
       },
