@@ -204,7 +204,7 @@ const ScreenModalCookie = ({
       JSON.stringify(preferences),
       cookieOptions
     );
-    if (markAccepted) {
+    if (markAccepted && (preferences.analytics || preferences.advertising)) {
       Cookies.set("cookiesAccepted", "true", cookieOptions);
     }
 
