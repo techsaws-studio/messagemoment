@@ -84,6 +84,7 @@ const MessageBox = ({
   const [isSessionExpiredRealTime, setIsSessionExpiredRealTime] =
     useState(false);
   const [isSessionLockedRealTime, setIsSessionLockedRealTime] = useState(false);
+  const [userHasJoinedSession, setUserHasJoinedSession] = useState(false);
 
   const {
     setShowUploadModal,
@@ -111,9 +112,10 @@ const MessageBox = ({
 
   const isLockedState = isSessionLocked || isSessionLockedRealTime;
   const isExpiredState = isSessionExpired || isSessionExpiredRealTime;
-  const isSessionInvalid = isLockedState || isExpiredState;
+  const shouldBlockInput = isExpiredState;
+  const shouldShowLockNotification = isLockedState && !isExpiredState;
 
-  const checkSessionValidity = useCallback(async () => {
+  const checkSessionValidityForJoining = useCallback(async () => {
     if (!sessionData?.code) return;
 
     try {
@@ -127,6 +129,7 @@ const MessageBox = ({
 
         if (status === "locked") {
           setIsSessionLockedRealTime(true);
+          setInputFieldDisabled(true);
           setChatMessages((prevMessages) => [
             ...prevMessages,
             {
@@ -151,7 +154,44 @@ const MessageBox = ({
         setinput("");
       }
     } catch (error) {
-      console.error("Session validation error:", error);
+      console.error("Session validation error (joining user):", error);
+    }
+  }, [sessionData?.code]);
+
+  const checkSessionValidityForExistingUsers = useCallback(async () => {
+    if (!sessionData?.code) return;
+
+    try {
+      const response = await ApiRequest(
+        `/validate-session/${sessionData.code}`,
+        "GET"
+      );
+
+      if (!response.success) {
+        const status = response.sessionStatus;
+
+        if (status === "locked") {
+          setIsSessionLockedRealTime(true);
+          console.log(
+            "🔒 Session locked - existing user can continue chatting"
+          );
+        } else if (status === "expired") {
+          setIsSessionExpiredRealTime(true);
+          setChatMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              type: messageType.MM_ERROR_MSG,
+              message:
+                "This chat session has expired. Return to the homepage to generate a new chat session.",
+            },
+          ]);
+
+          setAskHandlerName(false);
+          setinput("");
+        }
+      }
+    } catch (error) {
+      console.error("Session validation error (existing user):", error);
     }
   }, [sessionData?.code]);
 
@@ -346,7 +386,7 @@ const MessageBox = ({
   };
 
   const handleInputChange = (e) => {
-    if (InputFieldDisabled || isSessionInvalid) return;
+    if (InputFieldDisabled || shouldBlockInput) return;
 
     let value = e.target.value;
     if (value !== "") {
@@ -456,6 +496,10 @@ const MessageBox = ({
   };
 
   const handleClickSendBtn = () => {
+    if (shouldBlockInput) {
+      return;
+    }
+
     if (verifySecurityCode()) {
       if (input.trim() !== "" && !input.startsWith("/")) {
         setSelectedCommands("");
@@ -513,6 +557,8 @@ const MessageBox = ({
   };
 
   const handleKeyDown = (event) => {
+    if (shouldBlockInput) return;
+
     if (sessionData?.type === SessionTypeEnum.SECURE && !isVerifiedCode) {
       if (
         event.keyCode === 69 ||
@@ -652,7 +698,7 @@ const MessageBox = ({
   };
 
   const verifySecurityCode = () => {
-    if (isSessionInvalid) return false;
+    if (shouldBlockInput) return false;
 
     if (sessionData?.type === SessionTypeEnum.SECURE && !isVerifiedCode) {
       const numberOnlyRegex = /^(?!.*[.eE])[0-9]{4}$/;
@@ -1130,37 +1176,56 @@ const MessageBox = ({
   };
 
   useEffect(() => {
-    if (
-      !sessionData?.code ||
-      isSessionExpiredRealTime ||
-      isSessionLockedRealTime
-    )
+    if (!sessionData?.code || isSessionExpiredRealTime) return;
+
+    if (isSessionLockedRealTime && userHasJoinedSession) {
+      console.log(
+        "🔒 Session locked - stopping validation checks for existing user"
+      );
       return;
+    }
 
-    const interval = setInterval(checkSessionValidity, 30000);
+    const validationFunction = userHasJoinedSession
+      ? checkSessionValidityForExistingUsers
+      : checkSessionValidityForJoining;
 
+    console.log(
+      `🔍 Using ${
+        userHasJoinedSession ? "existing user" : "joining user"
+      } validation`
+    );
+
+    const interval = setInterval(validationFunction, 30000);
     return () => clearInterval(interval);
   }, [
     sessionData?.code,
-    checkSessionValidity,
+    checkSessionValidityForJoining,
+    checkSessionValidityForExistingUsers,
     isSessionExpiredRealTime,
     isSessionLockedRealTime,
+    userHasJoinedSession,
   ]);
 
   useEffect(() => {
-    if (isSessionExpiredRealTime || isSessionLockedRealTime) {
-      console.log("🚨 Session became invalid while user was on page", {
-        expired: isSessionExpiredRealTime,
-        locked: isSessionLockedRealTime,
-      });
-
+    if (isSessionExpiredRealTime) {
+      console.log("🚨 Session expired - blocking all user input");
       setShowCommands(false);
       setSelectedCommands("");
       setSpaceAdded(false);
       setAskHandlerName(false);
       setinput("");
+      setUserHasJoinedSession(false);
     }
-  }, [isSessionExpiredRealTime, isSessionLockedRealTime]);
+
+    if (isSessionLockedRealTime && !isSessionExpiredRealTime) {
+      if (userHasJoinedSession) {
+        console.log("🔒 Session locked - existing user can continue chatting");
+      } else {
+        console.log("🔒 Session locked - blocking new user from joining");
+        setInputFieldDisabled(true);
+      }
+    }
+  }, [isSessionExpiredRealTime, isSessionLockedRealTime, userHasJoinedSession]);
 
   useEffect(() => {
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -1319,7 +1384,6 @@ const MessageBox = ({
       username: handlerName,
     });
 
-    // ROOM JOIN INITIALIZATION
     setIsJoining(true);
 
     const fingerprint = safeGetFingerprint();
@@ -1349,6 +1413,11 @@ const MessageBox = ({
     const handleJoinedRoom = (data) => {
       console.log("✅ Successfully joined room:", data);
       setIsJoining(false);
+
+      setUserHasJoinedSession(true);
+      console.log(
+        "🎯 User marked as joined - switching to existing user validation"
+      );
 
       setChatMessages((prevMessages) => {
         const filteredMessages = prevMessages.map((msg) => {
@@ -1624,8 +1693,10 @@ const MessageBox = ({
 
     const handleSessionExpired = (data) => {
       console.log("⏰ Session Expired from socket:", data);
+
       setIsJoining(false);
       setIsSessionExpiredRealTime(true);
+      setUserHasJoinedSession(false);
 
       setChatMessages((prevMessages) => [
         ...prevMessages.filter((msg) => msg.tempId !== "joining-loader"),
@@ -1651,6 +1722,8 @@ const MessageBox = ({
       console.error("👤 Username Error:", message);
       setIsJoining(false);
 
+      setUserHasJoinedSession(false);
+
       setChatMessages((prevMessages) => [
         ...prevMessages.filter((msg) => msg.tempId !== "joining-loader"),
         {
@@ -1666,6 +1739,8 @@ const MessageBox = ({
     const handleSocketError = (error) => {
       console.error("❌ Socket Error:", error);
       setIsJoining(false);
+
+      setUserHasJoinedSession(false);
 
       setChatMessages((prevMessages) =>
         prevMessages.filter((msg) => msg.tempId !== "joining-loader")
@@ -1715,6 +1790,8 @@ const MessageBox = ({
     return () => {
       console.log("🧹 Cleaning up socket event listeners");
 
+      setUserHasJoinedSession(false);
+
       // SUCCESS EVENTS CLEANUP
       socket.off("joinedRoom", handleJoinedRoom);
       socket.off("userList", handleUserList);
@@ -1729,7 +1806,7 @@ const MessageBox = ({
       socket.off("userLeft", handleUserLeft);
       socket.off("sessionFull", handleSessionFull);
       socket.off("info", handleInfoMessage);
-      socket.off("sessionExpired", handleSessionExpired);
+      // socket.off("sessionExpired", handleSessionExpired);
 
       // ERROR EVENTS CLEANUP
       socket.off("usernameError", handleUsernameError);
@@ -1764,14 +1841,14 @@ const MessageBox = ({
       />
 
       <MessageInput
-        InputFieldDisabled={InputFieldDisabled || isSessionInvalid}
+        InputFieldDisabled={InputFieldDisabled || shouldBlockInput}
         showAttachment={showAttachment}
         input={input}
         handleInputChange={handleInputChange}
         handleClickSendBtn={handleClickSendBtn}
         sendBtn={sendBtn}
         sendBtnGrey={sendBtnGrey}
-        isDisabled={isDisabled || isSessionInvalid}
+        isDisabled={isDisabled || shouldBlockInput}
         KeyboardType={KeyboardType}
         showCommands={showCommands}
         selectedCommands={selectedCommands}
