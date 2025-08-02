@@ -56,6 +56,7 @@ const JoinRoom = (io: Server, socket: Socket): void => {
         socket.emit("sessionExpired", {
           message:
             "This chat session has expired. Return to the homepage to generate a new chat session.",
+          status: "expired",
         });
         return;
       }
@@ -64,12 +65,18 @@ const JoinRoom = (io: Server, socket: Socket): void => {
         socket.emit("sessionExpired", {
           message:
             "This chat session has expired. Return to the homepage to generate a new chat session.",
+          status: "expired",
         });
         return;
       }
 
       if (session.sessionLocked) {
-        socket.emit("redirect", "/session-locked");
+        socket.emit("sessionLocked", {
+          message:
+            "This chat session has been locked. You cannot enter at this time. Please try again later or reach out to the person who shared the chat link with you.",
+          status: "locked",
+          lockedBy: session.sessionLockedBy,
+        });
         return;
       }
 

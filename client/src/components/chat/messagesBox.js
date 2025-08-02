@@ -48,7 +48,11 @@ import sendBtnGrey from "@/assets/icons/chat/send_grey.svg";
 
 export const messageContainerRef = createRef(null);
 
-const MessageBox = ({ isSessionExpired = false }) => {
+const MessageBox = ({
+  isSessionExpired = false,
+  isSessionLocked = false,
+  sessionStatus = null,
+}) => {
   const [input, setinput] = useState("");
   const [commandlist, setCommandsList] = useState(listcommands);
   const [selectedCommands, setSelectedCommands] = useState("");
@@ -79,6 +83,7 @@ const MessageBox = ({ isSessionExpired = false }) => {
   const [isJoining, setIsJoining] = useState(false);
   const [isSessionExpiredRealTime, setIsSessionExpiredRealTime] =
     useState(false);
+  const [isSessionLockedRealTime, setIsSessionLockedRealTime] = useState(false);
 
   const {
     setShowUploadModal,
@@ -104,6 +109,10 @@ const MessageBox = ({ isSessionExpired = false }) => {
   const commandModalRef = useRef();
   const socket = useSocket();
 
+  const isLockedState = isSessionLocked || isSessionLockedRealTime;
+  const isExpiredState = isSessionExpired || isSessionExpiredRealTime;
+  const isSessionInvalid = isLockedState || isExpiredState;
+
   const checkSessionValidity = useCallback(async () => {
     if (!sessionData?.code) return;
 
@@ -114,16 +123,29 @@ const MessageBox = ({ isSessionExpired = false }) => {
       );
 
       if (!response.success) {
-        setIsSessionExpiredRealTime(true);
+        const status = response.sessionStatus;
 
-        setChatMessages((prevMessages) => [
-          ...prevMessages,
-          {
-            type: messageType.MM_ERROR_MSG,
-            message:
-              "This chat session has expired. Return to the homepage to generate a new chat session.",
-          },
-        ]);
+        if (status === "locked") {
+          setIsSessionLockedRealTime(true);
+          setChatMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              type: messageType.MM_ERROR_MSG,
+              message:
+                "This chat session has been locked. You cannot enter at this time. Please try again later or reach out to the person who shared the chat link with you.",
+            },
+          ]);
+        } else {
+          setIsSessionExpiredRealTime(true);
+          setChatMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              type: messageType.MM_ERROR_MSG,
+              message:
+                "This chat session has expired. Return to the homepage to generate a new chat session.",
+            },
+          ]);
+        }
 
         setAskHandlerName(false);
         setinput("");
@@ -324,7 +346,7 @@ const MessageBox = ({ isSessionExpired = false }) => {
   };
 
   const handleInputChange = (e) => {
-    if (InputFieldDisabled || isSessionExpiredRealTime) return;
+    if (InputFieldDisabled || isSessionInvalid) return;
 
     let value = e.target.value;
     if (value !== "") {
@@ -630,7 +652,7 @@ const MessageBox = ({ isSessionExpired = false }) => {
   };
 
   const verifySecurityCode = () => {
-    if (isSessionExpiredRealTime) return false;
+    if (isSessionInvalid) return false;
 
     if (sessionData?.type === SessionTypeEnum.SECURE && !isVerifiedCode) {
       const numberOnlyRegex = /^(?!.*[.eE])[0-9]{4}$/;
@@ -1107,19 +1129,30 @@ const MessageBox = ({ isSessionExpired = false }) => {
     }
   };
 
-  const isExpiredState = isSessionExpired || isSessionExpiredRealTime;
-
   useEffect(() => {
-    if (!sessionData?.code || isSessionExpiredRealTime) return;
+    if (
+      !sessionData?.code ||
+      isSessionExpiredRealTime ||
+      isSessionLockedRealTime
+    )
+      return;
 
     const interval = setInterval(checkSessionValidity, 30000);
 
     return () => clearInterval(interval);
-  }, [sessionData?.code, checkSessionValidity, isSessionExpiredRealTime]);
+  }, [
+    sessionData?.code,
+    checkSessionValidity,
+    isSessionExpiredRealTime,
+    isSessionLockedRealTime,
+  ]);
 
   useEffect(() => {
-    if (isSessionExpiredRealTime) {
-      console.log("🚨 Session expired while user was on page");
+    if (isSessionExpiredRealTime || isSessionLockedRealTime) {
+      console.log("🚨 Session became invalid while user was on page", {
+        expired: isSessionExpiredRealTime,
+        locked: isSessionLockedRealTime,
+      });
 
       setShowCommands(false);
       setSelectedCommands("");
@@ -1127,7 +1160,7 @@ const MessageBox = ({ isSessionExpired = false }) => {
       setAskHandlerName(false);
       setinput("");
     }
-  }, [isSessionExpiredRealTime]);
+  }, [isSessionExpiredRealTime, isSessionLockedRealTime]);
 
   useEffect(() => {
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -1731,14 +1764,14 @@ const MessageBox = ({ isSessionExpired = false }) => {
       />
 
       <MessageInput
-        InputFieldDisabled={InputFieldDisabled || isExpiredState}
+        InputFieldDisabled={InputFieldDisabled || isSessionInvalid}
         showAttachment={showAttachment}
         input={input}
         handleInputChange={handleInputChange}
         handleClickSendBtn={handleClickSendBtn}
         sendBtn={sendBtn}
         sendBtnGrey={sendBtnGrey}
-        isDisabled={isDisabled || isExpiredState}
+        isDisabled={isDisabled || isSessionInvalid}
         KeyboardType={KeyboardType}
         showCommands={showCommands}
         selectedCommands={selectedCommands}

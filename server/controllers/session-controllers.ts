@@ -103,6 +103,7 @@ export const ValidationSessionFunction = CatchAsyncErrors(
           return res.status(200).json({
             success: false,
             redirect: "/locked-session",
+            sessionStatus: "locked",
             message: "Session is locked",
           });
         }
@@ -112,6 +113,7 @@ export const ValidationSessionFunction = CatchAsyncErrors(
           return res.status(200).json({
             success: false,
             redirect: "/full-session",
+            sessionStatus: "full",
             message: "Session is full",
           });
         }
@@ -126,6 +128,7 @@ export const ValidationSessionFunction = CatchAsyncErrors(
       return res.status(200).json({
         success: false,
         redirect: "/expired-session",
+        sessionStatus: "expired",
         message: "Session is expired or does not exist",
       });
     } catch (error: any) {

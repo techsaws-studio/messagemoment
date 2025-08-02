@@ -14,6 +14,8 @@ import { ApiRequest } from "@/utils/api-request";
 function ChatPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSessionExpired, setIsSessionExpired] = useState(false);
+  const [isSessionLocked, setIsSessionLocked] = useState(false);
+  const [sessionStatus, setSessionStatus] = useState(null);
 
   const { sessionId } = useParams();
   const { setSessionData } = chatContext();
@@ -26,7 +28,17 @@ function ChatPage() {
       );
 
       if (!validationResponse.success) {
-        setIsSessionExpired(true);
+        const status = validationResponse.sessionStatus;
+        setSessionStatus(status);
+
+        if (status === "locked") {
+          setIsSessionLocked(true);
+        } else if (status === "expired") {
+          setIsSessionExpired(true);
+        } else {
+          setIsSessionExpired(true);
+        }
+
         setIsLoading(false);
         return;
       }
@@ -47,9 +59,11 @@ function ChatPage() {
         });
       } else {
         console.error("Session not found.");
+        setIsSessionExpired(true);
       }
     } catch (error) {
       console.error("Error fetching session data:", error.message);
+      setIsSessionExpired(true);
     } finally {
       setIsLoading(false);
     }
@@ -68,7 +82,11 @@ function ChatPage() {
   return (
     <>
       <ChatHeader />
-      <MessageBox isSessionExpired={isSessionExpired} />
+      <MessageBox
+        isSessionExpired={isSessionExpired}
+        isSessionLocked={isSessionLocked}
+        sessionStatus={sessionStatus}
+      />
     </>
   );
 }
