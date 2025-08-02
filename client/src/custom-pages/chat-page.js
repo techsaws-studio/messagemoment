@@ -7,7 +7,6 @@ import { chatContext } from "@/contexts/chat-context";
 
 import { ChatHeader } from "@/components/chat/header";
 import MessageBox from "@/components/chat/messagesBox";
-import SideCookieModal from "@/components/home/sideCookieModal";
 import Loader from "@/components/loader";
 
 import { ApiRequest } from "@/utils/api-request";
@@ -70,7 +69,6 @@ function ChatPage() {
     <>
       <ChatHeader />
       <MessageBox isSessionExpired={isSessionExpired} />
-      <SideCookieModal />
     </>
   );
 }

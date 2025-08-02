@@ -152,7 +152,10 @@ const Message = ({
           className="chat-text msg_txt"
           style={{ display: "flex", alignItems: "center", gap: "10px" }}
         >
-          <Image src={aiResearchCompanionIcon} alt="AI Research Companion Icon" />{" "}
+          <Image
+            src={aiResearchCompanionIcon}
+            alt="AI Research Companion Icon"
+          />{" "}
           <span ref={el}></span>
         </p>
       </>
@@ -602,7 +605,6 @@ const Message = ({
   useEffect(() => {
     let typingInterval;
     let observer;
-    let lastContent = "";
     let userScrolled = false;
     let scrollPauseTimeout;
     let animationFrameId;
@@ -629,7 +631,6 @@ const Message = ({
           scrollToBottom?.();
         }
       } else {
-        // ⭐ INSTANT SCROLL - Scroll immediately when message starts
         if (!userScrolled) {
           scrollToBottom?.();
         }
@@ -648,10 +649,10 @@ const Message = ({
             currentIndex = Math.min(targetIndex, message.length);
             el.current.innerHTML = message.substring(0, currentIndex);
 
-            // Optional: Keep scrolling during typing (remove if you only want initial scroll)
-            // if (!userScrolled) {
-            //   scrollToBottom?.();
-            // }
+            // Keep scrolling during typing
+            if (!userScrolled) {
+              scrollToBottom?.();
+            }
           }
 
           if (currentIndex < message.length) {

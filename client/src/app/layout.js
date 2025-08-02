@@ -1,6 +1,8 @@
 import ChatContextProvider from "@/contexts/chat-context";
 import { SocketProvider } from "@/contexts/socket-context";
 
+import SideCookieModal from "@/components/home/sideCookieModal";
+
 import "../../public/styles/main.scss";
 
 const BASE_URL =
@@ -75,7 +77,10 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <ChatContextProvider>
-          <SocketProvider>{children}</SocketProvider>
+          <SocketProvider>
+            {children}
+            <SideCookieModal />
+          </SocketProvider>
         </ChatContextProvider>
       </body>
     </html>

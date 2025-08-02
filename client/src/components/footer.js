@@ -11,7 +11,6 @@ import Link from "next/link";
 import des from "../assets/icons/desBy.svg";
 import heartIcon from "../assets/icons/heart.svg";
 import Button from "./button";
-import SideCookieModal from "./home/sideCookieModal";
 
 const Footer = () => {
   const currentYear = getYear(new Date());
@@ -34,77 +33,69 @@ const Footer = () => {
   };
 
   return (
-    <>
-      <SideCookieModal />
-      <footer className="footer-bg-layer">
-        <Image
-          onClick={handleLogoClick}
-          src={logo}
-          alt="logo"
-          className="logo"
-        />
-        <ul className="footer-links">
-          <li>
-            <Link href="/about">About</Link>
-          </li>
-          <li>
-            <Link href="/faqs">Help & Support </Link>
-          </li>
-          <li>
-            <Link href="/terms">Terms of Use</Link>
-          </li>
-          <li>
-            <Link href="/privacy">Privacy Policy</Link>
-          </li>
-          <div className="support-footer-btn">
-            <Button
-              icon={heartIcon}
-              text="Support Us"
-              className="support-btn support-us-blue-text primary-bg  responsive-button-footer"
-              onClick={() => handleNavClick("https://ko-fi.com/messagemoment")}
-            />
-          </div>
-        </ul>
+    <footer className="footer-bg-layer">
+      <Image onClick={handleLogoClick} src={logo} alt="logo" className="logo" />
+      <ul className="footer-links">
+        <li>
+          <Link href="/about">About</Link>
+        </li>
+        <li>
+          <Link href="/faqs">Help & Support </Link>
+        </li>
+        <li>
+          <Link href="/terms">Terms of Use</Link>
+        </li>
+        <li>
+          <Link href="/privacy">Privacy Policy</Link>
+        </li>
+        <div className="support-footer-btn">
+          <Button
+            icon={heartIcon}
+            text="Support Us"
+            className="support-btn support-us-blue-text primary-bg  responsive-button-footer"
+            onClick={() => handleNavClick("https://ko-fi.com/messagemoment")}
+          />
+        </div>
+      </ul>
 
-        <div className="divider"></div>
-        <div className="copy-right container">
-          <div className="support-footer-btn-mobile">
-            <Button
-              icon={heartIcon}
-              text="Support Us"
-              maxWidth={"388px"}
-              className="support-btn support-us-blue-text primary-bg  responsive-button-footer"
-              onClick={() => handleNavClick("https://ko-fi.com/messagemoment")}
-            />
-          </div>
-          <p className="note text-dark-gray">
-            Copyright © {currentYear} MessageMoment. All rights reserved.
-          </p>{" "}
-          <div className="social-icons">
-            {/* Add hyperlinks to social media profiles */}
-            <a href="https://x.com/" target="_blank">
-              <Image src={x} alt="X logo" priority />
-            </a>
-            <a href="https://www.instagram.com/" target="_blank">
-              <Image src={Instagram} alt="Instagram logo" priority />
-            </a>
-            <a href="https://www.facebook.com/" target="_blank">
-              <Image src={facebook} alt="Facebook logo" priority />
-            </a>
-            <a href="https://www.youtube.com/" target="_blank">
-              <Image src={youtube} alt="YouTube logo" priority />
-            </a>
-          </div>
-          <p className="note text-dark-gray">
-            Designed By
-            <Image src={des} alt="Designed by" style={{ cursor: "default" }} />
-          </p>
+      <div className="divider"></div>
+      <div className="copy-right container">
+        <div className="support-footer-btn-mobile">
+          <Button
+            icon={heartIcon}
+            text="Support Us"
+            maxWidth={"388px"}
+            className="support-btn support-us-blue-text primary-bg  responsive-button-footer"
+            onClick={() => handleNavClick("https://ko-fi.com/messagemoment")}
+          />
         </div>
-        <div onClick={scrollToTop} className="scrol-btn">
-          <Image src={upArrow} alt="upArrow" />
+        <p className="note text-dark-gray">
+          Copyright © {currentYear} MessageMoment. All rights reserved.
+        </p>{" "}
+        <div className="social-icons">
+          {/* Add hyperlinks to social media profiles */}
+          <a href="https://x.com/" target="_blank">
+            <Image src={x} alt="X logo" priority />
+          </a>
+          <a href="https://www.instagram.com/" target="_blank">
+            <Image src={Instagram} alt="Instagram logo" priority />
+          </a>
+          <a href="https://www.facebook.com/" target="_blank">
+            <Image src={facebook} alt="Facebook logo" priority />
+          </a>
+          <a href="https://www.youtube.com/" target="_blank">
+            <Image src={youtube} alt="YouTube logo" priority />
+          </a>
         </div>
-      </footer>
-    </>
+        <p className="note text-dark-gray">
+          Designed By
+          <Image src={des} alt="Designed by" style={{ cursor: "default" }} />
+        </p>
+      </div>
+      <div onClick={scrollToTop} className="scrol-btn">
+        <Image src={upArrow} alt="upArrow" />
+      </div>
+    </footer>
   );
 };
 
