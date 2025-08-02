@@ -22,14 +22,9 @@ const ScreenModalCookie = ({
   onPress,
   initialPreferences,
   onPreferencesChange,
+  setCookie,
 }) => {
-  const [cookiePreferences, setCookiePreferences] = useState(
-    initialPreferences || {
-      essential: true,
-      analytics: false,
-      advertising: false,
-    }
-  );
+  const cookiePreferences = initialPreferences;
 
   const text = `
   These cookies are essential for the proper functioning of this website. Without these cookies, the website would not work properly.
@@ -188,59 +183,8 @@ const ScreenModalCookie = ({
     },
   ];
 
-  const setCookie = (preferences = cookiePreferences, markAccepted = true) => {
-    const cookieOptions = {
-      expires: 365,
-      sameSite: "Lax",
-      secure: window.location.protocol === "https:",
-      path: "/",
-      ...(process.env.NODE_ENV === "production" && {
-        domain: window.location.hostname,
-      }),
-    };
-
-    Cookies.set(
-      "cookiePreferences",
-      JSON.stringify(preferences),
-      cookieOptions
-    );
-    if (markAccepted && (preferences.analytics || preferences.advertising)) {
-      Cookies.set("cookiesAccepted", "true", cookieOptions);
-    }
-
-    if (preferences.analytics) {
-      loadAnalyticsScripts();
-    }
-    if (preferences.advertising) {
-      loadAdvertisingScripts();
-    }
-  };
-
-  const loadAnalyticsScripts = () => {
-    if (typeof gtag !== "undefined") {
-      gtag("consent", "update", { analytics_storage: "granted" });
-    }
-    console.log("Analytics cookies enabled");
-  };
-
-  const loadAdvertisingScripts = () => {
-    if (typeof gtag !== "undefined") {
-      gtag("consent", "update", { ad_storage: "granted" });
-    }
-    console.log("Advertising cookies enabled");
-  };
-
-  useEffect(() => {
-    if (initialPreferences) {
-      setCookiePreferences(initialPreferences);
-    }
-  }, [initialPreferences]);
-
   const updatePreferences = (newPreferences) => {
-    setCookiePreferences(newPreferences);
-    if (onPreferencesChange) {
-      onPreferencesChange(newPreferences);
-    }
+    onPreferencesChange(newPreferences);
   };
 
   return (
@@ -336,7 +280,7 @@ const ScreenModalCookie = ({
                   analytics: false,
                   advertising: false,
                 };
-                setCookie(onlyEssential, false);
+                setCookie(onlyEssential);
                 onPress();
               }}
             />
@@ -465,6 +409,7 @@ export default function SideCookieModal() {
         onPress={closedModal}
         initialPreferences={cookiePreferences}
         onPreferencesChange={setCookiePreferences}
+        setCookie={setCookie}
       />
 
       <div className={`${isVisible ? "bg-wrapper" : "bg-wrappper-hide"}`}>
