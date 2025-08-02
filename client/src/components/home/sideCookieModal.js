@@ -312,8 +312,6 @@ export default function SideCookieModal() {
     advertising: false,
   });
 
-  const cookiesAccepted = Cookies.get("cookiesAccepted");
-
   const closedModal = () => {
     setisClosing(true);
     setTimeout(() => {
@@ -356,44 +354,24 @@ export default function SideCookieModal() {
 
   useEffect(() => {
     const savedPreferences = Cookies.get("cookiePreferences");
-    const hasVisitedBefore = Cookies.get("hasVisited");
 
     if (savedPreferences) {
       try {
         const preferences = JSON.parse(savedPreferences);
         setCookiePreferences(preferences);
 
-        const hasAccepted =
-          preferences.analytics === true || preferences.advertising === true;
-
-        if (hasAccepted) {
-          setIsVisible(false);
-          setHasShown(true);
-        } else {
-          setIsVisible(true);
-          setHasShown(false);
-        }
-
-        // gtag handling stays
+        setIsVisible(false);
+        setHasShown(true);
       } catch (error) {
         console.error("Error parsing cookie preferences:", error);
         setIsVisible(true);
         setHasShown(false);
       }
-    } else if (!hasVisitedBefore) {
+    } else {
       setIsVisible(true);
       setHasShown(false);
-      Cookies.set("hasVisited", "true", {
-        expires: 365,
-        path: "/",
-        sameSite: "Lax",
-        secure: window.location.protocol === "https:",
-      });
-    } else {
-      setIsVisible(false);
-      setHasShown(true);
     }
-  }, [cookiesAccepted]);
+  }, []);
 
   useEffect(() => {
     if (cookieModal) {
