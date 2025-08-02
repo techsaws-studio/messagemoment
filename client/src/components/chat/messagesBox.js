@@ -128,20 +128,30 @@ const MessageBox = ({
         const status = response.sessionStatus;
 
         if (status === "locked") {
-          setIsSessionLockedRealTime(true);
-          setInputFieldDisabled(true);
-          setChatMessages((prevMessages) => [
-            ...prevMessages,
-            {
-              type: messageType.MM_ERROR_MSG,
-              message:
-                "This chat session has been locked. You cannot enter at this time. Please try again later or reach out to the person who shared the chat link with you.",
-            },
-          ]);
-        } else {
+          console.log("🔒 Session locked - blocking new user from joining");
+
+          if (!isSessionLockedRealTime) {
+            setIsSessionLockedRealTime(true);
+            setInputFieldDisabled(true);
+
+            setChatMessages((prevMessages) => [
+              ...prevMessages,
+              {
+                type: messageType.MM_ERROR_MSG,
+                message:
+                  "This chat session is currently locked. Please wait for it to become available, or try again later. Once this message no longer appears, you can enter your name to join. Alternatively, contact the person who shared the chat link with you for assistance.",
+                tempId: "session-locked-message",
+              },
+            ]);
+          }
+        } else if (status === "expired") {
           setIsSessionExpiredRealTime(true);
+          setIsSessionLockedRealTime(false);
+
           setChatMessages((prevMessages) => [
-            ...prevMessages,
+            ...prevMessages.filter(
+              (msg) => msg.tempId !== "session-locked-message"
+            ),
             {
               type: messageType.MM_ERROR_MSG,
               message:
@@ -152,11 +162,38 @@ const MessageBox = ({
 
         setAskHandlerName(false);
         setinput("");
+      } else {
+        console.log("✅ Session available - enabling join functionality");
+
+        if (isSessionLockedRealTime && !isSessionExpiredRealTime) {
+          console.log("🔓 Session unlocked - re-enabling join functionality");
+
+          setIsSessionLockedRealTime(false);
+          setInputFieldDisabled(false);
+
+          setChatMessages((prevMessages) => {
+            const filteredMessages = prevMessages.filter(
+              (msg) => msg.tempId !== "session-locked-message"
+            );
+
+            if (!handlerName && !askHanderName) {
+              setAskHandlerName(true);
+            }
+
+            return filteredMessages;
+          });
+        }
       }
     } catch (error) {
       console.error("Session validation error (joining user):", error);
     }
-  }, [sessionData?.code]);
+  }, [
+    sessionData?.code,
+    isSessionLockedRealTime,
+    isSessionExpiredRealTime,
+    handlerName,
+    askHanderName,
+  ]);
 
   const checkSessionValidityForExistingUsers = useCallback(async () => {
     if (!sessionData?.code) return;
@@ -171,14 +208,23 @@ const MessageBox = ({
         const status = response.sessionStatus;
 
         if (status === "locked") {
-          setIsSessionLockedRealTime(true);
           console.log(
             "🔒 Session locked - existing user can continue chatting"
           );
+
+          if (!isSessionLockedRealTime) {
+            setIsSessionLockedRealTime(true);
+          }
         } else if (status === "expired") {
           setIsSessionExpiredRealTime(true);
+          setIsSessionLockedRealTime(false);
+
           setChatMessages((prevMessages) => [
-            ...prevMessages,
+            ...prevMessages.filter(
+              (msg) =>
+                msg.tempId !== "session-locked-info" &&
+                msg.tempId !== "session-unlocked-info"
+            ),
             {
               type: messageType.MM_ERROR_MSG,
               message:
@@ -189,11 +235,25 @@ const MessageBox = ({
           setAskHandlerName(false);
           setinput("");
         }
+      } else {
+        if (isSessionLockedRealTime && !isSessionExpiredRealTime) {
+          console.log("🔓 Session unlocked - notifying existing user");
+
+          setIsSessionLockedRealTime(false);
+
+          setTimeout(() => {
+            setChatMessages((prevMessages) =>
+              prevMessages.filter(
+                (msg) => msg.tempId !== "session-unlocked-info"
+              )
+            );
+          }, 5000);
+        }
       }
     } catch (error) {
       console.error("Session validation error (existing user):", error);
     }
-  }, [sessionData?.code]);
+  }, [sessionData?.code, isSessionLockedRealTime, isSessionExpiredRealTime]);
 
   const WalletChatUtils = () => {
     if (isMobileView) {
@@ -386,7 +446,23 @@ const MessageBox = ({
   };
 
   const handleInputChange = (e) => {
-    if (InputFieldDisabled || shouldBlockInput) return;
+    if (isSessionExpiredRealTime) {
+      console.log("🚫 Input blocked - session expired");
+      return;
+    }
+
+    if (isSessionLockedRealTime && !userHasJoinedSession) {
+      console.log("🚫 Input blocked - session locked for joining user");
+      return;
+    }
+
+    if (
+      InputFieldDisabled &&
+      !(isSessionLockedRealTime && userHasJoinedSession)
+    ) {
+      console.log("🚫 Input blocked - field disabled");
+      return;
+    }
 
     let value = e.target.value;
     if (value !== "") {
@@ -496,7 +572,13 @@ const MessageBox = ({
   };
 
   const handleClickSendBtn = () => {
-    if (shouldBlockInput) {
+    if (isSessionExpiredRealTime) {
+      console.log("🚫 Send blocked - session expired");
+      return;
+    }
+
+    if (isSessionLockedRealTime && !userHasJoinedSession) {
+      console.log("🚫 Send blocked - session locked for joining user");
       return;
     }
 
@@ -1176,7 +1258,12 @@ const MessageBox = ({
   };
 
   useEffect(() => {
-    if (!sessionData?.code || isSessionExpiredRealTime) return;
+    if (!sessionData?.code || isSessionExpiredRealTime) {
+      console.log(
+        "🚫 Skipping validation - no session code or session expired"
+      );
+      return;
+    }
 
     if (isSessionLockedRealTime && userHasJoinedSession) {
       console.log(
@@ -1195,8 +1282,14 @@ const MessageBox = ({
       } validation`
     );
 
+    validationFunction();
+
     const interval = setInterval(validationFunction, 30000);
-    return () => clearInterval(interval);
+
+    return () => {
+      console.log("🧹 Clearing validation interval");
+      clearInterval(interval);
+    };
   }, [
     sessionData?.code,
     checkSessionValidityForJoining,
@@ -1208,24 +1301,50 @@ const MessageBox = ({
 
   useEffect(() => {
     if (isSessionExpiredRealTime) {
-      console.log("🚨 Session expired - blocking all user input");
+      console.log(
+        "🚨 Session expired - blocking all user input and resetting states"
+      );
+
       setShowCommands(false);
       setSelectedCommands("");
       setSpaceAdded(false);
       setAskHandlerName(false);
       setinput("");
       setUserHasJoinedSession(false);
+      setIsSessionLockedRealTime(false);
+      setInputFieldDisabled(true);
+
+      return;
     }
 
-    if (isSessionLockedRealTime && !isSessionExpiredRealTime) {
+    if (isSessionLockedRealTime) {
       if (userHasJoinedSession) {
         console.log("🔒 Session locked - existing user can continue chatting");
       } else {
         console.log("🔒 Session locked - blocking new user from joining");
         setInputFieldDisabled(true);
+        setAskHandlerName(false);
+      }
+    } else {
+      if (!isSessionExpiredRealTime) {
+        console.log("🔓 Session unlocked - enabling functionality");
+
+        if (!userHasJoinedSession) {
+          setInputFieldDisabled(false);
+
+          if (!handlerName && sessionData?.type !== SessionTypeEnum.WALLET) {
+            setAskHandlerName(true);
+          }
+        }
       }
     }
-  }, [isSessionExpiredRealTime, isSessionLockedRealTime, userHasJoinedSession]);
+  }, [
+    isSessionExpiredRealTime,
+    isSessionLockedRealTime,
+    userHasJoinedSession,
+    handlerName,
+    sessionData?.type,
+  ]);
 
   useEffect(() => {
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
