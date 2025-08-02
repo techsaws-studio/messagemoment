@@ -4,7 +4,7 @@ export const StoreSessionLinkService = async (
   sessionId: string,
   sessionData: any,
   // ttl: number = 600
-  ttl: number = 60
+  ttl: number = 180
 ): Promise<void> => {
   try {
     if (!sessionData.createdAt) {
