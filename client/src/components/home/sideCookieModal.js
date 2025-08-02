@@ -321,9 +321,7 @@ export default function SideCookieModal() {
     }, 280);
   };
 
-  const setCookie = (
-    preferences = { essential: true, analytics: true, advertising: true }
-  ) => {
+  const setCookie = (preferences) => {
     const cookieOptions = {
       expires: 365,
       sameSite: "Lax",
@@ -339,17 +337,20 @@ export default function SideCookieModal() {
       JSON.stringify(preferences),
       cookieOptions
     );
-    Cookies.set("cookiesAccepted", "true", cookieOptions);
+    const hasAccepted =
+      preferences.analytics === true || preferences.advertising === true;
 
-    if (preferences.analytics) {
-      if (typeof gtag !== "undefined") {
-        gtag("consent", "update", { analytics_storage: "granted" });
-      }
+    if (hasAccepted) {
+      Cookies.set("cookiesAccepted", "true", cookieOptions);
+    } else {
+      Cookies.remove("cookiesAccepted");
     }
-    if (preferences.advertising) {
-      if (typeof gtag !== "undefined") {
-        gtag("consent", "update", { ad_storage: "granted" });
-      }
+
+    if (typeof gtag !== "undefined") {
+      gtag("consent", "update", {
+        analytics_storage: preferences.analytics ? "granted" : "denied",
+        ad_storage: preferences.advertising ? "granted" : "denied",
+      });
     }
   };
 
@@ -357,19 +358,23 @@ export default function SideCookieModal() {
     const savedPreferences = Cookies.get("cookiePreferences");
     const hasVisitedBefore = Cookies.get("hasVisited");
 
-    if (cookiesAccepted === "true" && savedPreferences) {
+    if (savedPreferences) {
       try {
         const preferences = JSON.parse(savedPreferences);
         setCookiePreferences(preferences);
-        setIsVisible(false);
-        setHasShown(true);
 
-        if (preferences.analytics && typeof gtag !== "undefined") {
-          gtag("consent", "update", { analytics_storage: "granted" });
+        const hasAccepted =
+          preferences.analytics === true || preferences.advertising === true;
+
+        if (hasAccepted) {
+          setIsVisible(false);
+          setHasShown(true);
+        } else {
+          setIsVisible(true);
+          setHasShown(false);
         }
-        if (preferences.advertising && typeof gtag !== "undefined") {
-          gtag("consent", "update", { ad_storage: "granted" });
-        }
+
+        // gtag handling stays
       } catch (error) {
         console.error("Error parsing cookie preferences:", error);
         setIsVisible(true);
