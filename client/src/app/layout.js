@@ -3,80 +3,76 @@ import { SocketProvider } from "@/contexts/socket-context";
 
 import "../../public/styles/main.scss";
 
+const BASE_URL =
+  process.env.NEXT_PUBLIC_FRONTEND_URL || "https://messagemoment.com";
+
 export const metadata = {
   title: "MessageMoment – Your Message Only Lasts a Moment",
   description:
     "MessageMoment is a secure, private, and temporary real-time chat platform. Share conversations with trusted friends that disappear after the moment passes.",
+  applicationName: "MessageMoment",
+  robots: "index, follow",
+  themeColor: "#494af8",
+  alternates: {
+    canonical: BASE_URL,
+  },
+  appleWebApp: {
+    capable: true,
+    title: "MessageMoment",
+    statusBarStyle: "default",
+  },
+  openGraph: {
+    type: "website",
+    url: BASE_URL,
+    title: "MessageMoment – Your Message Only Lasts a Moment",
+    description:
+      "MessageMoment is a secure, private, and temporary real-time chat platform. Share conversations with trusted friends that disappear after the moment passes.",
+    siteName: "MessageMoment",
+    images: [
+      {
+        url: `${BASE_URL}/android-chrome-512x512.png`,
+        width: 1200,
+        height: 630,
+        type: "image/png",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MessageMoment – Your Message Only Lasts a Moment",
+    description:
+      "MessageMoment is a secure, private, and temporary real-time chat platform. Share conversations with trusted friends that disappear after the moment passes.",
+    images: [`${BASE_URL}/android-chrome-512x512.png`],
+  },
+  icons: {
+    icon: [
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      {
+        url: "/android-chrome-192x192.png",
+        sizes: "192x192",
+        type: "image/png",
+      },
+      {
+        url: "/android-chrome-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+      },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+};
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  interactiveWidget: "resizes-visual",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <head>
-        <title>{metadata.title}</title>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-        />
-        <meta
-          name="title"
-          content="MessageMoment – Your Message Only Lasts a Moment"
-        />
-        <meta
-          name="description"
-          content="MessageMoment is a secure, private, and temporary real-time chat platform. Share conversations with trusted friends that disappear after the moment passes."
-        />
-
-        <meta name="application-name" content="MessageMoment" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-title" content="MessageMoment" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta property="og:type" content="website" />
-        <meta
-          property="og:title"
-          content="MessageMoment – Your Message Only Lasts a Moment"
-        />
-        <meta
-          property="og:description"
-          content="MessageMoment is a secure, private, and temporary real-time chat platform. Share conversations with trusted friends that disappear after the moment passes."
-        />
-        <meta
-          property="og:url"
-          content="https://message-moment-app.vercel.app"
-        />
-        <meta
-          property="og:image"
-          content="https://message-moment-app.vercel.app/android-chrome-512x512.png"
-        />
-        <meta property="og:site_name" content="MessageMoment" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:type" content="image/png" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={metadata.title} />
-        <meta name="twitter:description" content={metadata.description} />
-        <meta
-          name="twitter:image"
-          content="https://message-moment-app.vercel.app/android-chrome-512x512.png"
-        />
-
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" href="/favicon.png" />
-        <link rel="icon" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="icon" sizes="32x32" href="/favicon-32x32.png" />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="192x192"
-          href="/android-chrome-192x192.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="512x512"
-          href="/android-chrome-512x512.png"
-        />
-      </head>
       <body>
         <ChatContextProvider>
           <SocketProvider>{children}</SocketProvider>
