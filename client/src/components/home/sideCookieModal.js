@@ -188,7 +188,7 @@ const ScreenModalCookie = ({
     },
   ];
 
-  const setCookie = (preferences = cookiePreferences) => {
+  const setCookie = (preferences = cookiePreferences, markAccepted = true) => {
     const cookieOptions = {
       expires: 365,
       sameSite: "Lax",
@@ -204,7 +204,9 @@ const ScreenModalCookie = ({
       JSON.stringify(preferences),
       cookieOptions
     );
-    Cookies.set("cookiesAccepted", "true", cookieOptions);
+    if (markAccepted) {
+      Cookies.set("cookiesAccepted", "true", cookieOptions);
+    }
 
     if (preferences.analytics) {
       loadAnalyticsScripts();
@@ -334,7 +336,7 @@ const ScreenModalCookie = ({
                   analytics: false,
                   advertising: false,
                 };
-                setCookie(onlyEssential);
+                setCookie(onlyEssential, false);
                 onPress();
               }}
             />
@@ -411,7 +413,7 @@ export default function SideCookieModal() {
     const savedPreferences = Cookies.get("cookiePreferences");
     const hasVisitedBefore = Cookies.get("hasVisited");
 
-    if (cookiesAccepted && savedPreferences) {
+    if (cookiesAccepted === "true" && savedPreferences) {
       try {
         const preferences = JSON.parse(savedPreferences);
         setCookiePreferences(preferences);
@@ -482,6 +484,7 @@ export default function SideCookieModal() {
           alt="Cross"
         />
         <h4>We use cookies!</h4>
+
         <p>
           Hi, this website uses essential cookies to ensure its proper operation
           and tracking cookies to understand how you interact with it. The
@@ -500,6 +503,7 @@ export default function SideCookieModal() {
           </span>
           .
         </p>
+
         <div>
           <Button
             text="Accept All"
@@ -507,11 +511,12 @@ export default function SideCookieModal() {
             height="45px"
             className="btn-primary text-white mt-28"
             onClick={() => {
-              setCookie({
+              const allAccepted = {
                 essential: true,
                 analytics: true,
                 advertising: true,
-              });
+              };
+              setCookie(allAccepted);
               setIsVisible(false);
             }}
           />
@@ -521,11 +526,12 @@ export default function SideCookieModal() {
             height="45px"
             className="reject-button btn-secondary mt-28 "
             onClick={() => {
-              setCookie({
+              const onlyEssential = {
                 essential: true,
                 analytics: false,
                 advertising: false,
-              });
+              };
+              setCookie(onlyEssential);
               setIsVisible(false);
             }}
           />
