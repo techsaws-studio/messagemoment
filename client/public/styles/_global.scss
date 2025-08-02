@@ -344,8 +344,8 @@ html {
 
 // chat notification styles
 .chatNotification {
-  position: absolute;
-  bottom: 20px;
+  position: fixed;
+  bottom: 20%;
   z-index: 9999;
   width: 90%;
   left: 0;
