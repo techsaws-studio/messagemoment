@@ -1,8 +1,8 @@
-'use client'
-import React  from "react";
+import React from "react";
+
 import Button from "../button";
 
-function LockedSessionContent() {
+function LockedSessionContent({ sessionId }) {
   return (
     <div className="locked-content">
       <h4>The chat session is locked</h4>
@@ -12,7 +12,9 @@ function LockedSessionContent() {
       <Button
         text="Return to Homepage"
         className="btn-primary text-white responsive-button"
-        onClick={() => (window.location.href = "/")}
+        onClick={() =>
+          (window.location.href = `${process.env.NEXT_PUBLIC_FRONTEND_URL}/chat/${sessionId}`)
+        }
       />
     </div>
   );

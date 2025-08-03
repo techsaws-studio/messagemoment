@@ -1,20 +1,9 @@
 import React from "react";
 
-import SessionHeader from "@/components/session-header";
-import Session from "@/components/session/session";
-import LockedSessionContent from "@/components/locked-session-content";
-
-import LockImg from "@/assets/icons/lock.svg"
+import LockedSessionPage from "@/custom-pages/locked-session-page";
 
 function LockedSession() {
-  return (
-    <>
-    <SessionHeader />
-    <Session imgName={LockImg} >
-    <LockedSessionContent />
-    </Session>
-    </>
-  )
+  return <LockedSessionPage />;
 }
 
 export default LockedSession;
