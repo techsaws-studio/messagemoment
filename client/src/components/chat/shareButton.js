@@ -79,7 +79,7 @@ const ShareButton = ({ onCopyClick }) => {
           </li>
         </ul>
         <div className="footer-block">
-          <p className="chat-text">https://message-moment-app.vercel.app/</p>
+          <p className="chat-text">https://messagemoment-one.vercel.app/</p>
         </div>
         <div
           className="chain-block"
