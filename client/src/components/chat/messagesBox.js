@@ -349,29 +349,26 @@ const MessageBox = ({
     }
   };
 
-  // const scrollToBottom = () => {
-  //   if (messageContainerRef.current) {
-  //     setTimeout(() => {
-  //       messageContainerRef.current?.scrollTo({
-  //         top: messageContainerRef.current.scrollHeight,
-  //         behavior: "smooth",
-  //       });
-  //     }, 20);
-  //   }
-  // };
-
   const scrollToBottom = useCallback(() => {
     if (messageContainerRef.current) {
       const container = messageContainerRef.current;
       const isSafari = /^((?!chrome|android).)*safari/i.test(
         navigator.userAgent
       );
+      const isFirefox = /Firefox/.test(navigator.userAgent);
+      const isMac = /Mac|macOS/.test(
+        navigator.platform || navigator.userAgentData?.platform || ""
+      );
 
-      if (isSafari) {
+      if (
+        isSafari ||
+        (isMac && (isFirefox || /Chrome/.test(navigator.userAgent)))
+      ) {
         container.scrollTop = container.scrollHeight;
-        setTimeout(() => {
+
+        requestAnimationFrame(() => {
           container.scrollTop = container.scrollHeight;
-        }, 100);
+        });
       } else {
         setTimeout(() => {
           container.scrollTo({
@@ -1516,6 +1513,33 @@ const MessageBox = ({
   useEffect(() => {
     scrollToBottom();
   }, [chatMessage]);
+
+  useEffect(() => {
+    const isMac = /Mac|macOS/.test(
+      navigator.platform || navigator.userAgentData?.platform || ""
+    );
+    const isChrome =
+      /Chrome/.test(navigator.userAgent) && !/Edge/.test(navigator.userAgent);
+
+    if (isMac && isChrome) {
+      const handleVisibilityChange = () => {
+        if (!document.hidden) {
+          setTimeout(() => {
+            scrollToBottom();
+          }, 100);
+        }
+      };
+
+      document.addEventListener("visibilitychange", handleVisibilityChange);
+
+      return () => {
+        document.removeEventListener(
+          "visibilitychange",
+          handleVisibilityChange
+        );
+      };
+    }
+  }, [scrollToBottom]);
 
   // SOCKET INTEGRATION -- START
 

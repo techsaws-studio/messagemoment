@@ -624,7 +624,7 @@ const Message = ({
        clearTimeout(scrollPauseTimeout);
        scrollPauseTimeout = setTimeout(() => {
          userScrolled = false;
-       }, 3000);
+       }, 1500);
      };
 
      if (container) {
