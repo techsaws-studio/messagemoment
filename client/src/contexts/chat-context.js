@@ -23,6 +23,7 @@ const ChatContextProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
   const [activeUser, setActiveUser] = useState("");
   const [isExpiryTimeExist, setIsExpiryTimeExist] = useState(false);
+  const [isLiveTypingActive, setIsLiveTypingActive] = useState(true);
   const [connectWalletFunction, setConnectWalletFunction] = useState(
     () => () => {}
   );
@@ -115,6 +116,9 @@ const ChatContextProvider = ({ children }) => {
 
     isExpiryTimeExist,
     setIsExpiryTimeExist,
+
+    isLiveTypingActive,
+    setIsLiveTypingActive,
   };
 
   return <ChatContext.Provider value={data}>{children}</ChatContext.Provider>;

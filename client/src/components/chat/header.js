@@ -32,6 +32,7 @@ import grey_logo from "@/assets/icons/chat/grey_logo.png";
 import heartIcon from "@/assets/icons/heart_white.svg";
 import MMLogo from "@/assets/icons/chat/mmLogo";
 import { SessionTypeEnum } from "@/enums/session-type-enum";
+import LiveTypingToogleSwitch from "./live-typing-toogle-switch";
 
 export const ChatHeader = () => {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -196,7 +197,7 @@ export const ChatHeader = () => {
             </div>
 
             <div id="chat-vt-divider-m" />
-            
+
             <div>
               <Image
                 src={upload_m}
@@ -381,6 +382,7 @@ export const ChatHeader = () => {
               </>
             ) : (
               <>
+                <LiveTypingToogleSwitch />
                 <Tooltip
                   overlayClassName="copylink-tooltip"
                   title={<Image src={expiry_tooltip} alt="copy-tooltip" />}

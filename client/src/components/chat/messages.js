@@ -37,6 +37,7 @@ const Message = ({
     connectWalletFunction,
     isWalletConnected,
     isWalletExist,
+    isLiveTypingActive,
   } = chatContext();
 
   const renderAdertisment = () => {
@@ -635,6 +636,11 @@ const Message = ({
           scrollToBottom?.();
         }
 
+        if (!isLiveTypingActive) {
+          el.current.innerHTML = message;
+          return;
+        }
+
         let currentIndex = 0;
         let startTime = performance.now();
         const typeSpeed = 30;
@@ -677,7 +683,7 @@ const Message = ({
       if (container) container.removeEventListener("scroll", handleUserScroll);
       clearTimeout(scrollPauseTimeout);
     };
-  }, [message, isOwnMessage]);
+  }, [message, isOwnMessage, isLiveTypingActive]);
 
   return (
     <div className="chat-msg-cont">
