@@ -349,16 +349,39 @@ const MessageBox = ({
     }
   };
 
-  const scrollToBottom = () => {
+  // const scrollToBottom = () => {
+  //   if (messageContainerRef.current) {
+  //     setTimeout(() => {
+  //       messageContainerRef.current?.scrollTo({
+  //         top: messageContainerRef.current.scrollHeight,
+  //         behavior: "smooth",
+  //       });
+  //     }, 20);
+  //   }
+  // };
+
+  const scrollToBottom = useCallback(() => {
     if (messageContainerRef.current) {
-      setTimeout(() => {
-        messageContainerRef.current?.scrollTo({
-          top: messageContainerRef.current.scrollHeight,
-          behavior: "smooth",
-        });
-      }, 20);
+      const container = messageContainerRef.current;
+      const isSafari = /^((?!chrome|android).)*safari/i.test(
+        navigator.userAgent
+      );
+
+      if (isSafari) {
+        container.scrollTop = container.scrollHeight;
+        setTimeout(() => {
+          container.scrollTop = container.scrollHeight;
+        }, 100);
+      } else {
+        setTimeout(() => {
+          container.scrollTo({
+            top: container.scrollHeight,
+            behavior: "smooth",
+          });
+        }, 20);
+      }
     }
-  };
+  }, []);
 
   const openFilePopup = () => {
     fileInputRef.current.click();
@@ -585,6 +608,7 @@ const MessageBox = ({
     if (verifySecurityCode()) {
       if (input.trim() !== "" && !input.startsWith("/")) {
         setSelectedCommands("");
+
         if (showAttachment) {
           checkIsFileAttachment();
         } else {
@@ -594,7 +618,7 @@ const MessageBox = ({
             message: input.trim(),
           });
           setinput("");
-          scrollToBottom();
+          requestAnimationFrame(() => scrollToBottom());
         }
       } else {
         setSelectedCommands("");
@@ -662,7 +686,7 @@ const MessageBox = ({
       if (verifySecurityCode()) {
         if (input.trim() !== "" && !input.startsWith("/")) {
           handleClickSendBtn();
-          scrollToBottom();
+          requestAnimationFrame(() => scrollToBottom());
         } else {
           if (input.startsWith("/")) {
             // timer command handleer

@@ -629,11 +629,11 @@ const Message = ({
       if (isOwnMessage) {
         el.current.innerHTML = message;
         if (!userScrolled) {
-          scrollToBottom?.();
+          requestAnimationFrame(() => scrollToBottom());
         }
       } else {
         if (!userScrolled) {
-          scrollToBottom?.();
+          scrollToBottom();
         }
 
         if (!isLiveTypingActive) {
@@ -655,20 +655,17 @@ const Message = ({
             currentIndex = Math.min(targetIndex, message.length);
             el.current.innerHTML = message.substring(0, currentIndex);
 
-            // Keep scrolling during typing
-            if (!userScrolled) {
-              scrollToBottom?.();
+            if (!userScrolled && currentIndex % 15 === 0) {
+              scrollToBottom();
             }
           }
 
           if (currentIndex < message.length) {
             animationFrameId = requestAnimationFrame(typeMessage);
-
-            typingInterval = setTimeout(() => {
-              if (currentIndex < message.length) {
-                typeMessage(performance.now());
-              }
-            }, typeSpeed);
+          } else {
+            if (!userScrolled) {
+              setTimeout(scrollToBottom, 50);
+            }
           }
         };
 
@@ -683,7 +680,7 @@ const Message = ({
       if (container) container.removeEventListener("scroll", handleUserScroll);
       clearTimeout(scrollPauseTimeout);
     };
-  }, [message, isOwnMessage, isLiveTypingActive]);
+  }, [message, isOwnMessage, isLiveTypingActive, scrollToBottom]);
 
   return (
     <div className="chat-msg-cont">
