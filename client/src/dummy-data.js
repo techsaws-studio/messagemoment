@@ -746,7 +746,7 @@ export const ShareLink = (type, sessionData, url) => {
     window.open(`sms:?&body=${shareText}`, "_blank");
   } else if (type == "messenger") {
     window.open(
-      `https://www.facebook.com/dialog/send?app_id=YOUR_FACEBOOK_APP_ID&link=https://messagemoment-one.vercel.app/&redirect_uri=https://messagemoment-one.vercel.app/`,
+      `https://www.facebook.com/dialog/send?app_id=YOUR_FACEBOOK_APP_ID&link=${process.env.NEXT_PUBLIC_FRONTEND_URL}/&redirect_uri=${process.env.NEXT_PUBLIC_FRONTEND_URL}/`,
       "_blank"
     );
   } else if (type == "mail") {

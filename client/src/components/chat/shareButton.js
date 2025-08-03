@@ -1,3 +1,13 @@
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { useParams } from "next/navigation";
+
+import { SessionTypeEnum } from "@/enums/session-type-enum";
+
+import { chatContext } from "@/contexts/chat-context";
+
+import { ShareLink } from "@/dummy-data";
+
 import chain from "@/assets/icons/chat/chain.svg";
 import instagram from "@/assets/icons/chat/instagram.svg";
 import mail from "@/assets/icons/chat/mail.svg";
@@ -7,23 +17,19 @@ import share from "@/assets/icons/chat/share.svg";
 import small_arrow from "@/assets/icons/chat/small_arrow.svg";
 import telegram from "@/assets/icons/chat/telegram.svg";
 import whatsapp from "@/assets/icons/chat/whatsapp.svg";
-import { chatContext } from "@/contexts/chat-context";
-import { ShareLink } from "@/dummy-data";
-import { SessionTypeEnum } from "@/enums/session-type-enum";
-import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
 
 const ShareButton = ({ onCopyClick }) => {
-  const { sessionData } = chatContext();
   const [showModal, setShowModal] = useState(false);
+  const [initialUrl, setInitialUrl] = useState("");
+
+  const { sessionData } = chatContext();
   const modalRef = useRef(null);
   const buttonRef = useRef(null);
-  const [initialUrl, setInitialUrl] = useState("");
-  // Close modal when clicking outside
+  const params = useParams();
 
   useEffect(() => {
-   const url=window.location.origin + window.location.pathname;
-   setInitialUrl(url);
+    const url = window.location.origin + window.location.pathname;
+    setInitialUrl(url);
     const handleClickOutside = (event) => {
       if (
         modalRef.current &&
@@ -39,8 +45,6 @@ const ShareButton = ({ onCopyClick }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
- 
 
   const renderShareModal = () => {
     return (
@@ -79,7 +83,12 @@ const ShareButton = ({ onCopyClick }) => {
           </li>
         </ul>
         <div className="footer-block">
-          <p className="chat-text">https://messagemoment-one.vercel.app/</p>
+          <p
+            className="chat-text"
+            style={{ marginLeft: "0px", paddingLeft: "108px" }}
+          >
+            {process.env.NEXT_PUBLIC_FRONTEND_URL}/chat/{params?.sessionId}
+          </p>
         </div>
         <div
           className="chain-block"

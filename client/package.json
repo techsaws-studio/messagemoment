@@ -29,5 +29,8 @@
     "tweetnacl": "^1.0.3",
     "typed.js": "^2.1.0",
     "viem": "^2.21.54"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.9"
   }
 }
