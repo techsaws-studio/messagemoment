@@ -73,7 +73,7 @@ const JoinRoom = (io: Server, socket: Socket): void => {
       if (session.sessionLocked) {
         socket.emit("sessionLocked", {
           message:
-            "This chat session is currently locked. Please wait for it to become available, or try again later. Once this message no longer appears, you can enter your name to join. Alternatively, contact the person who shared the chat link with you for assistance.",
+            "This chat session is currently locked. Please wait for it to become available, or try again later. Once this message disappears, you’ll be able to enter your name to join if you haven’t already. Alternatively, contact the person who shared the chat link with you for assistance.",
           status: "locked",
           lockedBy: session.sessionLockedBy,
         });
