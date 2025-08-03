@@ -80,6 +80,10 @@ const MessageContainer = ({
                   attachmentFile={item?.attachmentFile}
                   handlerColor={item?.handlerColor}
                   isOwnMessage={isOwnMessage}
+                  messageId={
+                    item.messageId || `${i}-${item.timestamp || Date.now()}`
+                  }
+                  timestamp={item.timestamp}
                 />
               );
             })}

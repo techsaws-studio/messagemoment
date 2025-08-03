@@ -1659,6 +1659,7 @@ const MessageBox = ({
           handlerName: data.sender,
           handlerColor: userColor,
           timestamp: data.timestamp,
+          messageId: `${data.timestamp}-${data.sender}`,
         },
       ]);
     };

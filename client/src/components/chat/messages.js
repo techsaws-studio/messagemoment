@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 import { SessionTypeEnum } from "@/enums/session-type-enum";
@@ -28,7 +28,13 @@ const Message = ({
   handlerColor = USER_HANDERLS[3],
   userNameColor = USER_HANDERLS[3],
   isOwnMessage = false,
+  messageId,
+  timestamp,
 }) => {
+  const [isFullyRendered, setIsFullyRendered] = useState(() => {
+    return isOwnMessage || !messageId || !timestamp;
+  });
+
   const el = useRef(null);
   const { isMessageMobileView: isMobileView } = useCheckIsMobileView();
   const {
@@ -603,84 +609,99 @@ const Message = ({
     );
   };
 
-  useEffect(() => {
-    let typingInterval;
-    let observer;
-    let userScrolled = false;
-    let scrollPauseTimeout;
-    let animationFrameId;
-    const container = messageContainerRef.current;
+   useEffect(() => {
+     let typingInterval;
+     let observer;
+     let userScrolled = false;
+     let scrollPauseTimeout;
+     let animationFrameId;
+     const container = messageContainerRef.current;
 
-    const handleUserScroll = () => {
-      if (!userScrolled) {
-        userScrolled = true;
-      }
-      clearTimeout(scrollPauseTimeout);
-      scrollPauseTimeout = setTimeout(() => {
-        userScrolled = false;
-      }, 3000);
-    };
+     const handleUserScroll = () => {
+       if (!userScrolled) {
+         userScrolled = true;
+       }
+       clearTimeout(scrollPauseTimeout);
+       scrollPauseTimeout = setTimeout(() => {
+         userScrolled = false;
+       }, 3000);
+     };
 
-    if (container) {
-      container.addEventListener("scroll", handleUserScroll);
-    }
+     if (container) {
+       container.addEventListener("scroll", handleUserScroll);
+     }
 
-    if (el.current) {
-      if (isOwnMessage) {
-        el.current.innerHTML = message;
-        if (!userScrolled) {
-          requestAnimationFrame(() => scrollToBottom());
-        }
-      } else {
-        if (!userScrolled) {
-          scrollToBottom();
-        }
+     if (el.current) {
+       if (isOwnMessage) {
+         el.current.innerHTML = message;
+         setIsFullyRendered(true);
+         if (!userScrolled) {
+           requestAnimationFrame(() => scrollToBottom());
+         }
+       } else {
+         if (!userScrolled) {
+           scrollToBottom();
+         }
 
-        if (!isLiveTypingActive) {
-          el.current.innerHTML = message;
-          return;
-        }
+         if (!isLiveTypingActive || isFullyRendered || !messageId) {
+           el.current.innerHTML = message;
+           if (!isFullyRendered) {
+             setIsFullyRendered(true);
+           }
+           return;
+         }
 
-        let currentIndex = 0;
-        let startTime = performance.now();
-        const typeSpeed = 30;
+         let currentIndex = 0;
+         let startTime = performance.now();
+         const typeSpeed = 30;
 
-        const typeMessage = (currentTime) => {
-          if (!el.current || currentIndex >= message.length) return;
+         const typeMessage = (currentTime) => {
+           if (!el.current || currentIndex >= message.length) {
+             setIsFullyRendered(true);
+             return;
+           }
 
-          const elapsed = currentTime - startTime;
-          const targetIndex = Math.floor(elapsed / typeSpeed);
+           const elapsed = currentTime - startTime;
+           const targetIndex = Math.floor(elapsed / typeSpeed);
 
-          if (targetIndex > currentIndex) {
-            currentIndex = Math.min(targetIndex, message.length);
-            el.current.innerHTML = message.substring(0, currentIndex);
+           if (targetIndex > currentIndex) {
+             currentIndex = Math.min(targetIndex, message.length);
+             el.current.innerHTML = message.substring(0, currentIndex);
 
-            if (!userScrolled && currentIndex % 15 === 0) {
-              scrollToBottom();
-            }
-          }
+             if (!userScrolled && currentIndex % 15 === 0) {
+               scrollToBottom();
+             }
+           }
 
-          if (currentIndex < message.length) {
-            animationFrameId = requestAnimationFrame(typeMessage);
-          } else {
-            if (!userScrolled) {
-              setTimeout(scrollToBottom, 50);
-            }
-          }
-        };
+           if (currentIndex < message.length) {
+             animationFrameId = requestAnimationFrame(typeMessage);
+           } else {
+             setIsFullyRendered(true);
+             if (!userScrolled) {
+               setTimeout(scrollToBottom, 50);
+             }
+           }
+         };
 
-        animationFrameId = requestAnimationFrame(typeMessage);
-      }
-    }
+         animationFrameId = requestAnimationFrame(typeMessage);
+       }
+     }
 
-    return () => {
-      if (typingInterval) clearTimeout(typingInterval);
-      if (animationFrameId) cancelAnimationFrame(animationFrameId);
-      if (observer) observer.disconnect();
-      if (container) container.removeEventListener("scroll", handleUserScroll);
-      clearTimeout(scrollPauseTimeout);
-    };
-  }, [message, isOwnMessage, isLiveTypingActive, scrollToBottom]);
+     return () => {
+       if (typingInterval) clearTimeout(typingInterval);
+       if (animationFrameId) cancelAnimationFrame(animationFrameId);
+       if (observer) observer.disconnect();
+       if (container) container.removeEventListener("scroll", handleUserScroll);
+       clearTimeout(scrollPauseTimeout);
+     };
+   }, [
+     message,
+     isOwnMessage,
+     isLiveTypingActive,
+     scrollToBottom,
+     isFullyRendered,
+     messageId,
+   ]);
 
   return (
     <div className="chat-msg-cont">
