@@ -13,8 +13,15 @@ const SessionUrlDisplay = () => {
   const sessionId = searchParams.get("sessionId");
 
   return (
-    <p className="small link">
-      https://messagemoment.com/{sessionId || "unknown"}
+    <p
+      className="small link"
+      // style={{
+      //   wordBreak: "break-all",
+      //   overflowWrap: "break-word",
+      //   whiteSpace: "normal",
+      // }}
+    >
+      https://messagemoment.com/chat/{sessionId || "unknown"}
     </p>
   );
 };
