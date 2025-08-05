@@ -1525,9 +1525,10 @@ const MessageBox = ({
 
     const handleJoinedRoom = (data) => {
       console.log("✅ Successfully joined room:", data);
-      setIsJoining(false);
 
+      setIsJoining(false);
       setUserHasJoinedSession(true);
+
       console.log(
         "🎯 User marked as joined - switching to existing user validation"
       );
@@ -1545,6 +1546,14 @@ const MessageBox = ({
           }
           return msg;
         });
+        
+        const sessionTimer = data.session?.sessionTimer || 30;
+        setExpiryTime(sessionTimer);
+
+        const wasTimerSetBySomeone =
+          data.session?.isExpirationTimeSet || sessionTimer !== 30;
+        setIsExpiryTimeExist(wasTimerSetBySomeone);
+        hasShownExpiryTimeMessageRef.current = wasTimerSetBySomeone;
 
         if (data.session?.isProjectModeOn) {
           console.log(
@@ -1554,30 +1563,18 @@ const MessageBox = ({
           filteredMessages.push({
             type: messageType.PROJECT_MODE_ENTRY,
           });
-        }
 
-        if (data.session?.isExpirationTimeSet) {
-          setIsExpiryTimeExist(true);
-          setExpiryTime(data.session.sessionTimer);
+          return filteredMessages;
+        }
+        
+        if (!wasTimerSetBySomeone && !hasShownExpiryTimeMessageRef.current) {
+          filteredMessages.push({
+            type: messageType.ASK_TO_SET_EXPIRYTIME,
+          });
           hasShownExpiryTimeMessageRef.current = true;
-          return filteredMessages;
-        } else {
-          setIsExpiryTimeExist(false);
-          setExpiryTime(30);
-          hasShownExpiryTimeMessageRef.current = false;
-
-          if (
-            !data.session?.isProjectModeOn &&
-            !hasShownExpiryTimeMessageRef.current
-          ) {
-            filteredMessages.push({
-              type: messageType.ASK_TO_SET_EXPIRYTIME,
-            });
-            hasShownExpiryTimeMessageRef.current = true;
-          }
-
-          return filteredMessages;
         }
+
+        return filteredMessages;
       });
 
       setCommandsList((prevList) => {
@@ -1827,7 +1824,11 @@ const MessageBox = ({
             },
           ];
 
-          if (!data.enabled && !isExpiryTimeExist) {
+          if (
+            !data.enabled &&
+            !isExpiryTimeExist &&
+            !hasShownExpiryTimeMessageRef.current
+          ) {
             newMessages.push({
               type: messageType.ASK_TO_SET_EXPIRYTIME,
             });
