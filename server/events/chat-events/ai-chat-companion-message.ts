@@ -66,7 +66,7 @@ const AIResearchCompanionMessageEvent = (io: Server, socket: Socket): void => {
         });
 
         const USE_SIMULATION = false;
-        const API_URL = process.env.AI_RESEARCH_COMPANION_API_URL;
+        const API_URL = process.env.AI_RESEARCH_COMPANION_API_URL; 
         const API_KEY = process.env.AI_RESEARCH_COMPANION_API_KEY;
 
         if (USE_SIMULATION) {
