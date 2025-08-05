@@ -1546,6 +1546,16 @@ const MessageBox = ({
           return msg;
         });
 
+        if (data.session?.isProjectModeOn) {
+          console.log(
+            "🚀 Project mode is active - showing entry instructions to new user"
+          );
+
+          filteredMessages.push({
+            type: messageType.PROJECT_MODE_ENTRY,
+          });
+        }
+
         if (data.session?.isExpirationTimeSet) {
           setIsExpiryTimeExist(true);
           setExpiryTime(data.session.sessionTimer);
@@ -1556,7 +1566,10 @@ const MessageBox = ({
           setExpiryTime(30);
           hasShownExpiryTimeMessageRef.current = false;
 
-          if (!hasShownExpiryTimeMessageRef.current) {
+          if (
+            !data.session?.isProjectModeOn &&
+            !hasShownExpiryTimeMessageRef.current
+          ) {
             filteredMessages.push({
               type: messageType.ASK_TO_SET_EXPIRYTIME,
             });
@@ -1569,6 +1582,7 @@ const MessageBox = ({
 
       setCommandsList((prevList) => {
         let newList = [...prevList];
+
         if (data.session?.sessionLocked) {
           setIsChatLock(true);
           newList = newList.filter((item) => item !== "/lock");
@@ -1812,6 +1826,13 @@ const MessageBox = ({
               handlerColor: "#494AF8",
             },
           ];
+
+          if (!data.enabled && !isExpiryTimeExist) {
+            newMessages.push({
+              type: messageType.ASK_TO_SET_EXPIRYTIME,
+            });
+            hasShownExpiryTimeMessageRef.current = true;
+          }
         }
 
         return newMessages;
