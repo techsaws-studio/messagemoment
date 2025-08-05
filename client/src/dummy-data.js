@@ -149,6 +149,11 @@ export const Faqs = [
     desc: "Once the Message Expiry time is set, it cannot be changed. In order to reset it, a new chat session needs to be established and the old chat link/session will be disregarded. By default, the Message Expiry time is set to 30 seconds however it can range from 3 seconds up to 5 minutes. Anyone that arrives at the chat session can choose to set it (first) however this is optional.",
   },
   {
+    id: 54,
+    title: "What is the Live Typing Effect and can I turn it off?",
+    desc: `The Live Typing Effect is enabled by default for message receivers and simulates characters appearing on-screen as they are typed. You can toggle this feature off at any time if you prefer instant message display. \n\n Please note: when Live Typing Effect is on, longer incoming messages will take longer to finish appearing than shorter ones that follow, which may make the order look confusing. However, messages will still be processed and removed according to the set Message Expiry Time in the correct order.`,
+  },
+  {
     id: 52,
     title: "Can the chat session be locked?",
     desc: "Yes, locking the chat session will prevent new users from joining. Any user can lock the chat session at any time using the /lock command. However, only the user who locked it, can unlock it. If they leave the session, the chat will automatically unlock, allowing another user to lock it again.",
@@ -222,6 +227,12 @@ export const Faqs = [
     ],
     desc: "",
     type: "bullets",
+  },
+  {
+    id: 53,
+    title:
+      "Are there any limits or guidelines for using the AI Research Companion?",
+    desc: `Yes. The AI Research Companion is provided free of charge on a self-funded platform that operates solely through donations. To ensure fair use for all participants, we ask that it be used sparingly and only when it genuinely adds value to the discussion or project at hand, not just for the sake of using it. Heavy or repetitive use can place unnecessary strain on the service. \n\n If you require intensive or frequent AI assistance, we recommend accessing a dedicated LLM provider directly through their own website for optimal performance and fairness to other users.`,
   },
   {
     id: 21,
