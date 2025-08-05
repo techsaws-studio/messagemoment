@@ -81,9 +81,16 @@ const JoinRoom = (io: Server, socket: Socket): void => {
       }
 
       if (session.isProjectModeOn) {
+        const projectModeActivator =
+          session.metadata?.get?.("projectModeActivator") ||
+          session.metadata?.projectModeActivator ||
+          "[MessageMoment.com]";
+
+        console.log("🔍 Project Mode Activator:", projectModeActivator);
+
         socket.emit("projectModeUpdate", {
           enabled: true,
-          toggledBy: "[MessageMoment.com]",
+          toggledBy: projectModeActivator,
         });
 
         console.info(`Sending project mode status to new user ${username}`);
