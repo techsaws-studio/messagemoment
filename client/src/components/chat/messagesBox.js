@@ -1196,7 +1196,11 @@ const MessageBox = ({
 
     const now = new Date();
     const date = now.toISOString().split("T")[0];
-    const filename = `chat_history_${date}.txt`;
+
+    const timeParts = now.toTimeString().split(" ")[0].split(":");
+    const time = `${timeParts[0]}-${timeParts[1]}`;
+
+    const filename = `chat_history_${date}__${time}.txt`;
 
     const blob = new Blob([chatText], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
