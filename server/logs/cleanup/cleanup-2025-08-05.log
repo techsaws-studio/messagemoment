@@ -368,3 +368,4 @@
 {"timestamp":"2025-08-05T02:49:49.824Z","level":"INFO","operation":"SESSION_BASED_CLEANUP_STATISTICS","details":{"statistics":{"expiredSessionMessages":0,"expiredMessages":0,"totalRemoved":0},"totalRecords":0,"executionTimeMs":496,"executionTimeSec":0},"environment":"development"}
 {"timestamp":"2025-08-05T02:49:49.825Z","level":"INFO","operation":"SCHEDULE_SETUP","details":{"service":"MessageCleanup","schedule":"every 4 hours","nextRun":"2025-08-05T06:49:49.825Z"},"environment":"development"}
 {"timestamp":"2025-08-05T02:49:49.825Z","level":"INFO","operation":"SCHEDULE_SETUP","details":{"service":"DataRetentionCleanup","schedule":"daily at midnight","nextRun":"2025-08-05T19:00:00.000Z"},"environment":"development"}
+{"timestamp":"2025-08-05T02:54:31.412Z","level":"INFO","operation":"SPECIFIC_SESSION_CLEANUP","details":{"sessionId":"0TyAr6p2Y5et6R","messagesDeleted":6},"environment":"development"}

@@ -157,7 +157,7 @@ const Message = ({
         </p>
         <p
           className="chat-text msg_txt"
-          style={{ display: "flex", alignItems: "center", gap: "10px" }}
+          style={{ display: "flex", alignItems: "start", gap: "10px" }}
         >
           <Image
             src={aiResearchCompanionIcon}
