@@ -83,7 +83,7 @@ const JoinRoom = (io: Server, socket: Socket): void => {
       if (session.isProjectModeOn) {
         socket.emit("projectModeUpdate", {
           enabled: true,
-          toggledBy: "System",
+          toggledBy: "[MessageMoment.com]",
         });
 
         console.info(`Sending project mode status to new user ${username}`);
@@ -185,7 +185,7 @@ const JoinRoom = (io: Server, socket: Socket): void => {
 
       // socket.emit("timerUpdate", {
       //   seconds: session.sessionTimer,
-      //   setBy: session.timerSetBy || "System",
+      //   setBy: session.timerSetBy || "[MessageMoment.com]",
       //   isProjectMode: session.isProjectModeOn,
       // });
 
@@ -215,7 +215,7 @@ const JoinRoom = (io: Server, socket: Socket): void => {
               timerValue: msg.timerValue || session.sessionTimer,
             })),
             timerSeconds: session.sessionTimer,
-            timerSetBy: session.timerSetBy || "System",
+            timerSetBy: session.timerSetBy || "[MessageMoment.com]",
             isProjectModeOn: session.isProjectModeOn,
           });
         }

@@ -28,7 +28,7 @@ const SessionSchema: Schema<ISession> = new Schema(
 
     sessionTimer: { type: Number, default: 30, min: 3, max: 300 },
 
-    timerSetBy: { type: String, default: "System" },
+    timerSetBy: { type: String, default: "[MessageMoment.com]" },
 
     isExpirationTimeSet: { type: Boolean, default: false },
 

@@ -59,15 +59,21 @@ const AIResearchCompanionMessageEvent = (io: Server, socket: Socket): void => {
 
         // LOADER
         io.to(sessionId).emit("receiveMessage", {
-          sender: "System",
+          sender: "[MessageMoment.com]",
           message: "Processing your request with AI Research Companion...",
           timestamp: processingMsgTime,
           isSystem: true,
         });
 
         const USE_SIMULATION = false;
-        const API_URL = process.env.AI_RESEARCH_COMPANION_API_URL; 
+        const API_URL = process.env.AI_RESEARCH_COMPANION_API_URL;
         const API_KEY = process.env.AI_RESEARCH_COMPANION_API_KEY;
+
+        if (!API_URL || !API_KEY) {
+          throw new Error(
+            "Missing AI Research Companion API URL or API KEY in environment variables."
+          );
+        }
 
         if (USE_SIMULATION) {
           setTimeout(() => {
@@ -77,7 +83,7 @@ const AIResearchCompanionMessageEvent = (io: Server, socket: Socket): void => {
               const timestamp = Date.now();
 
               io.to(sessionId).emit("receiveMessage", {
-                sender: "AI_RESEARCH_COMPANION",
+                sender: "[AI_RESEARCH_COMPANION]",
                 message: AIResearchCompanionResponse,
                 timestamp,
                 isAI: true,
@@ -86,7 +92,7 @@ const AIResearchCompanionMessageEvent = (io: Server, socket: Socket): void => {
               try {
                 new MessageModel({
                   sessionId,
-                  username: "AI_RESEARCH_COMPANION",
+                  username: "[AI_RESEARCH_COMPANION]",
                   message: AIResearchCompanionResponse,
                   timestamp,
                   displayExpiresAt: null,
@@ -122,64 +128,46 @@ const AIResearchCompanionMessageEvent = (io: Server, socket: Socket): void => {
             );
 
             const requestPayload = {
-              contents: [
-                {
-                  parts: [{ text: message }],
-                },
-              ],
-              generationConfig: {
-                temperature: 0.7,
-                maxOutputTokens: 1024,
-                topP: 0.9,
-              },
-              safetySettings: [
-                {
-                  category: "HARM_CATEGORY_HARASSMENT",
-                  threshold: "BLOCK_ONLY_HIGH",
-                },
-              ],
+              model: "llama3-70b-8192",
+              messages: [{ role: "user", content: message }],
+              temperature: 0.7,
+              max_tokens: 1024,
             };
 
-            const response = await axios.post(
-              `${API_URL}?key=${API_KEY}`,
-              requestPayload,
-              {
-                headers: {
-                  "Content-Type": "application/json",
-                  "x-goog-api-key": API_KEY,
-                },
-                timeout: 10000,
-              }
-            );
+            const response = await axios.post(API_URL, requestPayload, {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${API_KEY}`,
+              },
+              timeout: 10000,
+            });
 
             console.log("[AI Research Companion] API Response:", {
               status: response.status,
               data: response.data,
             });
 
-            if (!response.data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+            if (!response.data?.choices?.[0]?.message?.content) {
               throw new Error(
                 "Unexpected response format from AI Research Companion"
               );
             }
 
             const AIResearchCompanionResponse =
-              response.data.candidates[0].content.parts[0].text;
+              response.data.choices[0].message.content;
             const timestamp = Date.now();
 
-            // Send to all clients
             io.to(sessionId).emit("receiveMessage", {
-              sender: "AI_RESEARCH_COMPANION",
+              sender: "[AI_RESEARCH_COMPANION]",
               message: AIResearchCompanionResponse,
               timestamp,
               isAI: true,
             });
 
-            // Save AI message to database
             try {
               await new MessageModel({
                 sessionId,
-                username: "AI_RESEARCH_COMPANION",
+                username: "[AI_RESEARCH_COMPANION]",
                 message: AIResearchCompanionResponse,
                 timestamp,
                 displayExpiresAt: null,
@@ -227,7 +215,7 @@ const AIResearchCompanionMessageEvent = (io: Server, socket: Socket): void => {
             }
 
             io.to(sessionId).emit("receiveMessage", {
-              sender: "System",
+              sender: "[MessageMoment.com]",
               message: `AI Research Companion Error: ${errorMessage}`,
               timestamp: Date.now(),
               isSystem: true,

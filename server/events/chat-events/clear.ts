@@ -48,7 +48,7 @@ export const ClearMessagesEvent = (io: Server, socket: Socket): void => {
       });
 
       io.to(sessionId).emit("receiveMessage", {
-        sender: "System",
+        sender: "[MessageMoment.com]",
         message: `Chat messages have been cleared by ${username}.`,
         timestamp: clearTimestamp,
         isSystemMessage: true,

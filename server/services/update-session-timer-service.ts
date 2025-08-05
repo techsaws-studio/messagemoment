@@ -10,12 +10,12 @@ export const UpdateSessionTimerService = async (
       { sessionId },
       {
         sessionTimer: timerSeconds,
-        timerSetBy: timerSetBy || "System",
+        timerSetBy: timerSetBy || "[MessageMoment.com]",
         isExpirationTimeSet: true,
       },
-      { 
+      {
         new: true,
-        writeConcern: { w: 'majority', j: true }
+        writeConcern: { w: "majority", j: true },
       }
     );
 

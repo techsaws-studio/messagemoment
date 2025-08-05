@@ -11,7 +11,7 @@ export function handleAIResearchCompanionError(
   });
 
   io.to(sessionId).emit("receiveMessage", {
-    sender: "System",
+    sender: "[MessageMoment.com]",
     message: `AI Research Companion Error: ${
       error.response?.data?.error?.message || error.message
     }`,

@@ -39,7 +39,7 @@ export async function EnableProjectMode(
   });
 
   io.to(sessionId).emit("receiveMessage", {
-    sender: "System",
+    sender: "[MessageMoment.com]",
     message: `Project Mode has been enabled. Previous messages cleared. Use /mm to interact with AI.`,
     timestamp: projectModeEnabledAt,
     isSystemMessage: true,
@@ -72,7 +72,7 @@ export async function DisableProjectMode(
   });
 
   io.to(sessionId).emit("receiveMessage", {
-    sender: "System",
+    sender: "[MessageMoment.com]",
     message: `Project Mode has been disabled. Regular chatting resumed.`,
     timestamp: Date.now(),
     isSystemMessage: true,

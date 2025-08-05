@@ -199,13 +199,13 @@ export const ReconnectionEvent = (io: Server, socket: Socket): void => {
       if (session.isProjectModeOn) {
         socket.emit("projectModeUpdate", {
           enabled: true,
-          toggledBy: "System",
+          toggledBy: "[MessageMoment.com]",
         });
       }
 
       socket.emit("timerUpdate", {
         seconds: session.sessionTimer,
-        setBy: session.timerSetBy || "System",
+        setBy: session.timerSetBy || "[MessageMoment.com]",
         isProjectMode: session.isProjectModeOn,
       });
 
@@ -231,7 +231,7 @@ export const ReconnectionEvent = (io: Server, socket: Socket): void => {
               timerValue: msg.timerValue || session.sessionTimer,
             })),
             timerSeconds: session.sessionTimer,
-            timerSetBy: session.timerSetBy || "System",
+            timerSetBy: session.timerSetBy || "[MessageMoment.com]",
             isProjectModeOn: session.isProjectModeOn,
           });
         }

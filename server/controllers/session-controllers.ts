@@ -163,7 +163,7 @@ export const FetchInitialChatLoadDataFunction = CatchAsyncErrors(
             sessionType: session.sessionType,
             sessionSecurityCode: session.sessionSecurityCode || null,
             sessionTimer: session.sessionTimer || 30,
-            timerSetBy: session.timerSetBy || "System",
+            timerSetBy: session.timerSetBy || "[MessageMoment.com]",
             isExpirationTimeSet: session.isExpirationTimeSet || false,
             isProjectModeOn: session.isProjectModeOn || false,
             sessionLocked: session.sessionLocked || false,
