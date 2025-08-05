@@ -1035,46 +1035,35 @@ const MessageBox = ({
   };
 
   const handleClearCommand = () => {
-    setChatMessages((prevMessages) => [...prevMessages.slice(0, 2)]);
+    socket.emit("clearMessages", {
+      sessionId: sessionData.code,
+      username: handlerName,
+    });
 
-    setTimeout(() => {
-      setChatMessages((prev) => [
-        ...prev,
-        {
-          type: messageType.EXPIRY_TIME_HAS_SET,
-          handlerName,
-          message: `* Chat cleared *`,
-          handlerColor: "white",
-        },
-      ]);
-    }, 500);
     setinput("");
     setShowCommands(false);
-    scrollToBottom();
   };
 
   const handleAIResearchCompanionCommand = () => {
     const msg = input.replace("/mm", "").trim();
-    if (msg == "") {
+    if (msg === "") {
       return;
     }
-    setChatMessages([
-      ...chatMessage,
-      {
-        type: messageType.AI_RESEARCH_COMPANION_INPUT,
-        handlerName,
-        message: msg,
-      },
-      {
-        type: messageType.AI_RESEARCH_COMPANION_RESPONSE,
-        handlerName: messageType.MESSAGE_MOMENT,
-        message:
-          "Today is March 10, 2023. So there are 19 days until March 29, 2023.",
-      },
-    ]);
+
+    console.log("🤖 Sending AI message:", {
+      sessionId: sessionData.code,
+      username: handlerName,
+      message: msg,
+    });
+
+    socket.emit("aiResearchCompanionMessage", {
+      sessionId: sessionData.code,
+      username: handlerName,
+      message: msg,
+    });
+
     setinput("");
     setShowCommands(false);
-    scrollToBottom();
   };
 
   const handleTimerCommand = (value) => {
@@ -1155,77 +1144,27 @@ const MessageBox = ({
   };
 
   const handleProjectOnCommand = () => {
-    const currentLockCommands = commandlist.filter(
-      (item) => item === "/lock" || item === "/unlock"
-    );
-    const list = commandlist.filter(
-      (item) => item != "/project on" && item != "/timer"
-    );
-
-    list.push("/project off");
-    list.push("/download");
-    list.push("/mm");
-    list.push("/clear");
-
-    currentLockCommands.forEach((cmd) => {
-      if (!list.includes(cmd)) {
-        list.push(cmd);
-      }
+    socket.emit("toggleProjectMode", {
+      sessionId: sessionData.code,
+      username: handlerName,
+      command: "on",
     });
 
-    setCommandsList(list);
-    setIsProjectModeOn(true);
     setinput("");
     setShowCommands(false);
     setAskprojectMode(false);
-    setChatMessages([
-      {
-        type: messageType.MM_ALERT,
-        message: `Project Mode Enabled by ${handlerName}`,
-        handlerColor: "#494AF8",
-      },
-      {
-        type: messageType.PROJECT_MODE_ENTRY,
-      },
-    ]);
-    scrollToBottom();
   };
 
   const handleProjectModeOfff = () => {
-    const currentLockCommands = commandlist.filter(
-      (item) => item === "/lock" || item === "/unlock"
-    );
-    const list = commandlist.filter(
-      (item) =>
-        item != "/project off" &&
-        item != "/mm" &&
-        item != "/download" &&
-        item != "/clear"
-    );
-    list.push("/timer");
-    list.push("/project on");
-
-    currentLockCommands.forEach((cmd) => {
-      if (!list.includes(cmd)) {
-        list.push(cmd);
-      }
+    socket.emit("toggleProjectMode", {
+      sessionId: sessionData.code,
+      username: handlerName,
+      command: "off",
     });
 
-    setChatMessages([
-      ...chatMessage,
-      {
-        type: messageType.MM_ALERT,
-        message: `Project Mode Disabled by ${handlerName}`,
-        handlerColor: "#494AF8",
-      },
-    ]);
-
-    setCommandsList(list);
-    setIsProjectModeOn(false);
     setAskExistProjectMode(false);
     setinput("");
     setShowCommands(false);
-    scrollToBottom();
   };
 
   const downloadChat = () => {
@@ -1663,6 +1602,11 @@ const MessageBox = ({
     const handleReceiveMessage = (data) => {
       console.log("📨 Received message:", data);
 
+      if (data.isSystem || data.isSystemMessage) {
+        console.log("🔇 Skipping system message - handled by frontend UI");
+        return;
+      }
+
       const user = userlist.find(
         (user) =>
           user.name.replace(/[\[\]]/g, "").toLowerCase() ===
@@ -1678,7 +1622,11 @@ const MessageBox = ({
       setChatMessages((prevMessages) => [
         ...prevMessages,
         {
-          type: messageType.DEFAULT,
+          type: data.isAI
+            ? messageType.AI_RESEARCH_COMPANION_RESPONSE
+            : data.isAIInput
+            ? messageType.AI_RESEARCH_COMPANION_INPUT
+            : messageType.DEFAULT,
           message: data.message,
           handlerName: data.sender,
           handlerColor: userColor,
@@ -1778,6 +1726,103 @@ const MessageBox = ({
       console.log("🚫 You were removed:", data);
 
       window.location.href = "/removed-user";
+    };
+
+    const handleProjectModeUpdate = (data) => {
+      console.log("🚀 Project Mode Update:", data);
+
+      if (!data) {
+        console.warn("⚠️ Invalid project mode data received:", data);
+        return;
+      }
+
+      setIsProjectModeOn(data.enabled);
+
+      setCommandsList((prevList) => {
+        const currentLockCommands = prevList.filter(
+          (item) => item === "/lock" || item === "/unlock"
+        );
+
+        if (data.enabled) {
+          const list = prevList.filter(
+            (item) => item !== "/project on" && item !== "/timer"
+          );
+
+          if (!list.includes("/project off")) list.push("/project off");
+          if (!list.includes("/download")) list.push("/download");
+          if (!list.includes("/mm")) list.push("/mm");
+          if (!list.includes("/clear")) list.push("/clear");
+
+          currentLockCommands.forEach((cmd) => {
+            if (!list.includes(cmd)) list.push(cmd);
+          });
+
+          return list;
+        } else {
+          const list = prevList.filter(
+            (item) =>
+              item !== "/project off" &&
+              item !== "/mm" &&
+              item !== "/download" &&
+              item !== "/clear"
+          );
+
+          if (!list.includes("/timer")) list.push("/timer");
+          if (!list.includes("/project on")) list.push("/project on");
+
+          currentLockCommands.forEach((cmd) => {
+            if (!list.includes(cmd)) list.push(cmd);
+          });
+
+          return list;
+        }
+      });
+
+      const message = data.enabled
+        ? `* Project Mode Enabled by ${data.toggledBy} *`
+        : `* Project Mode Disabled by ${data.toggledBy} *`;
+
+      setChatMessages((prevMessages) => {
+        let newMessages;
+
+        if (data.enabled && data.messagesCleared) {
+          newMessages = [
+            {
+              type: messageType.MM_ALERT,
+              message: message,
+              handlerColor: "#494AF8",
+            },
+            {
+              type: messageType.PROJECT_MODE_ENTRY,
+            },
+          ];
+        } else {
+          newMessages = [
+            ...prevMessages,
+            {
+              type: messageType.MM_ALERT,
+              message: message,
+              handlerColor: "#494AF8",
+            },
+          ];
+        }
+
+        return newMessages;
+      });
+    };
+
+    const handleMessageCleared = (data) => {
+      console.log("🧹 Messages Cleared:", data);
+
+      setChatMessages((prevMessages) => [
+        ...prevMessages.slice(0, 2),
+        {
+          type: messageType.EXPIRY_TIME_HAS_SET,
+          handlerName: data.clearedBy,
+          message: `* Chat cleared *`,
+          handlerColor: "white",
+        },
+      ]);
     };
 
     // ============================
@@ -1926,6 +1971,10 @@ const MessageBox = ({
       setinput("");
     };
 
+    const handleAIError = (error) => {
+      console.error("🤖 AI Error:", error);
+    };
+
     // ============================
     // EVENT LISTENER REGISTRATION
     // ============================
@@ -1938,6 +1987,8 @@ const MessageBox = ({
     socket.on("lockStatusUpdate", handleLockStatusUpdate);
     socket.on("userRemoved", handleUserRemoved);
     socket.on("youWereRemoved", handleYouWereRemoved);
+    socket.on("projectModeUpdate", handleProjectModeUpdate);
+    socket.on("messageCleared", handleMessageCleared);
 
     // NOTIFICATION EVENTS
     socket.on("userJoined", handleUserJoined);
@@ -1951,6 +2002,7 @@ const MessageBox = ({
     socket.on("error", handleSocketError);
     socket.on("lockError", handleLockError);
     socket.on("removeError", handleRemoveError);
+    socket.on("aiError", handleAIError);
 
     // =================
     // CLEANUP FUNCTION
@@ -1968,6 +2020,8 @@ const MessageBox = ({
       socket.off("lockStatusUpdate", handleLockStatusUpdate);
       socket.off("userRemoved", handleUserRemoved);
       socket.off("youWereRemoved", handleYouWereRemoved);
+      socket.off("projectModeUpdate", handleProjectModeUpdate);
+      socket.off("messageCleared", handleMessageCleared);
 
       // NOTIFICATION EVENTS CLEANUP
       socket.off("userJoined", handleUserJoined);
@@ -1981,6 +2035,7 @@ const MessageBox = ({
       socket.off("error", handleSocketError);
       socket.off("lockError", handleLockError);
       socket.off("removeError", handleRemoveError);
+      socket.off("aiError", handleAIError);
     };
   }, [socket, sessionData, handlerName]);
 

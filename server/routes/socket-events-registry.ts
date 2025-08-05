@@ -26,7 +26,7 @@ export const SocketEventsRegistry = (io: Server, socket: Socket): void => {
   register("removeUser", RemoveUserEvent);
   register("timer", TimerEvent);
   register("lockSession", LockEvent);
-  register("gptMessage", AIResearchCompanionMessageEvent);
+  register("aiResearchCompanionMessage", AIResearchCompanionMessageEvent);
   register("clearMessages", ClearMessagesEvent);
   register("toggleProjectMode", ProjectModeEvent);
   register("getUserList", GetUserListEvent);

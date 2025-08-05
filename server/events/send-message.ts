@@ -49,24 +49,24 @@ const SendMessage = (io: Server, socket: Socket): void => {
       const timestamp = Date.now();
 
       if (session.isProjectModeOn && message.startsWith("/mm ")) {
-        const gptMessage = message.substring(4).trim();
+        const aiResearchCompanionMessage = message.substring(4).trim();
 
-        if (gptMessage.length === 0) {
+        if (aiResearchCompanionMessage.length === 0) {
           socket.emit("error", "Please provide a message after /mm");
           return;
         }
 
-        socket.emit("gptMessage", {
+        socket.emit("aiResearchCompanionMessage", {
           sessionId,
           username,
-          message: gptMessage,
+          message: aiResearchCompanionMessage,
         });
 
         try {
           await new MessageModel({
             sessionId,
             username,
-            message: message.trim(),
+            message: aiResearchCompanionMessage,
             timestamp,
             displayExpiresAt: null,
             isSystemMessage: false,
@@ -130,7 +130,7 @@ const SendMessage = (io: Server, socket: Socket): void => {
         isPermanent: session.isProjectModeOn,
         assignedColor: participant ? participant.assignedColor : 0,
       };
-      
+
       console.log(
         `Publishing to Redis channel chatRoom:${sessionId}:`,
         messageData
@@ -140,7 +140,7 @@ const SendMessage = (io: Server, socket: Socket): void => {
         `chatRoom:${sessionId}`,
         JSON.stringify(messageData)
       );
-      
+
       console.info(
         `Message from ${username} published to chatRoom:${sessionId}`
       );
@@ -155,6 +155,7 @@ const SendMessage = (io: Server, socket: Socket): void => {
         timestamp,
         isSystem: isSystemMessage,
         isAI: isAIMessage,
+        isAIInput: message.startsWith("/mm "),
         isPermanent: session.isProjectModeOn,
         timerValue: session.sessionTimer,
         assignedColor: participant ? participant.assignedColor : 0,
