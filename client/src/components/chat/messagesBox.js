@@ -1180,11 +1180,10 @@ const MessageBox = ({
       },
       ...chatMessage,
     ];
+
     const chatText = UpdateChatMessage.map((chat) => {
-      // Set default handler name if it's empty
       const handlerName = chat.handlerName || "[MessageMoment.com]";
 
-      // Set default message if it's empty based on message type
       const message =
         chat.type == messageType.MM_NOTIFICATION_REMOVE_USER
           ? renderRemoveUserText(chat.message)
@@ -1192,18 +1191,22 @@ const MessageBox = ({
 
       return `${handlerName} ${message}`;
     }).join("\n");
+
     setinput("");
-    // Create a Blob from the string
+
+    const now = new Date();
+    const date = now.toISOString().split("T")[0];
+    const filename = `chat_history_${date}.txt`;
+
     const blob = new Blob([chatText], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
 
-    // Create a temporary anchor element to download the file
     const link = document.createElement("a");
     link.href = url;
-    link.download = "chat_history.txt";
+    link.download = filename;
     document.body.appendChild(link);
     link.click();
-    // Clean up
+
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   };
