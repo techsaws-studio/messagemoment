@@ -266,47 +266,80 @@ const MessageBox = ({
     }
   }, [sessionData?.code, isSessionLockedRealTime, isSessionExpiredRealTime]);
 
-  const WalletChatUtils = () => {
-    if (isMobileView) {
-      setIsWalletConnected(true);
-      setAskHandlerName(true);
-      setChatMessages([
-        ...chatMessage,
-        {
-          type: messageType.PHANTOM_WALLET,
-          handlerName: messageType.MESSAGE_MOMENT,
-        },
+  const WalletChatUtils = useCallback(async () => {
+    console.log("🔗 Wallet connected - validating session status");
+
+    setIsWalletConnected(true);
+
+    try {
+      const response = await ApiRequest(
+        `/validate-session/${sessionData.code}`,
+        "GET"
+      );
+
+      if (!response.success) {
+        const status = response.sessionStatus;
+
+        if (status === "expired") {
+          setIsSessionExpiredRealTime(true);
+          setChatMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              type: messageType.MM_ERROR_MSG,
+              message:
+                "This chat session has expired. Return to the homepage to generate a new chat session.",
+            },
+          ]);
+          return;
+        } else if (status === "locked") {
+          setIsSessionLockedRealTime(true);
+          setInputFieldDisabled(true);
+          setChatMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              type: messageType.MM_ERROR_MSG,
+              message: getSessionLockedMessage(),
+              tempId: "session-locked-message",
+            },
+          ]);
+          return;
+        } else if (status === "full") {
+          setChatMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              type: messageType.MM_ERROR_MSG,
+              message:
+                "The chat session is full! There are currently 10/10 users joined.",
+            },
+          ]);
+          return;
+        }
+      }
+
+      console.log(
+        "✅ Wallet connected and session valid - asking for handler name"
+      );
+
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
         {
           type: messageType.MESSAGE_MOMENT,
           handlerName: "",
-        },
-        {
-          type: messageType.MM_ERROR_MSG,
-          message:
-            "The chat session is full! There are currently 10/10 users joined.",
         },
       ]);
-    } else {
-      setIsWalletConnected(true);
+
       setAskHandlerName(true);
-      setChatMessages([
-        ...chatMessage,
-        {
-          type: messageType.PHANTOM_WALLET,
-          handlerName: messageType.MESSAGE_MOMENT,
-        },
-        {
-          type: messageType.MESSAGE_MOMENT,
-          handlerName: "",
-        },
+    } catch (error) {
+      console.error("Wallet session validation error:", error);
+      setChatMessages((prevMessages) => [
+        ...prevMessages,
         {
           type: messageType.MM_ERROR_MSG,
-          message:
-            "The chat session is full! There are currently 10/10 users joined.",
+          message: "Failed to validate session. Please try again.",
         },
       ]);
     }
-  };
+  }, [sessionData?.code, getSessionLockedMessage]);
 
   const handlePhantomConnection = async () => {
     if (!isMobileView) {
