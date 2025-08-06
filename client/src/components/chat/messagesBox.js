@@ -45,6 +45,7 @@ import { ApiRequest } from "@/utils/api-request";
 
 import sendBtn from "@/assets/icons/chat/sendBtn.svg";
 import sendBtnGrey from "@/assets/icons/chat/send_grey.svg";
+import ChatVerifyingLoader from "./chat-verifying-loader";
 
 export const messageContainerRef = createRef(null);
 
@@ -115,6 +116,15 @@ const MessageBox = ({
   const shouldBlockInput = isExpiredState;
   const shouldShowLockNotification = isLockedState && !isExpiredState;
 
+  const getSessionLockedMessage = useCallback(() => {
+    const inputType =
+      sessionData?.type === SessionTypeEnum.SECURE && !isVerifiedCode
+        ? "code"
+        : "name";
+
+    return `This chat session is currently locked. Please wait for it to become available, or try again later. Once this message disappears, you'll be able to enter your ${inputType} to join if you haven't already. Alternatively, contact the person who shared the chat link with you for assistance.`;
+  }, [sessionData?.type, isVerifiedCode]);
+
   const checkSessionValidityForJoining = useCallback(async () => {
     if (!sessionData?.code) return;
 
@@ -138,8 +148,7 @@ const MessageBox = ({
               ...prevMessages,
               {
                 type: messageType.MM_ERROR_MSG,
-                message:
-                  "This chat session is currently locked. Please wait for it to become available, or try again later. Once this message disappears, you’ll be able to enter your name to join if you haven’t already. Alternatively, contact the person who shared the chat link with you for assistance.",
+                message: getSessionLockedMessage(),
                 tempId: "session-locked-message",
               },
             ]);
@@ -193,6 +202,8 @@ const MessageBox = ({
     isSessionExpiredRealTime,
     handlerName,
     askHanderName,
+    isVerifiedCode,
+    getSessionLockedMessage,
   ]);
 
   const checkSessionValidityForExistingUsers = useCallback(async () => {
@@ -806,33 +817,105 @@ const MessageBox = ({
     if (sessionData?.type === SessionTypeEnum.SECURE && !isVerifiedCode) {
       const numberOnlyRegex = /^(?!.*[.eE])[0-9]{4}$/;
 
-      if (!numberOnlyRegex.test(input)) return;
-      if (input == sessionData?.secureCode) {
+      if (!numberOnlyRegex.test(input)) return false;
+
+      if (input === sessionData?.secureCode) {
         setChatMessages([
           ...chatMessage,
-
           {
             type: messageType.MM_NOTIFICATION,
-            message: "Verifying...",
+            message: <ChatVerifyingLoader />,
+            handlerName: "[MessageMoment.com]",
             handlerColor: "#494AF8",
-          },
-          {
-            type: messageType.MM_ERROR_MSG,
-            message:
-              "The chat session is full! There are currently 10/10 users joined.",
-          },
-          {
-            type: messageType.MESSAGE_MOMENT,
-            handler: messageType.MESSAGE_MOMENT,
+            tempId: "verifying-loader",
           },
         ]);
-        setAskHandlerName(true);
-        scrollToBottom();
+
         setinput("");
-        setTimeout(() => {
-          setIsVerifiedCode(true);
-          return true;
+        scrollToBottom();
+
+        setTimeout(async () => {
+          try {
+            const response = await ApiRequest(
+              `/validate-session/${sessionData.code}`,
+              "GET"
+            );
+
+            setChatMessages((prevMessages) => {
+              const filteredMessages = prevMessages.filter(
+                (msg) => msg.tempId !== "verifying-loader"
+              );
+
+              if (!response.success) {
+                const status = response.sessionStatus;
+
+                if (status === "expired") {
+                  setIsSessionExpiredRealTime(true);
+                  return [
+                    ...filteredMessages,
+                    {
+                      type: messageType.MM_ERROR_MSG,
+                      message:
+                        "This chat session has expired. Return to the homepage to generate a new chat session.",
+                    },
+                  ];
+                } else if (status === "locked") {
+                  setIsSessionLockedRealTime(true);
+                  setInputFieldDisabled(true);
+                  return [
+                    ...filteredMessages,
+                    {
+                      type: messageType.MM_ERROR_MSG,
+                      message:
+                        "This chat session is currently locked. Please wait for it to become available, or try again later. Once this message disappears, you’ll be able to enter your code to join if you haven’t already. Alternatively, contact the person who shared the chat link with you for assistance.",
+                      tempId: "session-locked-message",
+                    },
+                  ];
+                } else if (status === "full") {
+                  return [
+                    ...filteredMessages,
+                    {
+                      type: messageType.MM_ERROR_MSG,
+                      message:
+                        "The chat session is full! There are currently 10/10 users joined.",
+                    },
+                  ];
+                }
+              }
+
+              setIsVerifiedCode(true);
+              setAskHandlerName(true);
+
+              return [
+                ...filteredMessages,
+                {
+                  type: messageType.MM_NOTIFICATION,
+                  message: "Verified",
+                  handlerName: "[MessageMoment.com]",
+                  handlerColor: "#494AF8",
+                },
+                {
+                  type: messageType.MESSAGE_MOMENT,
+                  handler: messageType.MESSAGE_MOMENT,
+                },
+              ];
+            });
+          } catch (error) {
+            console.error("Security code verification error:", error);
+
+            setChatMessages((prevMessages) => [
+              ...prevMessages.filter(
+                (msg) => msg.tempId !== "verifying-loader"
+              ),
+              {
+                type: messageType.MM_ERROR_MSG,
+                message: "Verification failed. Please try again.",
+              },
+            ]);
+          }
         }, 2000);
+
+        return false;
       } else {
         setIsVerifiedCode(false);
         setChatMessages([
@@ -845,6 +928,7 @@ const MessageBox = ({
         ]);
         setinput("");
         scrollToBottom();
+        return false;
       }
     } else {
       if (askHanderName) {
@@ -1259,11 +1343,13 @@ const MessageBox = ({
     };
   }, [
     sessionData?.code,
+    sessionData?.type,
     checkSessionValidityForJoining,
     checkSessionValidityForExistingUsers,
     isSessionExpiredRealTime,
     isSessionLockedRealTime,
     userHasJoinedSession,
+    isVerifiedCode,
   ]);
 
   useEffect(() => {
@@ -1546,7 +1632,7 @@ const MessageBox = ({
           }
           return msg;
         });
-        
+
         const sessionTimer = data.session?.sessionTimer || 30;
         setExpiryTime(sessionTimer);
 
@@ -1566,7 +1652,7 @@ const MessageBox = ({
 
           return filteredMessages;
         }
-        
+
         if (!wasTimerSetBySomeone && !hasShownExpiryTimeMessageRef.current) {
           filteredMessages.push({
             type: messageType.ASK_TO_SET_EXPIRYTIME,
