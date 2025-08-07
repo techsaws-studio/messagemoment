@@ -15,6 +15,9 @@ const MessageContainer = ({
   isSafari,
   isAndroid,
   messageType,
+  userHasJoinedSession,
+  isSessionExpiredRealTime,
+  isSessionLockedRealTime,
 }) => {
   return (
     <div className="chat-section">
@@ -84,6 +87,9 @@ const MessageContainer = ({
                     item.messageId || `${i}-${item.timestamp || Date.now()}`
                   }
                   timestamp={item.timestamp}
+                  isSessionLockedRealTime={isSessionLockedRealTime}
+                  isSessionExpiredRealTime={isSessionExpiredRealTime}
+                  userHasJoinedSession={userHasJoinedSession}
                 />
               );
             })}

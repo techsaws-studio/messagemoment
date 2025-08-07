@@ -180,6 +180,13 @@ const MessageBox = ({
           setIsSessionLockedRealTime(false);
           setInputFieldDisabled(false);
 
+          if (
+            sessionData?.type === SessionTypeEnum.WALLET &&
+            !userHasJoinedSession
+          ) {
+            setIsWalletConnected(false);
+          }
+
           setChatMessages((prevMessages) => {
             const filteredMessages = prevMessages.filter(
               (msg) => msg.tempId !== "session-locked-message"
@@ -198,12 +205,14 @@ const MessageBox = ({
     }
   }, [
     sessionData?.code,
+    sessionData?.type,
     isSessionLockedRealTime,
     isSessionExpiredRealTime,
     handlerName,
     askHanderName,
     isVerifiedCode,
     getSessionLockedMessage,
+    userHasJoinedSession,
   ]);
 
   const checkSessionValidityForExistingUsers = useCallback(async () => {
@@ -510,8 +519,8 @@ const MessageBox = ({
   };
 
   const handleInputChange = (e) => {
-    if (isSessionExpiredRealTime) {
-      console.log("🚫 Input blocked - session expired");
+    if (isSessionExpiredRealTime || isJoining) {
+      console.log("🚫 Input blocked - session expired or joining in progress");
       return;
     }
 
@@ -636,7 +645,7 @@ const MessageBox = ({
   };
 
   const handleClickSendBtn = () => {
-    if (isSessionExpiredRealTime) {
+    if (isSessionExpiredRealTime || isJoining) {
       console.log("🚫 Send blocked - session expired");
       return;
     }
@@ -1617,7 +1626,6 @@ const MessageBox = ({
     });
 
     setIsJoining(true);
-
     const fingerprint = safeGetFingerprint();
 
     setChatMessages((prevMessages) => [
@@ -2209,6 +2217,9 @@ const MessageBox = ({
         isAndroid={isAndroid}
         messageType={messageType}
         scrollToBottom={scrollToBottom}
+        isSessionLockedRealTime={isSessionLockedRealTime}
+        isSessionExpiredRealTime={isSessionExpiredRealTime}
+        userHasJoinedSession={userHasJoinedSession}
       />
 
       <MessageInput
