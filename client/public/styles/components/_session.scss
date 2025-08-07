@@ -59,6 +59,11 @@
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
+
+      .link {
+        width: 90%;
+        overflow-wrap: break-word;
+      }
     }
     .locked-content {
       padding: 130px 125px 100px 125px;
@@ -306,7 +311,6 @@
           max-width: 284px;
           width: 100%;
           font-size: 13px;
-
         }
       }
 
