@@ -539,6 +539,25 @@ const MessageBox = ({
     }
 
     let value = e.target.value;
+
+    if (
+      askProjectMode ||
+      askExitProjectMode ||
+      askRemoveUser ||
+      askBeforClearChat
+    ) {
+      const ynOnlyRegex = /^[ynYN]?$/;
+
+      if (ynOnlyRegex.test(value)) {
+        setIsDisabled(false);
+        setinput(value.toLowerCase());
+      } else {
+        setIsDisabled(true);
+        return;
+      }
+      return;
+    }
+
     if (value !== "") {
       if (value.startsWith("/")) {
         if (handlerName.trim() !== "") {
