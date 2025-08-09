@@ -5,6 +5,8 @@ import Message from "../messages";
 import ChatNotification from "../chat-components/chat-notification";
 import Notification from "@/components/notification";
 
+import { chatContext } from "@/contexts/chat-context";
+
 const MessageContainer = ({
   showAttachment,
   messageContainerRef,
@@ -19,6 +21,8 @@ const MessageContainer = ({
   isSessionExpiredRealTime,
   isSessionLockedRealTime,
 }) => {
+  const { expiryTime } = chatContext();
+
   return (
     <div className="chat-section">
       <div
@@ -90,6 +94,8 @@ const MessageContainer = ({
                   isSessionLockedRealTime={isSessionLockedRealTime}
                   isSessionExpiredRealTime={isSessionExpiredRealTime}
                   userHasJoinedSession={userHasJoinedSession}
+                  expiresAt={item.expiresAt}
+                  isPermanent={item.isPermanent}
                 />
               );
             })}

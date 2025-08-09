@@ -33,10 +33,14 @@ const Message = ({
   userHasJoinedSession,
   isSessionExpiredRealTime,
   isSessionLockedRealTime,
+
+  expiresAt,
+  isPermanent,
 }) => {
   const [isFullyRendered, setIsFullyRendered] = useState(() => {
     return isOwnMessage || !messageId || !timestamp;
   });
+  const [isExpired, setIsExpired] = useState(false);
 
   const el = useRef(null);
   const { isMessageMobileView: isMobileView } = useCheckIsMobileView();
@@ -47,6 +51,7 @@ const Message = ({
     isWalletConnected,
     isWalletExist,
     isLiveTypingActive,
+    isProjectModeOn,
   } = chatContext();
 
   const renderAdertisment = () => {
@@ -711,6 +716,47 @@ const Message = ({
     isFullyRendered,
     messageId,
   ]);
+
+  useEffect(() => {
+    if (
+      isPermanent ||
+      isProjectModeOn ||
+      !expiresAt ||
+      type === messageType.ADVERTISEMENT ||
+      type === messageType.GREETING ||
+      type === messageType.MESSAGE_MOMENT ||
+      type === messageType.SECURITY_CODE ||
+      type === messageType.ASK_TO_SET_EXPIRYTIME ||
+      type === messageType.PROJECT_MODE ||
+      type === messageType.PROJECT_MODE_ENTRY ||
+      type === messageType.MM_NOTIFICATION ||
+      type === messageType.MM_ERROR_MSG ||
+      type === messageType.MM_ALERT ||
+      type === messageType.EXPIRY_TIME_HAS_SET ||
+      type === messageType.PHANTOM_WALLET ||
+      type === messageType.MM_NOTIFICATION_REMOVE_USER ||
+      handlerName === "[MessageMoment.com]" ||
+      handlerName === "[AI_RESEARCH_COMPANION]"
+    ) {
+      return;
+    }
+
+    const checkExpiration = () => {
+      const now = Date.now();
+      if (now >= expiresAt) {
+        setIsExpired(true);
+        return;
+      }
+    };
+
+    checkExpiration();
+    const interval = setInterval(checkExpiration, 1000);
+    return () => clearInterval(interval);
+  }, [expiresAt, isPermanent, isProjectModeOn, type, handlerName]);
+
+  if (isExpired) {
+    return null;
+  }
 
   return (
     <div className="chat-msg-cont">

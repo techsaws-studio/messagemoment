@@ -106,6 +106,7 @@ const MessageBox = ({
     setIsWalletExist,
     isExpiryTimeExist,
     setIsExpiryTimeExist,
+    expiryTime,
   } = chatContext();
   const fileInputRef = useRef(null);
   const commandModalRef = useRef();
@@ -1686,6 +1687,7 @@ const MessageBox = ({
           console.log(
             "🚀 Project mode is active - showing entry instructions to new user"
           );
+          setIsProjectModeOn(true);
 
           filteredMessages.push({
             type: messageType.PROJECT_MODE_ENTRY,
@@ -1729,6 +1731,113 @@ const MessageBox = ({
       });
     };
 
+    const handleHistoricalMessages = (data) => {
+      console.log("📚 Received historical messages:", data);
+
+      if (!data?.messages || data.messages.length === 0) {
+        console.log("📚 No historical messages to display");
+        return;
+      }
+
+      const historicalMessages = data.messages.map((msg) => {
+        const userColor =
+          msg.assignedColor !== undefined
+            ? USER_HANDERLS[msg.assignedColor]
+            : USER_HANDERLS[0];
+
+        let messageExpiresAt = msg.expiresAt;
+        if (!messageExpiresAt && !msg.isPermanent && !data.isProjectModeOn) {
+          const timerForMessage = msg.timerValue || data.timerSeconds || 30;
+          messageExpiresAt = msg.timestamp + timerForMessage * 1000;
+        }
+
+        return {
+          type: msg.isAI
+            ? messageType.AI_RESEARCH_COMPANION_RESPONSE
+            : msg.isSystem
+            ? messageType.MM_NOTIFICATION
+            : messageType.DEFAULT,
+          message: msg.message,
+          handlerName: msg.sender,
+          handlerColor: userColor,
+          timestamp: msg.timestamp,
+          messageId: `historical-${msg.timestamp}-${msg.sender}`,
+          expiresAt: messageExpiresAt,
+          isPermanent: msg.isPermanent || data.isProjectModeOn,
+          timerValue: msg.timerValue || data.timerSeconds || 30,
+        };
+      });
+
+      console.log(`📚 Adding ${historicalMessages.length} historical messages`);
+
+      setChatMessages((prevMessages) => {
+        const fixedMessages = prevMessages.slice(0, 2);
+
+        if (data.isProjectModeOn) {
+          const systemMessages = prevMessages
+            .slice(2)
+            .filter(
+              (msg) =>
+                msg.type === messageType.MM_ALERT ||
+                msg.type === messageType.PROJECT_MODE_ENTRY ||
+                (msg.type === messageType.MM_NOTIFICATION &&
+                  msg.handlerName === "[MessageMoment.com]" &&
+                  !msg.message.includes("Joined"))
+            );
+
+          const joinedMessage = prevMessages
+            .slice(2)
+            .find(
+              (msg) =>
+                msg.type === messageType.MM_NOTIFICATION &&
+                msg.message &&
+                msg.message.includes("Joined")
+            );
+
+          let orderedMessages = [
+            ...fixedMessages,
+            ...systemMessages,
+            ...historicalMessages,
+          ];
+
+          if (joinedMessage) {
+            orderedMessages.push(joinedMessage);
+          }
+
+          return orderedMessages;
+        } else {
+          const joinedMessage = prevMessages
+            .slice(2)
+            .find(
+              (msg) =>
+                msg.type === messageType.MM_NOTIFICATION &&
+                msg.message &&
+                msg.message.includes("Joined")
+            );
+
+          const expiryMessage = prevMessages
+            .slice(2)
+            .find((msg) => msg.type === messageType.ASK_TO_SET_EXPIRYTIME);
+
+          let orderedMessages = [...fixedMessages];
+
+          if (joinedMessage) {
+            orderedMessages.push(joinedMessage);
+          }
+          if (expiryMessage) {
+            orderedMessages.push(expiryMessage);
+          }
+          orderedMessages.push(...historicalMessages);
+
+          return orderedMessages;
+        }
+      });
+
+      if (data.isProjectModeOn) {
+        setIsProjectModeOn(true);
+      }
+    };
+
     const handleUserList = (data) => {
       if (!data?.participants) {
         console.warn("⚠️ Invalid user list data received:", data);
@@ -1764,6 +1873,20 @@ const MessageBox = ({
         ? USER_HANDERLS[data.assignedColor]
         : USER_HANDERLS[0];
 
+      let messageExpiresAt = data.expiresAt;
+      if (!messageExpiresAt && !data.isPermanent && !isProjectModeOn) {
+        const currentTimer = data.timerValue || expiryTime || 30;
+        messageExpiresAt = data.timestamp + currentTimer * 1000;
+      }
+
+      console.log("📨 Message expiration info:", {
+        timestamp: data.timestamp,
+        expiresAt: messageExpiresAt,
+        timerValue: data.timerValue || expiryTime || 30,
+        isPermanent: data.isPermanent,
+        isProjectMode: isProjectModeOn,
+      });
+
       setChatMessages((prevMessages) => [
         ...prevMessages,
         {
@@ -1777,6 +1900,9 @@ const MessageBox = ({
           handlerColor: userColor,
           timestamp: data.timestamp,
           messageId: `${data.timestamp}-${data.sender}`,
+          expiresAt: messageExpiresAt,
+          isPermanent: data.isPermanent || isProjectModeOn,
+          timerValue: data.timerValue || expiryTime,
         },
       ]);
     };
@@ -2137,6 +2263,7 @@ const MessageBox = ({
 
     // SUCCESS EVENTS
     socket.on("joinedRoom", handleJoinedRoom);
+    socket.on("historicalMessages", handleHistoricalMessages);
     socket.on("userList", handleUserList);
     socket.on("receiveMessage", handleReceiveMessage);
     socket.on("timerUpdate", handleTimerUpdate);
@@ -2170,6 +2297,7 @@ const MessageBox = ({
 
       // SUCCESS EVENTS CLEANUP
       socket.off("joinedRoom", handleJoinedRoom);
+      socket.off("historicalMessages", handleHistoricalMessages);
       socket.off("userList", handleUserList);
       socket.off("receiveMessage", handleReceiveMessage);
       socket.off("timerUpdate", handleTimerUpdate);
