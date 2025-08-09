@@ -1739,7 +1739,15 @@ const MessageBox = ({
         return;
       }
 
-      const historicalMessages = data.messages.map((msg) => {
+      let filteredMessages = data.messages;
+      if (!data.isProjectModeOn) {
+        filteredMessages = data.messages.filter((msg) => {
+          return !msg.isPermanent || msg.isSystem;
+        });
+      }
+
+      // CHANGE: Use filteredMessages instead of data.messages
+      const historicalMessages = filteredMessages.map((msg) => {
         const userColor =
           msg.assignedColor !== undefined
             ? USER_HANDERLS[msg.assignedColor]
