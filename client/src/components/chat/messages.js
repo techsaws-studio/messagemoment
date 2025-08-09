@@ -646,7 +646,10 @@ const Message = ({
     }
 
     if (el.current) {
-      if (isOwnMessage) {
+      const isHistoricalMessage =
+        messageId && messageId.includes("historical-");
+
+      if (isOwnMessage || isHistoricalMessage) {
         el.current.innerHTML = message;
         setIsFullyRendered(true);
         if (!userScrolled) {
