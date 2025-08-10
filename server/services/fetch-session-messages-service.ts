@@ -15,6 +15,8 @@ export const FetchSessionMessagesService = async (
         projectModeEnabledAt: 1,
         projectModeDisabledAt: 1,
         messageClearHistory: 1,
+        participants: 1,
+        sessionTimer: 1,
       }
     );
 
@@ -22,6 +24,20 @@ export const FetchSessionMessagesService = async (
       console.error(`Session not found for sessionId: ${sessionId}`);
       return [];
     }
+
+    const participantColorMap = new Map();
+    if (session.participants && session.participants.length > 0) {
+      session.participants.forEach((participant) => {
+        participantColorMap.set(
+          participant.username,
+          participant.assignedColor
+        );
+      });
+    }
+    console.log(
+      "🎨 Participant Color Map:",
+      Object.fromEntries(participantColorMap)
+    );
 
     let latestClearTimestamp = 0;
     if (session.messageClearHistory && session.messageClearHistory.length > 0) {
@@ -130,9 +146,18 @@ export const FetchSessionMessagesService = async (
         }
       }
 
+      const assignedColor = participantColorMap.get(message.username) || 0;
+
+      console.log(`🔍 Message Color Assignment:`, {
+        username: message.username,
+        assignedColor: assignedColor,
+        foundInMap: participantColorMap.has(message.username),
+      });
+
       return {
         ...message,
         timerValue: messageTimerValue,
+        assignedColor: assignedColor,
       };
     });
 

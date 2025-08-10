@@ -236,6 +236,8 @@ export const ReconnectionEvent = (io: Server, socket: Socket): void => {
                 : null,
               isPermanent: msg.isPermanent || false,
               timerValue: msg.timerValue || session.sessionTimer,
+
+              assignedColor: msg.assignedColor,
             })),
             timerSeconds: session.sessionTimer,
             timerSetBy: session.timerSetBy || "[MessageMoment.com]",

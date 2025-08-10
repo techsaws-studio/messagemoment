@@ -1777,6 +1777,14 @@ const MessageBox = ({
     const handleHistoricalMessages = (data) => {
       console.log("📚 Received historical messages:", data);
 
+      console.log("🔍 Historical Messages Debug Info:", {
+        totalMessages: data?.messages?.length || 0,
+        isProjectModeOn: data.isProjectModeOn,
+        timerSeconds: data.timerSeconds,
+        userListAtTime: userlist.length,
+        currentUserList: userlist,
+      });
+
       if (!data?.messages || data.messages.length === 0) {
         console.log("📚 No historical messages to display");
         return;
@@ -1789,8 +1797,29 @@ const MessageBox = ({
         });
       }
 
-      // CHANGE: Use filteredMessages instead of data.messages
-      const historicalMessages = filteredMessages.map((msg) => {
+      const historicalMessages = filteredMessages.map((msg, index) => {
+        console.log(`🎨 Message ${index + 1} Color Debug:`, {
+          sender: msg.sender,
+          assignedColorFromMessage: msg.assignedColor,
+          assignedColorType: typeof msg.assignedColor,
+          assignedColorExists: msg.assignedColor !== undefined,
+          assignedColorIsNumber: typeof msg.assignedColor === "number",
+          availableUserHandlers: Object.keys(USER_HANDERLS),
+          selectedColor:
+            msg.assignedColor !== undefined
+              ? USER_HANDERLS[msg.assignedColor]
+              : "FALLBACK_TO_0",
+          fallbackColor: USER_HANDERLS[0],
+          userListLookup: userlist.find(
+            (user) =>
+              user.name.replace(/[\[\]]/g, "").toLowerCase() ===
+              msg.sender.replace(/[\[\]]/g, "").toLowerCase()
+          ),
+          timestamp: msg.timestamp,
+          isSystem: msg.isSystem,
+          isAI: msg.isAI,
+        });
+
         const userColor =
           msg.assignedColor !== undefined
             ? USER_HANDERLS[msg.assignedColor]
@@ -1818,6 +1847,15 @@ const MessageBox = ({
           timerValue: msg.timerValue || data.timerSeconds || 30,
         };
       });
+
+      console.log(
+        "🎨 Final Historical Messages with Colors:",
+        historicalMessages.map((msg) => ({
+          sender: msg.handlerName,
+          color: msg.handlerColor,
+          type: msg.type,
+        }))
+      );
 
       console.log(`📚 Adding ${historicalMessages.length} historical messages`);
 
