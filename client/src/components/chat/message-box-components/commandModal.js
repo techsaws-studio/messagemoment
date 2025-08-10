@@ -13,6 +13,7 @@ const CommandModal = ({
   isRemoveCommand,
   commandlist,
   userlist,
+  removeUserList,
   input,
   selectedIndex,
   handleSelectedCommand,
@@ -20,6 +21,12 @@ const CommandModal = ({
   setSelectedColor,
   setShowCommands,
 }) => {
+  const listToShow = isRemoveCommand ? removeUserList : commandlist;
+
+  if (showCommands && listToShow.length === 0) {
+    return null;
+  }
+
   return (
     <>
       <div
@@ -39,7 +46,7 @@ const CommandModal = ({
         </div>
         <ul>
           {isRemoveCommand
-            ? userlist.map((item, index) => (
+            ? removeUserList.map((item, index) => (
                 <li
                   key={`command-list-${index}`}
                   onClick={() => {

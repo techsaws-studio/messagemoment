@@ -86,6 +86,7 @@ const MessageBox = ({
     useState(false);
   const [isSessionLockedRealTime, setIsSessionLockedRealTime] = useState(false);
   const [userHasJoinedSession, setUserHasJoinedSession] = useState(false);
+  const [removeUserList, setRemoveUserList] = useState([]);
 
   const {
     setShowUploadModal,
@@ -498,7 +499,8 @@ const MessageBox = ({
         setShowCommands(false);
         return;
       }
-      const isExist = userlist.some((user) =>
+
+      const isExist = removeUserList.some((user) =>
         user.name
           .replace(/\[|\]/g, "")
           .toLowerCase()
@@ -806,7 +808,7 @@ const MessageBox = ({
       setSelectedIndex((prevIndex) =>
         Math.min(
           prevIndex + 1,
-          (isRemoveCommand ? userlist : commandlist).length - 1
+          (isRemoveCommand ? removeUserList : commandlist).length - 1
         )
       );
     }
@@ -819,7 +821,7 @@ const MessageBox = ({
     if (e.key === "Enter" && selectedIndex >= 0) {
       e.preventDefault();
       const selectedItem = isRemoveCommand
-        ? userlist[selectedIndex]
+        ? removeUserList[selectedIndex]
         : commandlist[selectedIndex];
 
       if (isRemoveCommand) {
@@ -845,7 +847,7 @@ const MessageBox = ({
 
       if (isRemoveCommand) {
         const userInput = inputValue.split(" ")[1].toLowerCase();
-        const matchingUser = userlist.find((item) =>
+        const matchingUser = removeUserList.find((item) =>
           item?.name
             .toLowerCase()
             .replace(/\[|\]/g, "")
@@ -1013,7 +1015,7 @@ const MessageBox = ({
     const username = input.split(" ")[1];
     if (!username) return;
 
-    const hasFindUser = userlist.find(
+    const hasFindUser = removeUserList.find(
       (item) =>
         item.name.replace(/\[|\]/g, "").toLowerCase() == username.toLowerCase()
     );
@@ -1634,6 +1636,28 @@ const MessageBox = ({
       };
     }
   }, [scrollToBottom]);
+
+  useEffect(() => {
+    if (!handlerName || !userlist.length) {
+      setRemoveUserList([]);
+      return;
+    }
+
+    const filteredRemoveList = userlist.filter((user) => {
+      const currentUserName = handlerName.replace(/[\[\]]/g, "").toLowerCase();
+      const listUserName = user.name.replace(/[\[\]]/g, "").toLowerCase();
+      return currentUserName !== listUserName;
+    });
+
+    setRemoveUserList(filteredRemoveList);
+
+    console.log("🎯 Remove user list updated:", {
+      totalUsers: userlist.length,
+      availableToRemove: filteredRemoveList.length,
+      currentUser: handlerName,
+      excludedFromRemoval: true,
+    });
+  }, [userlist, handlerName]);
 
   // SOCKET INTEGRATION -- START
 
@@ -2394,6 +2418,7 @@ const MessageBox = ({
         handleKeyDown={handleKeyDown}
         // COMMAND LISTS
         userlist={userlist}
+        removeUserList={removeUserList}
         commandlist={commandlist}
         handleSelectedCommand={handleSelectedCommand}
         handleSelectedUser={handleSelectedUser}

@@ -22,6 +22,7 @@ const MessageInput = ({
   handleKeyDown,
   InputFieldDisabled,
   userlist,
+  removeUserList,
   commandlist,
   handleSelectedCommand,
   handleSelectedUser,
@@ -68,6 +69,7 @@ const MessageInput = ({
         showCommands={showCommands}
         selectedCommands={selectedCommands}
         userlist={userlist}
+        removeUserList={removeUserList}
         showAttachment={showAttachment}
         commandlist={commandlist}
         input={input}
