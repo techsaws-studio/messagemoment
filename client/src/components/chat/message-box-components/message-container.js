@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import SideBar from "../side-bar";
 import Message from "../messages";
@@ -21,7 +21,60 @@ const MessageContainer = ({
   isSessionExpiredRealTime,
   isSessionLockedRealTime,
 }) => {
-  const { expiryTime } = chatContext();
+  const [currentTime, setCurrentTime] = useState(Date.now());
+
+  const { expiryTime, isProjectModeOn } = chatContext();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const visibleMessagesWithUsernameLogic = useMemo(() => {
+    const visibleMessages = chatMessage.filter((message, index) => {
+      if (
+        message.isPermanent ||
+        isProjectModeOn ||
+        !message.expiresAt ||
+        message.type === messageType.ADVERTISEMENT ||
+        message.type === messageType.GREETING ||
+        message.type === messageType.MESSAGE_MOMENT ||
+        message.type === messageType.SECURITY_CODE ||
+        message.type === messageType.ASK_TO_SET_EXPIRYTIME ||
+        message.type === messageType.PROJECT_MODE ||
+        message.type === messageType.PROJECT_MODE_ENTRY ||
+        message.type === messageType.MM_NOTIFICATION ||
+        message.type === messageType.MM_ERROR_MSG ||
+        message.type === messageType.MM_ALERT ||
+        message.type === messageType.EXPIRY_TIME_HAS_SET ||
+        message.type === messageType.PHANTOM_WALLET ||
+        message.type === messageType.MM_NOTIFICATION_REMOVE_USER ||
+        message.handlerName === "[MessageMoment.com]" ||
+        message.handlerName === "[AI_RESEARCH_COMPANION]"
+      ) {
+        return true;
+      }
+
+      return currentTime < message.expiresAt;
+    });
+
+    return visibleMessages.map((message, index) => {
+      const showUsername =
+        message.type !== messageType.DEFAULT ||
+        index === 0 ||
+        visibleMessages[index - 1]?.handlerName !== message?.handlerName ||
+        visibleMessages[index - 1]?.type === messageType.EXPIRY_TIME_HAS_SET;
+
+      return {
+        ...message,
+        showUsername,
+        isOwnMessage: message?.handlerName === handlerName,
+      };
+    });
+  }, [chatMessage, messageType, handlerName, isProjectModeOn, currentTime]);
 
   return (
     <div className="chat-section">
@@ -61,44 +114,34 @@ const MessageContainer = ({
             paddingBottom: isMobileView ? "85px" : showAttachment ? "60px" : "",
           }}
         >
-          {chatMessage.length > 0 &&
-            chatMessage.map((item, i) => {
-              const showUsername =
-                item.type !== messageType.DEFAULT ||
-                i === 0 ||
-                chatMessage[i - 1]?.handlerName !== item?.handlerName ||
-                chatMessage[i - 1]?.type === messageType.EXPIRY_TIME_HAS_SET;
-
-              const isOwnMessage = item?.handlerName === handlerName;
-
-              return (
-                <Message
-                  key={`chat-index-${i.toString()}`}
-                  type={item?.type}
-                  userNameColor={item?.userNameColor}
-                  handlerName={
-                    item?.handlerName != ""
-                      ? showUsername
-                        ? item?.handlerName
-                        : ""
-                      : "[Unknown]"
-                  }
-                  message={item?.message}
-                  attachmentFile={item?.attachmentFile}
-                  handlerColor={item?.handlerColor}
-                  isOwnMessage={isOwnMessage}
-                  messageId={
-                    item.messageId || `${i}-${item.timestamp || Date.now()}`
-                  }
-                  timestamp={item.timestamp}
-                  isSessionLockedRealTime={isSessionLockedRealTime}
-                  isSessionExpiredRealTime={isSessionExpiredRealTime}
-                  userHasJoinedSession={userHasJoinedSession}
-                  expiresAt={item.expiresAt}
-                  isPermanent={item.isPermanent}
-                />
-              );
-            })}
+          {visibleMessagesWithUsernameLogic.map((item, i) => (
+            <Message
+              key={`chat-index-${i.toString()}`}
+              type={item?.type}
+              userNameColor={item?.userNameColor}
+              handlerName={
+                item?.handlerName !== ""
+                  ? item.showUsername
+                    ? item?.handlerName
+                    : ""
+                  : "[Unknown]"
+              }
+              message={item?.message}
+              attachmentFile={item?.attachmentFile}
+              handlerColor={item?.handlerColor}
+              isOwnMessage={item.isOwnMessage}
+              messageId={
+                item.messageId || `${i}-${item.timestamp || Date.now()}`
+              }
+              timestamp={item.timestamp}
+              isSessionLockedRealTime={isSessionLockedRealTime}
+              isSessionExpiredRealTime={isSessionExpiredRealTime}
+              userHasJoinedSession={userHasJoinedSession}
+              expiresAt={item.expiresAt}
+              isPermanent={item.isPermanent}
+              skipExpirationCheck={true}
+            />
+          ))}
         </div>
         <Notification />
         <ChatNotification />

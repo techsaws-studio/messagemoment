@@ -36,6 +36,8 @@ const Message = ({
 
   expiresAt,
   isPermanent,
+
+  skipExpirationCheck = false,
 }) => {
   const [isFullyRendered, setIsFullyRendered] = useState(() => {
     return isOwnMessage || !messageId || !timestamp;
@@ -721,6 +723,10 @@ const Message = ({
   ]);
 
   useEffect(() => {
+    if (skipExpirationCheck) {
+      return;
+    }
+
     if (
       isPermanent ||
       isProjectModeOn ||
@@ -755,9 +761,16 @@ const Message = ({
     checkExpiration();
     const interval = setInterval(checkExpiration, 1000);
     return () => clearInterval(interval);
-  }, [expiresAt, isPermanent, isProjectModeOn, type, handlerName]);
+  }, [
+    expiresAt,
+    isPermanent,
+    isProjectModeOn,
+    type,
+    handlerName,
+    skipExpirationCheck,
+  ]);
 
-  if (isExpired) {
+  if (isExpired && !skipExpirationCheck) {
     return null;
   }
 
