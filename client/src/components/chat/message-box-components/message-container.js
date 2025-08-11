@@ -23,7 +23,7 @@ const MessageContainer = ({
 }) => {
   const [currentTime, setCurrentTime] = useState(Date.now());
 
-  const { expiryTime, isProjectModeOn } = chatContext();
+  const { isProjectModeOn } = chatContext();
 
   useEffect(() => {
     const interval = setInterval(() => {
