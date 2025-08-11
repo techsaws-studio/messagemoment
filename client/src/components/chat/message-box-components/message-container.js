@@ -139,6 +139,7 @@ const MessageContainer = ({
               userHasJoinedSession={userHasJoinedSession}
               expiresAt={item.expiresAt}
               isPermanent={item.isPermanent}
+              
               skipExpirationCheck={true}
             />
           ))}

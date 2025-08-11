@@ -87,6 +87,8 @@ const MessageBox = ({
   const [isSessionLockedRealTime, setIsSessionLockedRealTime] = useState(false);
   const [userHasJoinedSession, setUserHasJoinedSession] = useState(false);
   const [removeUserList, setRemoveUserList] = useState([]);
+  const [pendingJoinData, setPendingJoinData] = useState(null);
+  const [isAwaitingUnlock, setIsAwaitingUnlock] = useState(false);
 
   const {
     setShowUploadModal,
@@ -146,14 +148,29 @@ const MessageBox = ({
             setIsSessionLockedRealTime(true);
             setInputFieldDisabled(true);
 
-            setChatMessages((prevMessages) => [
-              ...prevMessages,
-              {
-                type: messageType.MM_ERROR_MSG,
-                message: getSessionLockedMessage(),
-                tempId: "session-locked-message",
-              },
-            ]);
+            if (isJoining && pendingJoinData) {
+              setIsAwaitingUnlock(true);
+              setIsJoining(false);
+            }
+
+            setChatMessages((prevMessages) => {
+              const hasSessionLockedMessage = prevMessages.some(
+                (msg) => msg.tempId === "session-locked-message"
+              );
+
+              if (hasSessionLockedMessage) {
+                return prevMessages;
+              }
+
+              return [
+                ...prevMessages,
+                {
+                  type: messageType.MM_ERROR_MSG,
+                  message: getSessionLockedMessage(),
+                  tempId: "session-locked-message",
+                },
+              ];
+            });
           }
         } else if (status === "expired") {
           setIsSessionExpiredRealTime(true);
@@ -182,6 +199,35 @@ const MessageBox = ({
           setIsSessionLockedRealTime(false);
           setInputFieldDisabled(false);
 
+          if (isAwaitingUnlock && pendingJoinData && !userHasJoinedSession) {
+            console.log("🔄 Auto-retrying join after session unlock");
+
+            setIsAwaitingUnlock(false);
+            setIsJoining(true);
+
+            setChatMessages((prevMessages) => {
+              const filteredMessages = prevMessages.filter(
+                (msg) =>
+                  msg.tempId !== "session-locked-message" &&
+                  msg.tempId !== "joining-loader"
+              );
+
+              return [
+                ...filteredMessages,
+                {
+                  type: messageType.MM_NOTIFICATION,
+                  message: <ChatJoiningLoader />,
+                  handlerName: "[MessageMoment.com]",
+                  handlerColor: "#494AF8",
+                  tempId: "joining-loader",
+                },
+              ];
+            });
+
+            socket.emit("joinRoom", pendingJoinData);
+            return;
+          }
+
           if (
             sessionData?.type === SessionTypeEnum.WALLET &&
             !userHasJoinedSession
@@ -194,7 +240,7 @@ const MessageBox = ({
               (msg) => msg.tempId !== "session-locked-message"
             );
 
-            if (!handlerName && !askHanderName) {
+            if (!handlerName && !askHanderName && !userHasJoinedSession) {
               setAskHandlerName(true);
             }
 
@@ -215,6 +261,10 @@ const MessageBox = ({
     isVerifiedCode,
     getSessionLockedMessage,
     userHasJoinedSession,
+    isJoining,
+    pendingJoinData,
+    isAwaitingUnlock,
+    socket,
   ]);
 
   const checkSessionValidityForExistingUsers = useCallback(async () => {
@@ -1110,12 +1160,20 @@ const MessageBox = ({
 
     if (isValidate !== "All Good!") return;
 
-    if (input.trim() != "" && input.length >= 15) {
-      setHandlerName(`[${input.trim().slice(0, 15)}]`);
-    } else {
-      setHandlerName(`[${input.trim()}]`);
-    }
+    const finalUsername =
+      input.trim().length >= 15
+        ? `[${input.trim().slice(0, 15)}]`
+        : `[${input.trim()}]`;
 
+    const joinData = {
+      username: finalUsername,
+      sessionId: sessionData.code,
+      sessionSecurityCode: sessionData.secureCode || "",
+      fingerprint: safeGetFingerprint(),
+    };
+
+    setPendingJoinData(joinData);
+    setHandlerName(finalUsername);
     setAskHandlerName(false);
     setinput("");
     scrollToBottom();
@@ -1699,6 +1757,8 @@ const MessageBox = ({
 
       setIsJoining(false);
       setUserHasJoinedSession(true);
+      setPendingJoinData(null);
+      setIsAwaitingUnlock(false);
 
       console.log(
         "🎯 User marked as joined - switching to existing user validation"
@@ -2318,13 +2378,17 @@ const MessageBox = ({
 
       setHandlerName("");
       setAskHandlerName(true);
+      setPendingJoinData(null);
+      setIsAwaitingUnlock(false);
     };
 
     const handleSocketError = (error) => {
       console.error("❌ Socket Error:", error);
-      setIsJoining(false);
 
+      setIsJoining(false);
       setUserHasJoinedSession(false);
+      setPendingJoinData(null);
+      setIsAwaitingUnlock(false);
 
       setChatMessages((prevMessages) =>
         prevMessages.filter((msg) => msg.tempId !== "joining-loader")
