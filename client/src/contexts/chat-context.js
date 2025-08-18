@@ -7,7 +7,6 @@ import { SessionTypeEnum } from "@/enums/session-type-enum";
 const ChatContext = createContext();
 const ChatContextProvider = ({ children }) => {
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [filedata, setFiledata] = useState({});
   const [showAttachment, setShowAttachment] = useState(false);
   const [isProjectModeOn, setIsProjectModeOn] = useState(false);
   const [showChatLeaveModal, setShowChatLeaveModal] = useState(false);
@@ -20,10 +19,12 @@ const ChatContextProvider = ({ children }) => {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [isWalletExist, setIsWalletExist] = useState(true);
   const [isLoadingGenerateLink, setIsLoadingGenerateLink] = useState(false);
-  const [users, setUsers] = useState([]);
   const [activeUser, setActiveUser] = useState("");
   const [isExpiryTimeExist, setIsExpiryTimeExist] = useState(false);
   const [isLiveTypingActive, setIsLiveTypingActive] = useState(true);
+
+  const [filedata, setFiledata] = useState({});
+  const [users, setUsers] = useState([]);
   const [connectWalletFunction, setConnectWalletFunction] = useState(
     () => () => {}
   );
