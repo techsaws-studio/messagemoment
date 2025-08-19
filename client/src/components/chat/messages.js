@@ -5,6 +5,7 @@ import { SessionTypeEnum } from "@/enums/session-type-enum";
 
 import { chatContext } from "@/contexts/chat-context";
 import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
+import { useSocket } from "@/contexts/socket-context";
 
 import { messageType, scrollToBottom, USER_HANDERLS } from "@/dummy-data";
 
@@ -55,6 +56,9 @@ const Message = ({
     isLiveTypingActive,
     isProjectModeOn,
   } = chatContext();
+  const socket = useSocket();
+
+  const sessionId = sessionData?.code;
 
   const renderAdertisment = () => {
     return (
@@ -677,6 +681,14 @@ const Message = ({
         const typeMessage = (currentTime) => {
           if (!el.current || currentIndex >= message.length) {
             setIsFullyRendered(true);
+
+            if (socket && sessionId && messageId && !isOwnMessage) {
+              socket.emit("messageTypingComplete", {
+                messageId,
+                timestamp: Date.now(),
+              });
+            }
+
             return;
           }
 
@@ -696,6 +708,14 @@ const Message = ({
             animationFrameId = requestAnimationFrame(typeMessage);
           } else {
             setIsFullyRendered(true);
+
+            if (socket && sessionId && messageId && !isOwnMessage) {
+              socket.emit("messageTypingComplete", {
+                messageId,
+                timestamp: Date.now(),
+              });
+            }
+
             if (!userScrolled) {
               setTimeout(scrollToBottom, 50);
             }
@@ -720,6 +740,8 @@ const Message = ({
     scrollToBottom,
     isFullyRendered,
     messageId,
+    socket,
+    sessionId,
   ]);
 
   useEffect(() => {
@@ -750,6 +772,34 @@ const Message = ({
       return;
     }
 
+    if (isOwnMessage && expiresAt) {
+      const checkExpiration = () => {
+        const now = Date.now();
+        if (now >= expiresAt) {
+          setIsExpired(true);
+          return;
+        }
+      };
+
+      checkExpiration();
+      const interval = setInterval(checkExpiration, 1000);
+      return () => clearInterval(interval);
+    }
+
+    if (!isOwnMessage && !expiresAt) {
+      console.log(
+        `⏳ Other user's message has no expiration time set yet: ${messageId}`
+      );
+      return;
+    }
+
+    if (!isOwnMessage && isLiveTypingActive && !isFullyRendered) {
+      console.log(
+        `⏳ Delaying expiration check for other user's message until typing completes: ${messageId}`
+      );
+      return;
+    }
+
     const checkExpiration = () => {
       const now = Date.now();
       if (now >= expiresAt) {
@@ -768,6 +818,10 @@ const Message = ({
     type,
     handlerName,
     skipExpirationCheck,
+    isLiveTypingActive,
+    isFullyRendered,
+    isOwnMessage,
+    messageId,
   ]);
 
   if (isExpired && !skipExpirationCheck) {

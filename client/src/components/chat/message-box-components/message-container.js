@@ -58,7 +58,23 @@ const MessageContainer = ({
         return true;
       }
 
-      return currentTime < message.expiresAt;
+      if (
+        message.isLiveTyping &&
+        !message.isFullyRendered &&
+        !message.isOwnMessage
+      ) {
+        return true;
+      }
+
+      if (message.isOwnMessage && message.expiresAt) {
+        return currentTime < message.expiresAt;
+      }
+
+      if (!message.isOwnMessage && !message.expiresAt) {
+        return true;
+      }
+
+      return message.expiresAt ? currentTime < message.expiresAt : true;
     });
 
     return visibleMessages.map((message, index) => {
@@ -139,7 +155,6 @@ const MessageContainer = ({
               userHasJoinedSession={userHasJoinedSession}
               expiresAt={item.expiresAt}
               isPermanent={item.isPermanent}
-              
               skipExpirationCheck={true}
             />
           ))}

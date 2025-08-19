@@ -108,6 +108,7 @@ const MessageBox = ({
     isWalletConnected,
     setIsWalletExist,
     isExpiryTimeExist,
+    isLiveTypingActive,
     setIsExpiryTimeExist,
     expiryTime,
   } = chatContext();
@@ -2022,18 +2023,34 @@ const MessageBox = ({
         ? USER_HANDERLS[data.assignedColor]
         : USER_HANDERLS[0];
 
-      let messageExpiresAt = data.expiresAt;
-      if (!messageExpiresAt && !data.isPermanent && !isProjectModeOn) {
-        const currentTimer = data.timerValue || expiryTime || 30;
-        messageExpiresAt = data.timestamp + currentTimer * 1000;
+      const isOwnMessage = data.sender === handlerName;
+
+      let messageExpiresAt = null;
+
+      if (
+        isOwnMessage ||
+        !isLiveTypingActive ||
+        data.isPermanent ||
+        isProjectModeOn
+      ) {
+        messageExpiresAt = data.expiresAt;
+        if (!messageExpiresAt && !data.isPermanent && !isProjectModeOn) {
+          const currentTimer = data.timerValue || expiryTime || 30;
+          messageExpiresAt = data.timestamp + currentTimer * 1000;
+        }
       }
 
       console.log("📨 Message expiration info:", {
         timestamp: data.timestamp,
+        sender: data.sender,
+        currentUser: handlerName,
+        isOwnMessage: isOwnMessage,
         expiresAt: messageExpiresAt,
         timerValue: data.timerValue || expiryTime || 30,
         isPermanent: data.isPermanent,
         isProjectMode: isProjectModeOn,
+        isLiveTypingActive: isLiveTypingActive,
+        willExpireAfterTyping: messageExpiresAt === null,
       });
 
       setChatMessages((prevMessages) => [
@@ -2052,8 +2069,44 @@ const MessageBox = ({
           expiresAt: messageExpiresAt,
           isPermanent: data.isPermanent || isProjectModeOn,
           timerValue: data.timerValue || expiryTime,
+          isLiveTyping: isLiveTypingActive && !isOwnMessage,
+          isOwnMessage: isOwnMessage,
         },
       ]);
+    };
+
+    const handleMessageTypingCompleted = (data) => {
+      console.log("⌨️ Message typing completed:", data);
+
+      if (!data?.messageId) {
+        console.warn("⚠️ Invalid typing completion data:", data);
+        return;
+      }
+
+      setChatMessages((prevMessages) =>
+        prevMessages.map((msg) => {
+          if (msg.messageId === data.messageId) {
+            console.log(
+              `✅ Starting expiration timer for message: ${data.messageId}`
+            );
+
+            let newExpiresAt = null;
+            if (!msg.isPermanent && !isProjectModeOn) {
+              const currentTimer = msg.timerValue || expiryTime || 30;
+              newExpiresAt = data.timestamp + currentTimer * 1000;
+            }
+
+            return {
+              ...msg,
+              isFullyRendered: true,
+              typingCompletedAt: data.timestamp,
+              expiresAt: newExpiresAt,
+              isLiveTyping: false,
+            };
+          }
+          return msg;
+        })
+      );
     };
 
     const handleTimerUpdate = (data) => {
@@ -2419,6 +2472,7 @@ const MessageBox = ({
     socket.on("historicalMessages", handleHistoricalMessages);
     socket.on("userList", handleUserList);
     socket.on("receiveMessage", handleReceiveMessage);
+    socket.on("messageTypingCompleted", handleMessageTypingCompleted);
     socket.on("timerUpdate", handleTimerUpdate);
     socket.on("lockStatusUpdate", handleLockStatusUpdate);
     socket.on("userRemoved", handleUserRemoved);
@@ -2453,6 +2507,7 @@ const MessageBox = ({
       socket.off("historicalMessages", handleHistoricalMessages);
       socket.off("userList", handleUserList);
       socket.off("receiveMessage", handleReceiveMessage);
+      socket.off("messageTypingCompleted", handleMessageTypingCompleted);
       socket.off("timerUpdate", handleTimerUpdate);
       socket.off("lockStatusUpdate", handleLockStatusUpdate);
       socket.off("userRemoved", handleUserRemoved);

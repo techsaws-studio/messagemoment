@@ -13,6 +13,7 @@ import { GetUserListEvent } from "../events/get-user-list.js";
 import { ReconnectionEvent } from "../events/reconnection.js";
 import { ErrorHandler } from "../events/error-handler.js";
 import { Disconnect } from "../events/disconnect.js";
+import { MessageTypingComplete } from "events/message-typing-complete.js";
 
 export const SocketEventsRegistry = (io: Server, socket: Socket): void => {
   const register = (event: string, handler: Function): void => {
@@ -31,6 +32,7 @@ export const SocketEventsRegistry = (io: Server, socket: Socket): void => {
   register("toggleProjectMode", ProjectModeEvent);
   register("getUserList", GetUserListEvent);
   register("attemptReconnection", ReconnectionEvent);
+  register("messageTypingComplete", MessageTypingComplete);
   register("errorHandler", () => ErrorHandler(socket));
 
   Disconnect(socket, io);
