@@ -1718,6 +1718,101 @@ const MessageBox = ({
     });
   }, [userlist, handlerName]);
 
+  useEffect(() => {
+    const cleanupInterval = setInterval(() => {
+      setChatMessages((prevMessages) => {
+        const now = Date.now();
+        let hasChanges = false;
+
+        const expiredMessages = [];
+        const activeMessages = [];
+
+        prevMessages.forEach((msg, index) => {
+          if (
+            msg.isPermanent ||
+            isProjectModeOn ||
+            !msg.expiresAt ||
+            msg.type === messageType.ADVERTISEMENT ||
+            msg.type === messageType.GREETING ||
+            msg.type === messageType.MESSAGE_MOMENT ||
+            msg.type === messageType.SECURITY_CODE ||
+            msg.type === messageType.ASK_TO_SET_EXPIRYTIME ||
+            msg.type === messageType.PROJECT_MODE ||
+            msg.type === messageType.PROJECT_MODE_ENTRY ||
+            msg.type === messageType.MM_NOTIFICATION ||
+            msg.type === messageType.MM_ERROR_MSG ||
+            msg.type === messageType.MM_ALERT ||
+            msg.type === messageType.EXPIRY_TIME_HAS_SET ||
+            msg.type === messageType.PHANTOM_WALLET ||
+            msg.type === messageType.MM_NOTIFICATION_REMOVE_USER ||
+            msg.handlerName === "[MessageMoment.com]" ||
+            msg.handlerName === "[AI_RESEARCH_COMPANION]"
+          ) {
+            activeMessages.push({ ...msg, originalIndex: index });
+            return;
+          }
+
+          if (msg.isLiveTyping && !msg.isFullyRendered && !msg.isOwnMessage) {
+            if (!isLiveTypingActive) {
+              msg.isFullyRendered = true;
+              msg.isLiveTyping = false;
+
+              if (msg.expiresAt && now >= msg.expiresAt) {
+                expiredMessages.push({ ...msg, originalIndex: index });
+                hasChanges = true;
+                return;
+              }
+            } else {
+              activeMessages.push({ ...msg, originalIndex: index });
+              return;
+            }
+          }
+
+          if (msg.expiresAt && now >= msg.expiresAt) {
+            if (
+              msg.isLiveTyping &&
+              !msg.isFullyRendered &&
+              !msg.isOwnMessage &&
+              isLiveTypingActive
+            ) {
+              activeMessages.push({ ...msg, originalIndex: index });
+              return;
+            }
+
+            expiredMessages.push({ ...msg, originalIndex: index });
+            hasChanges = true;
+          } else {
+            activeMessages.push({ ...msg, originalIndex: index });
+          }
+        });
+
+        if (!hasChanges) {
+          return prevMessages;
+        }
+
+        if (expiredMessages.length > 0) {
+          console.log(
+            "🗑️ Removing expired messages:",
+            expiredMessages.map((msg) => ({
+              sender: msg.handlerName,
+              timestamp: msg.timestamp,
+              expiresAt: msg.expiresAt,
+              wasTyping: msg.isLiveTyping,
+              isOwn: msg.isOwnMessage,
+            }))
+          );
+        }
+
+        return activeMessages.map((msg) => {
+          const { originalIndex, ...cleanMsg } = msg;
+          return cleanMsg;
+        });
+      });
+    }, 500);
+
+    return () => clearInterval(cleanupInterval);
+  }, [isProjectModeOn, messageType, isLiveTypingActive]);
+
   // SOCKET INTEGRATION -- START
 
   useEffect(() => {
@@ -2026,6 +2121,7 @@ const MessageBox = ({
       const isOwnMessage = data.sender === handlerName;
 
       let messageExpiresAt = null;
+      let shouldStartTyping = false;
 
       if (
         isOwnMessage ||
@@ -2038,9 +2134,12 @@ const MessageBox = ({
           const currentTimer = data.timerValue || expiryTime || 30;
           messageExpiresAt = data.timestamp + currentTimer * 1000;
         }
+        shouldStartTyping = false;
+      } else {
+        shouldStartTyping = true;
       }
 
-      console.log("📨 Message expiration info:", {
+      console.log("📨 Message handling info:", {
         timestamp: data.timestamp,
         sender: data.sender,
         currentUser: handlerName,
@@ -2050,7 +2149,7 @@ const MessageBox = ({
         isPermanent: data.isPermanent,
         isProjectMode: isProjectModeOn,
         isLiveTypingActive: isLiveTypingActive,
-        willExpireAfterTyping: messageExpiresAt === null,
+        shouldStartTyping: shouldStartTyping,
       });
 
       setChatMessages((prevMessages) => [
@@ -2069,8 +2168,9 @@ const MessageBox = ({
           expiresAt: messageExpiresAt,
           isPermanent: data.isPermanent || isProjectModeOn,
           timerValue: data.timerValue || expiryTime,
-          isLiveTyping: isLiveTypingActive && !isOwnMessage,
+          isLiveTyping: shouldStartTyping,
           isOwnMessage: isOwnMessage,
+          isFullyRendered: !shouldStartTyping,
         },
       ]);
     };
@@ -2086,14 +2186,26 @@ const MessageBox = ({
       setChatMessages((prevMessages) =>
         prevMessages.map((msg) => {
           if (msg.messageId === data.messageId) {
-            console.log(
-              `✅ Starting expiration timer for message: ${data.messageId}`
-            );
+            console.log(`✅ Message typing completed for: ${data.messageId}`);
 
             let newExpiresAt = null;
             if (!msg.isPermanent && !isProjectModeOn) {
               const currentTimer = msg.timerValue || expiryTime || 30;
               newExpiresAt = data.timestamp + currentTimer * 1000;
+
+              if (Date.now() >= newExpiresAt) {
+                console.log(
+                  `⏰ Message ${data.messageId} expired immediately after typing completion`
+                );
+                return {
+                  ...msg,
+                  isFullyRendered: true,
+                  typingCompletedAt: data.timestamp,
+                  expiresAt: newExpiresAt,
+                  isLiveTyping: false,
+                  _shouldExpireImmediately: true,
+                };
+              }
             }
 
             return {
@@ -2104,6 +2216,7 @@ const MessageBox = ({
               isLiveTyping: false,
             };
           }
+
           return msg;
         })
       );

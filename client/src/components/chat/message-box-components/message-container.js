@@ -34,6 +34,8 @@ const MessageContainer = ({
   }, []);
 
   const visibleMessagesWithUsernameLogic = useMemo(() => {
+    const now = currentTime;
+
     const visibleMessages = chatMessage.filter((message, index) => {
       if (
         message.isPermanent ||
@@ -58,6 +60,10 @@ const MessageContainer = ({
         return true;
       }
 
+      if (message._shouldExpireImmediately) {
+        return false;
+      }
+
       if (
         message.isLiveTyping &&
         !message.isFullyRendered &&
@@ -66,15 +72,11 @@ const MessageContainer = ({
         return true;
       }
 
-      if (message.isOwnMessage && message.expiresAt) {
-        return currentTime < message.expiresAt;
+      if (message.expiresAt && now >= message.expiresAt) {
+        return false;
       }
 
-      if (!message.isOwnMessage && !message.expiresAt) {
-        return true;
-      }
-
-      return message.expiresAt ? currentTime < message.expiresAt : true;
+      return true;
     });
 
     return visibleMessages.map((message, index) => {

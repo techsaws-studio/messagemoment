@@ -671,6 +671,21 @@ const Message = ({
           if (!isFullyRendered) {
             setIsFullyRendered(true);
           }
+
+          if (
+            !isLiveTypingActive &&
+            !isFullyRendered &&
+            socket &&
+            sessionId &&
+            messageId &&
+            !isOwnMessage
+          ) {
+            socket.emit("messageTypingComplete", {
+              messageId,
+              timestamp: Date.now(),
+            });
+          }
+
           return;
         }
 
@@ -679,6 +694,23 @@ const Message = ({
         const typeSpeed = 30;
 
         const typeMessage = (currentTime) => {
+          if (!isLiveTypingActive) {
+            el.current.innerHTML = message;
+            setIsFullyRendered(true);
+
+            if (socket && sessionId && messageId && !isOwnMessage) {
+              socket.emit("messageTypingComplete", {
+                messageId,
+                timestamp: Date.now(),
+              });
+            }
+
+            if (!userScrolled) {
+              setTimeout(scrollToBottom, 50);
+            }
+            return;
+          }
+
           if (!el.current || currentIndex >= message.length) {
             setIsFullyRendered(true);
 
@@ -772,7 +804,12 @@ const Message = ({
       return;
     }
 
-    if (isOwnMessage && expiresAt) {
+    if (expiresAt && Date.now() >= expiresAt) {
+      setIsExpired(true);
+      return;
+    }
+
+    if (isOwnMessage) {
       const checkExpiration = () => {
         const now = Date.now();
         if (now >= expiresAt) {
@@ -786,31 +823,19 @@ const Message = ({
       return () => clearInterval(interval);
     }
 
-    if (!isOwnMessage && !expiresAt) {
-      console.log(
-        `⏳ Other user's message has no expiration time set yet: ${messageId}`
-      );
-      return;
+    if (!isOwnMessage && isFullyRendered && expiresAt) {
+      const checkExpiration = () => {
+        const now = Date.now();
+        if (now >= expiresAt) {
+          setIsExpired(true);
+          return;
+        }
+      };
+
+      checkExpiration();
+      const interval = setInterval(checkExpiration, 1000);
+      return () => clearInterval(interval);
     }
-
-    if (!isOwnMessage && isLiveTypingActive && !isFullyRendered) {
-      console.log(
-        `⏳ Delaying expiration check for other user's message until typing completes: ${messageId}`
-      );
-      return;
-    }
-
-    const checkExpiration = () => {
-      const now = Date.now();
-      if (now >= expiresAt) {
-        setIsExpired(true);
-        return;
-      }
-    };
-
-    checkExpiration();
-    const interval = setInterval(checkExpiration, 1000);
-    return () => clearInterval(interval);
   }, [
     expiresAt,
     isPermanent,

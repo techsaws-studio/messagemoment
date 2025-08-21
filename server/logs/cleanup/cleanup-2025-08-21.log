@@ -1,0 +1,3 @@
+{"timestamp":"2025-08-21T16:46:20.891Z","level":"INFO","operation":"SPECIFIC_SESSION_CLEANUP","details":{"sessionId":"gG9LkI4YbqATCD","messagesDeleted":1},"environment":"development"}
+{"timestamp":"2025-08-21T16:49:38.112Z","level":"INFO","operation":"SPECIFIC_SESSION_CLEANUP","details":{"sessionId":"s0tqYgHSXUDIaC","messagesDeleted":3},"environment":"development"}
+{"timestamp":"2025-08-21T17:01:23.755Z","level":"INFO","operation":"SPECIFIC_SESSION_CLEANUP","details":{"sessionId":"HZ9zxnc3wuKn2S","messagesDeleted":3},"environment":"development"}
