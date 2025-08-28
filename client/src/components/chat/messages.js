@@ -809,24 +809,15 @@ const Message = ({
       return;
     }
 
-    if (isOwnMessage) {
+    if (isOwnMessage || (isFullyRendered && expiresAt)) {
       const checkExpiration = () => {
         const now = Date.now();
         if (now >= expiresAt) {
-          setIsExpired(true);
-          return;
-        }
-      };
-
-      checkExpiration();
-      const interval = setInterval(checkExpiration, 1000);
-      return () => clearInterval(interval);
-    }
-
-    if (!isOwnMessage && isFullyRendered && expiresAt) {
-      const checkExpiration = () => {
-        const now = Date.now();
-        if (now >= expiresAt) {
+          console.log(
+            `⏰ Message expired individually: ${
+              messageId || "unknown"
+            } - will be removed in chronological order`
+          );
           setIsExpired(true);
           return;
         }

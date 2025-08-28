@@ -89,6 +89,8 @@ const MessageBox = ({
   const [removeUserList, setRemoveUserList] = useState([]);
   const [pendingJoinData, setPendingJoinData] = useState(null);
   const [isAwaitingUnlock, setIsAwaitingUnlock] = useState(false);
+  const [messageExpirationQueue, setMessageExpirationQueue] = useState([]);
+  const [isProcessingExpiration, setIsProcessingExpiration] = useState(false);
 
   const {
     setShowUploadModal,
@@ -1431,6 +1433,125 @@ const MessageBox = ({
     }
   };
 
+  const calculateChronologicalExpiration = (messages) => {
+    const expirableMessages = [];
+
+    messages.forEach((msg, index) => {
+      if (
+        !msg.isPermanent &&
+        !isProjectModeOn &&
+        msg.expiresAt !== undefined &&
+        msg.handlerName !== "[MessageMoment.com]" &&
+        msg.handlerName !== "[AI_RESEARCH_COMPANION]" &&
+        msg.type !== messageType.ADVERTISEMENT &&
+        msg.type !== messageType.GREETING &&
+        msg.type !== messageType.MESSAGE_MOMENT &&
+        msg.type !== messageType.SECURITY_CODE &&
+        msg.type !== messageType.ASK_TO_SET_EXPIRYTIME &&
+        msg.type !== messageType.PROJECT_MODE &&
+        msg.type !== messageType.PROJECT_MODE_ENTRY &&
+        msg.type !== messageType.MM_NOTIFICATION &&
+        msg.type !== messageType.MM_ERROR_MSG &&
+        msg.type !== messageType.MM_ALERT &&
+        msg.type !== messageType.EXPIRY_TIME_HAS_SET &&
+        msg.type !== messageType.PHANTOM_WALLET &&
+        msg.type !== messageType.MM_NOTIFICATION_REMOVE_USER
+      ) {
+        expirableMessages.push({ msg, index });
+      }
+    });
+
+    const now = Date.now();
+
+    return messages.map((msg, index) => {
+      const expirableIndex = expirableMessages.findIndex(
+        (em) => em.index === index
+      );
+
+      if (expirableIndex === -1) {
+        return msg;
+      }
+
+      if (msg.isOwnMessage) {
+        if (!msg.expiresAt && !msg.isPermanent && !isProjectModeOn) {
+          const currentTimer = msg.timerValue || expiryTime || 30;
+          return {
+            ...msg,
+            expiresAt: msg.timestamp + currentTimer * 1000,
+          };
+        }
+        return msg;
+      }
+
+      if (!msg.isFullyRendered || msg.isLiveTyping) {
+        return {
+          ...msg,
+          expiresAt: null,
+        };
+      }
+
+      const earlierExpirableMessages = expirableMessages.slice(
+        0,
+        expirableIndex
+      );
+
+      const earliestStillTyping = earlierExpirableMessages.find((em) => {
+        const earlierMsg = messages[em.index];
+        return !earlierMsg.isFullyRendered || earlierMsg.isLiveTyping;
+      });
+
+      if (earliestStillTyping) {
+        console.log(
+          `Message ${msg.messageId} waiting for earlier message to finish typing`
+        );
+        return {
+          ...msg,
+          expiresAt: null,
+          _waitingForEarlierTyping: true,
+        };
+      }
+
+      const earliestWithActiveTimer = earlierExpirableMessages.find((em) => {
+        const earlierMsg = messages[em.index];
+        return earlierMsg.expiresAt && now < earlierMsg.expiresAt;
+      });
+
+      if (earliestWithActiveTimer) {
+        console.log(
+          `Message ${msg.messageId} waiting for earlier message to expire first`
+        );
+        return {
+          ...msg,
+          expiresAt: null,
+          _waitingForEarlierExpiration: true,
+        };
+      }
+
+      if (!msg.expiresAt && !msg.isPermanent && !isProjectModeOn) {
+        const currentTimer = msg.timerValue || expiryTime || 30;
+        const newExpiresAt =
+          (msg.typingCompletedAt || msg.timestamp) + currentTimer * 1000;
+
+        const finalExpiresAt = newExpiresAt < now ? now + 100 : newExpiresAt;
+
+        console.log(
+          `Starting expiration timer for ${
+            msg.messageId
+          } - expires at ${new Date(finalExpiresAt).toLocaleTimeString()}`
+        );
+
+        return {
+          ...msg,
+          expiresAt: finalExpiresAt,
+          _waitingForEarlierTyping: false,
+          _waitingForEarlierExpiration: false,
+        };
+      }
+
+      return msg;
+    });
+  };
+
   useEffect(() => {
     if (!sessionData?.code || isSessionExpiredRealTime) {
       console.log(
@@ -1721,97 +1842,58 @@ const MessageBox = ({
   useEffect(() => {
     const cleanupInterval = setInterval(() => {
       setChatMessages((prevMessages) => {
+        const messagesWithUpdatedExpiration =
+          calculateChronologicalExpiration(prevMessages);
+
         const now = Date.now();
         let hasChanges = false;
 
-        const expiredMessages = [];
-        const activeMessages = [];
-
-        prevMessages.forEach((msg, index) => {
-          if (
-            msg.isPermanent ||
-            isProjectModeOn ||
-            !msg.expiresAt ||
-            msg.type === messageType.ADVERTISEMENT ||
-            msg.type === messageType.GREETING ||
-            msg.type === messageType.MESSAGE_MOMENT ||
-            msg.type === messageType.SECURITY_CODE ||
-            msg.type === messageType.ASK_TO_SET_EXPIRYTIME ||
-            msg.type === messageType.PROJECT_MODE ||
-            msg.type === messageType.PROJECT_MODE_ENTRY ||
-            msg.type === messageType.MM_NOTIFICATION ||
-            msg.type === messageType.MM_ERROR_MSG ||
-            msg.type === messageType.MM_ALERT ||
-            msg.type === messageType.EXPIRY_TIME_HAS_SET ||
-            msg.type === messageType.PHANTOM_WALLET ||
-            msg.type === messageType.MM_NOTIFICATION_REMOVE_USER ||
-            msg.handlerName === "[MessageMoment.com]" ||
-            msg.handlerName === "[AI_RESEARCH_COMPANION]"
-          ) {
-            activeMessages.push({ ...msg, originalIndex: index });
-            return;
-          }
-
-          if (msg.isLiveTyping && !msg.isFullyRendered && !msg.isOwnMessage) {
-            if (!isLiveTypingActive) {
-              msg.isFullyRendered = true;
-              msg.isLiveTyping = false;
-
-              if (msg.expiresAt && now >= msg.expiresAt) {
-                expiredMessages.push({ ...msg, originalIndex: index });
-                hasChanges = true;
-                return;
-              }
-            } else {
-              activeMessages.push({ ...msg, originalIndex: index });
-              return;
-            }
-          }
-
-          if (msg.expiresAt && now >= msg.expiresAt) {
+        const filteredMessages = messagesWithUpdatedExpiration.filter(
+          (msg, index) => {
             if (
-              msg.isLiveTyping &&
-              !msg.isFullyRendered &&
-              !msg.isOwnMessage &&
-              isLiveTypingActive
+              msg.isPermanent ||
+              isProjectModeOn ||
+              !msg.expiresAt ||
+              msg.type === messageType.ADVERTISEMENT ||
+              msg.type === messageType.GREETING ||
+              msg.type === messageType.MESSAGE_MOMENT ||
+              msg.type === messageType.SECURITY_CODE ||
+              msg.type === messageType.ASK_TO_SET_EXPIRYTIME ||
+              msg.type === messageType.PROJECT_MODE ||
+              msg.type === messageType.PROJECT_MODE_ENTRY ||
+              msg.type === messageType.MM_NOTIFICATION ||
+              msg.type === messageType.MM_ERROR_MSG ||
+              msg.type === messageType.MM_ALERT ||
+              msg.type === messageType.EXPIRY_TIME_HAS_SET ||
+              msg.type === messageType.PHANTOM_WALLET ||
+              msg.type === messageType.MM_NOTIFICATION_REMOVE_USER ||
+              msg.handlerName === "[MessageMoment.com]" ||
+              msg.handlerName === "[AI_RESEARCH_COMPANION]"
             ) {
-              activeMessages.push({ ...msg, originalIndex: index });
-              return;
+              return true;
             }
 
-            expiredMessages.push({ ...msg, originalIndex: index });
-            hasChanges = true;
-          } else {
-            activeMessages.push({ ...msg, originalIndex: index });
+            if (msg.expiresAt && now >= msg.expiresAt) {
+              hasChanges = true;
+              return false;
+            }
+
+            return true;
           }
-        });
+        );
 
-        if (!hasChanges) {
-          return prevMessages;
+        if (hasChanges) {
+          const removedCount =
+            messagesWithUpdatedExpiration.length - filteredMessages.length;
+          console.log(`Messages expired: ${removedCount}`);
         }
 
-        if (expiredMessages.length > 0) {
-          console.log(
-            "🗑️ Removing expired messages:",
-            expiredMessages.map((msg) => ({
-              sender: msg.handlerName,
-              timestamp: msg.timestamp,
-              expiresAt: msg.expiresAt,
-              wasTyping: msg.isLiveTyping,
-              isOwn: msg.isOwnMessage,
-            }))
-          );
-        }
-
-        return activeMessages.map((msg) => {
-          const { originalIndex, ...cleanMsg } = msg;
-          return cleanMsg;
-        });
+        return hasChanges ? filteredMessages : messagesWithUpdatedExpiration;
       });
     }, 500);
 
     return () => clearInterval(cleanupInterval);
-  }, [isProjectModeOn, messageType, isLiveTypingActive]);
+  }, [isProjectModeOn, messageType, expiryTime]);
 
   // SOCKET INTEGRATION -- START
 
@@ -2176,50 +2258,32 @@ const MessageBox = ({
     };
 
     const handleMessageTypingCompleted = (data) => {
-      console.log("⌨️ Message typing completed:", data);
+      console.log("Message typing completed:", data);
 
       if (!data?.messageId) {
-        console.warn("⚠️ Invalid typing completion data:", data);
+        console.warn("Invalid typing completion data:", data);
         return;
       }
 
-      setChatMessages((prevMessages) =>
-        prevMessages.map((msg) => {
+      setChatMessages((prevMessages) => {
+        const updatedMessages = prevMessages.map((msg, index) => {
           if (msg.messageId === data.messageId) {
-            console.log(`✅ Message typing completed for: ${data.messageId}`);
+            console.log(`Message typing completed for: ${data.messageId}`);
 
-            let newExpiresAt = null;
-            if (!msg.isPermanent && !isProjectModeOn) {
-              const currentTimer = msg.timerValue || expiryTime || 30;
-              newExpiresAt = data.timestamp + currentTimer * 1000;
-
-              if (Date.now() >= newExpiresAt) {
-                console.log(
-                  `⏰ Message ${data.messageId} expired immediately after typing completion`
-                );
-                return {
-                  ...msg,
-                  isFullyRendered: true,
-                  typingCompletedAt: data.timestamp,
-                  expiresAt: newExpiresAt,
-                  isLiveTyping: false,
-                  _shouldExpireImmediately: true,
-                };
-              }
-            }
-
-            return {
+            const updatedMsg = {
               ...msg,
               isFullyRendered: true,
               typingCompletedAt: data.timestamp,
-              expiresAt: newExpiresAt,
               isLiveTyping: false,
             };
-          }
 
+            return updatedMsg;
+          }
           return msg;
-        })
-      );
+        });
+
+        return calculateChronologicalExpiration(updatedMessages);
+      });
     };
 
     const handleTimerUpdate = (data) => {
