@@ -15,4 +15,9 @@ export interface SocketConfig {
   maxHttpBufferSize: number;
   allowUpgrades: boolean;
   transports: ("websocket" | "polling")[];
+  retries?: number;
+  reconnection?: boolean;
+  reconnectionDelay?: number;
+  reconnectionAttempts?: number;
+  timeout?: number;
 }

@@ -23,8 +23,8 @@ const gracePeriodRegistry = new Map<
 
 const intentionalLeaveRegistry = new Set<string>();
 
-const GRACE_PERIOD_MS = 15000;
-const MAX_GRACE_EXTENSIONS = 2;
+const GRACE_PERIOD_MS = 30000;
+const MAX_GRACE_EXTENSIONS = 3;
 
 const registerSocket = (
   socketId: string,
@@ -256,11 +256,11 @@ const Disconnect = (socket: Socket, io: Server): void => {
 
       unregisterSocket(socket.id);
 
-      // Determine if this looks like a page refresh/temporary disconnect
       const isLikelyTemporary =
         reason === "transport close" ||
         reason === "client namespace disconnect" ||
-        reason === "ping timeout";
+        reason === "ping timeout" ||
+        reason === "transport error";
 
       if (isLikelyTemporary) {
         console.info(

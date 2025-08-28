@@ -212,11 +212,20 @@ export const LeaveSessionService = async (
 
       if (updatedSession && updatedSession.participantCount <= 0) {
         console.info(`Session ${sessionId} is now empty, marking as expired`);
-        await SessionModel.updateOne(
-          { sessionId },
-          { sessionExpired: true },
-          { writeConcern: { w: "majority", j: true } }
-        );
+
+        setTimeout(async () => {
+          const reCheckSession = await SessionModel.findOne({ sessionId });
+          if (reCheckSession && reCheckSession.participantCount <= 0) {
+            await SessionModel.updateOne(
+              { sessionId },
+              { sessionExpired: true },
+              { writeConcern: { w: "majority", j: true } }
+            );
+            console.info(`Session ${sessionId} expired after timeout`);
+          } else {
+            console.info(`Session ${sessionId} recovered, keeping alive`);
+          }
+        }, 60000);
 
         const deletedCount =
           await MessageCleanupService.cleanupSpecificSessionMessages(sessionId);

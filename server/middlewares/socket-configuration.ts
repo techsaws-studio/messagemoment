@@ -8,15 +8,18 @@ import { SocketConfig } from "../interfaces/middlewares-interface.js";
 import { GetAllowedOrigins } from "./cors-middleware.js";
 
 const GetSocketConfiguration = (): SocketConfig => {
-  const isDevelopment = process.env.NODE_ENV !== "production";
-
   return {
-    pingTimeout: isDevelopment ? 30000 : 60000,
-    pingInterval: isDevelopment ? 15000 : 25000,
-    connectTimeout: isDevelopment ? 30000 : 45000,
-    maxHttpBufferSize: 10 * 1024 * 1024, // 10MB
+    pingTimeout: 60000,
+    pingInterval: 25000,
+    connectTimeout: 60000,
+    maxHttpBufferSize: 10 * 1024 * 1024,
     allowUpgrades: true,
     transports: ["websocket", "polling"] as ("websocket" | "polling")[],
+    retries: 5,
+    reconnection: true,
+    reconnectionDelay: 2000,
+    reconnectionAttempts: 5,
+    timeout: 20000,
   };
 };
 

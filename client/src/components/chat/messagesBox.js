@@ -1898,6 +1898,59 @@ const MessageBox = ({
   // SOCKET INTEGRATION -- START
 
   useEffect(() => {
+    if (!socket || !sessionData?.code) return;
+
+    let reconnectAttempts = 0;
+    const maxReconnectAttempts = 5;
+    let reconnectTimer = null;
+
+    const handleReconnection = () => {
+      if (reconnectAttempts < maxReconnectAttempts && userHasJoinedSession) {
+        reconnectAttempts++;
+        console.log(
+          `Attempting reconnection ${reconnectAttempts}/${maxReconnectAttempts}`
+        );
+
+        reconnectTimer = setTimeout(() => {
+          if (socket.disconnected && userHasJoinedSession) {
+            socket.connect();
+          }
+        }, 2000 * reconnectAttempts);
+      }
+    };
+
+    const handleConnect = () => {
+      console.log("Socket reconnected successfully");
+      reconnectAttempts = 0;
+
+      if (userHasJoinedSession && handlerName) {
+        const sessionToken = localStorage.getItem("mm_session_token");
+        if (sessionToken) {
+          socket.emit("attemptJWTReconnection", { token: sessionToken });
+        }
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden && socket.disconnected && userHasJoinedSession) {
+        console.log("Tab became visible, attempting reconnection");
+        socket.connect();
+      }
+    };
+
+    socket.on("disconnect", handleReconnection);
+    socket.on("connect", handleConnect);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      socket.off("disconnect", handleReconnection);
+      socket.off("connect", handleConnect);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      if (reconnectTimer) clearTimeout(reconnectTimer);
+    };
+  }, [socket, sessionData?.code, userHasJoinedSession, handlerName]);
+
+  useEffect(() => {
     if (!socket || !handlerName) return;
 
     console.log("🔍 Attempting to join room with:", {

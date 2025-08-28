@@ -34,10 +34,8 @@ const Message = ({
   userHasJoinedSession,
   isSessionExpiredRealTime,
   isSessionLockedRealTime,
-
   expiresAt,
   isPermanent,
-
   skipExpirationCheck = false,
 }) => {
   const [isFullyRendered, setIsFullyRendered] = useState(() => {
