@@ -8,6 +8,6 @@ import {
 const BasicRouter = express.Router();
 
 BasicRouter.get("/", RootEndpointFunction);
-BasicRouter.get("/ping", BasicPingFunction);
+BasicRouter.get("/ping", BasicPingFunction); 
 
 export default BasicRouter;
