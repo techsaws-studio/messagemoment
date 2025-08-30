@@ -95,6 +95,7 @@ const MessageInput = ({
           }
           onKeyDown={handleKeyDown}
           type={KeyboardType}
+          className="input-mono"
         />
         <Image
           src={!isDisabled && input.length > 0 ? sendBtn : sendBtnGrey}
