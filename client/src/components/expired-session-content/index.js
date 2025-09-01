@@ -24,7 +24,7 @@ const SessionUrlDisplay = () => {
 const SessionUrlSkeleton = () => (
   <div className="small link loading-container">
     <Skeleton
-      width="280px"
+      width="100%"
       height="16px"
       className="skeleton-inline"
       variant="text"
