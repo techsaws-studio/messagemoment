@@ -437,7 +437,30 @@
   height: 0vh;
   transition: height 0.6s ease-in-out;
 }
+
 // Mobile Responsive
+@media screen and (max-width: 1060px) {
+  .chat-header {
+    .url {
+      padding-left: 4px;
+      gap: 4px;
+    }
+    .side-btns {
+      gap: 4px;
+    }
+  }
+}
+
+@media screen and (max-width: 1030px) {
+  .chat-header {
+    .timer-cont {
+      gap: 3px;
+    }
+    #flex-row {
+      gap: 3px;
+    }
+  }
+}
 
 @media screen and (max-width: 1000px) {
   .chat-header {
@@ -451,13 +474,25 @@
     .url {
       display: none;
     }
-
     #flex-row {
-      gap: 6px;
+      gap: 10px;
       justify-content: flex-end;
       flex: 1 1;
       .projectmode-img {
         margin-top: 3px;
+      }
+    }
+
+    .side-btns {
+      gap: 10px;
+    }
+  }
+
+  .chat-mobile-header {
+    #flex-chat-row {
+      .projectmode-img {
+        width: 93px;
+        height: 47px;
       }
     }
   }
@@ -473,5 +508,65 @@
       display: block !important;
       cursor: pointer;
     }
+  }
+}
+
+@media screen and (max-width: 440px) {
+  .chat-header {
+    #flex-row {
+      gap: 4px;
+    }
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .chat-mobile-header {
+    #flex-chat-row {
+      gap: 3px;
+
+      .chat-m-timerClock {
+        width: 48px;
+        height: 42px;
+      }
+      .projectmode-img {
+        width: 84px;
+        height: 42px;
+      }
+    }
+    #flex-chat-row img {
+      width: 42px;
+      height: 42px;
+    }
+  }
+  .side-btns {
+    .chat_header_icons {
+      width: 42px;
+      height: 42px;
+    }
+  }
+  .chat-header {
+    #half-vt-divider {
+      height: 42px;
+    }
+    #flex-row {
+      gap: 3px;
+      .projectmode-img {
+        width: auto;
+        height: 49px;
+        object-fit: cover;
+      }
+    }
+    .timer-cont {
+      gap: 3px;
+      height: 42px;
+      align-items: end;
+      .timer-block {
+        width: 48px;
+        height: 42px;
+      }
+    }
+  }
+  .side-btns {
+    gap: 3px !important;
   }
 }
