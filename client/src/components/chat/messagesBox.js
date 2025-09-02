@@ -36,7 +36,7 @@ import {
 
 import { validateDisplayName } from "./chat-messages-utils";
 import MessagesModals from "./message-box-components/messagesModals";
-import MessageInput from "./message-box-components/message-input";
+import MessageInput, { inputRef } from "./message-box-components/message-input";
 import MessageContainer from "./message-box-components/message-container";
 import ChatJoiningLoader from "./chat-joining-loader";
 
@@ -458,6 +458,8 @@ const MessageBox = ({
   };
 
   const scrollToBottom = useCallback(() => {
+    inputRef.current.style.height = "40px";
+
     if (messageContainerRef.current) {
       const container = messageContainerRef.current;
       const isSafari = /^((?!chrome|android).)*safari/i.test(
@@ -592,6 +594,11 @@ const MessageBox = ({
       console.log("🚫 Input blocked - field disabled");
       return;
     }
+
+    const textarea = e.target;
+    textarea.style.height = "40px";
+    const newHeight = Math.min(textarea.scrollHeight, 94);
+    textarea.style.height = newHeight + "px !important";
 
     let value = e.target.value;
 
@@ -790,6 +797,13 @@ const MessageBox = ({
   const handleKeyDown = (event) => {
     if (shouldBlockInput) return;
 
+    if (event.key === "Enter" && event.shiftKey) {
+      return;
+    }
+    if (isMobileView && event.key === "Enter") {
+      return;
+    }
+
     if (sessionData?.type === SessionTypeEnum.SECURE && !isVerifiedCode) {
       if (
         event.keyCode === 69 ||
@@ -808,6 +822,7 @@ const MessageBox = ({
       handleKeyUpAndDown(event);
       return;
     } else if (event.key === "Enter" && input.trim() !== "") {
+      event.preventDefault();
       if (verifySecurityCode()) {
         if (input.trim() !== "" && !input.startsWith("/")) {
           handleClickSendBtn();

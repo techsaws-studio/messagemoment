@@ -622,7 +622,11 @@ const Message = ({
           {handlerName}
         </p>
 
-        <p className="chat-text msg_txt" ref={el}></p>
+        <p
+          className="chat-text msg_txt"
+          ref={el}
+          style={{ whiteSpace: "pre-wrap" }}
+        ></p>
       </>
     );
   };
