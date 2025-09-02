@@ -10,6 +10,15 @@ button {
     border-radius: 6px;
     background: var(--blue);
   }
+  &.btn-primary-border {
+    border: solid 1px #494af8;
+    background-color: white;
+    border-radius: 6px;
+    color: #494af8;
+    &:hover {
+      background-color: white;
+    }
+  }
   &:hover {
     background-color: rgba(66, 67, 233, 1);
   }
