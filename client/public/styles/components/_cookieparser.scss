@@ -153,7 +153,6 @@
     display: flex;
   }
 
-  
   .cookie-modal-wrapper {
     width: 690px;
     height: 73%;
@@ -390,6 +389,10 @@
   position: relative;
   cursor: pointer;
   transition: background-color 0.3s;
+  &.keyboard-switch {
+    min-width: 48px !important;
+    width: 48px !important;
+  }
 }
 
 .custom-switch.checked {

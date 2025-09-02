@@ -52,33 +52,46 @@
 .chat-input-cont {
   border-top: solid 1px rgba(0, 0, 0, 0.1);
   background-color: rgba(245, 245, 245, 1);
-  height: 89px;
+  min-height: 89px;
+  max-height: 130px;
   flex: 1;
   display: flex;
   align-items: center;
+  padding: 20px 0px;
   padding-left: 24px;
   position: fixed;
   bottom: 0px;
   width: 100%;
   .input-cont {
     background-color: white;
-    height: 50px;
+    min-height: 50px;
     width: 80%;
     border-radius: 10px;
     display: flex;
     align-items: center;
-    padding: 0px 10px 0px 21px;
-    input {
-      flex: 1;
-      margin-top: 2px;
-      height: 96%;
+    padding: 5px 10px 5px 21px;
+    textarea {
+      font-family: "JetBrains Mono";
+      margin-top: 0px;
+      margin-bottom: 0px;
+      width: 100%;
+      height: 40px;
+      box-sizing: border-box;
+      padding: 10px 0px 0px 0px;
       border: none;
       outline: none;
       margin-right: 22px;
-      caret-color: rgba(54, 60, 79, 1);
-      color: rgba(54, 60, 79, 1);
+      caret-color: #363c4f;
+      color: #363c4f;
       font-size: 16px;
       font-weight: 400;
+      resize: none;
+      overflow-y: scroll;
+      scrollbar-width: none; /* Firefox */
+    }
+
+    textarea::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Edge */
     }
     #arrow-icon {
       margin-right: 22px;

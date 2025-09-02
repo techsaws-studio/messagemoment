@@ -1,10 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import React, { createRef, useRef } from "react";
 import Image from "next/image";
 
 import SelectedFileView from "../chat-components/selected-file";
 import CommandModal from "./commandModal";
 
 import arrow from "@/assets/icons/chat/open_right.svg";
+
+export const inputRef = createRef(null);
 
 const MessageInput = ({
   showAttachment,
@@ -31,27 +33,7 @@ const MessageInput = ({
   setSelectedColor,
   setShowCommands,
 }) => {
-  const inputRef = useRef(null);
   const pageRef = useRef(null);
-
-  // const handleClickOutside = (e) => {
-  //   if (
-  //     document.activeElement === inputRef.current &&
-  //     pageRef.current &&
-  //     !pageRef.current.contains(e.target)
-  //   ) {
-  //     if (!showCommands) {
-  //       inputRef.current.blur();
-  //     }
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   document.addEventListener("touchstart", handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener("touchstart", handleClickOutside);
-  //   };
-  // }, [showCommands]);
 
   const combinedRef = (node) => {
     commandModalRef.current = node;
@@ -84,7 +66,7 @@ const MessageInput = ({
 
       <div className="input-cont" id="chat-input-cont">
         <Image src={arrow} id="arrow-icon" alt="arrow" />
-        <input
+        <textarea
           value={input}
           ref={inputRef}
           onChange={handleInputChange}
@@ -96,6 +78,7 @@ const MessageInput = ({
           onKeyDown={handleKeyDown}
           type={KeyboardType}
           className="input-mono"
+          draggable={false}
         />
         <Image
           src={!isDisabled && input.length > 0 ? sendBtn : sendBtnGrey}
