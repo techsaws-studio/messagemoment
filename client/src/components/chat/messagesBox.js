@@ -458,8 +458,6 @@ const MessageBox = ({
   };
 
   const scrollToBottom = useCallback(() => {
-    inputRef.current.style.height = "40px";
-
     if (messageContainerRef.current) {
       const container = messageContainerRef.current;
       const isSafari = /^((?!chrome|android).)*safari/i.test(
@@ -598,7 +596,9 @@ const MessageBox = ({
     const textarea = e.target;
     textarea.style.height = "40px";
     const newHeight = Math.min(textarea.scrollHeight, 94);
-    textarea.style.height = newHeight + "px !important";
+    textarea.style.height = newHeight + "px";
+
+    console.log("textarea --------", textarea);
 
     let value = e.target.value;
 
@@ -727,6 +727,12 @@ const MessageBox = ({
   };
 
   const handleClickSendBtn = () => {
+    const resetTextareaHeight = () => {
+      if (inputRef.current) {
+        inputRef.current.style.height = "40px";
+      }
+    };
+
     if (isSessionExpiredRealTime || isJoining) {
       console.log("🚫 Send blocked - session expired");
       return;
@@ -750,6 +756,7 @@ const MessageBox = ({
             message: input.trim(),
           });
           setinput("");
+          resetTextareaHeight();
           requestAnimationFrame(() => scrollToBottom());
         }
       } else {
@@ -797,13 +804,6 @@ const MessageBox = ({
   const handleKeyDown = (event) => {
     if (shouldBlockInput) return;
 
-    if (event.key === "Enter" && event.shiftKey) {
-      return;
-    }
-    if (isMobileView && event.key === "Enter") {
-      return;
-    }
-
     if (sessionData?.type === SessionTypeEnum.SECURE && !isVerifiedCode) {
       if (
         event.keyCode === 69 ||
@@ -813,6 +813,13 @@ const MessageBox = ({
       ) {
         event.preventDefault();
       }
+    }
+
+    if (event.key === "Enter" && event.shiftKey) {
+      return;
+    }
+    if (isMobileView && event.key === "Enter") {
+      return;
     }
 
     if (event.key !== "Enter") {

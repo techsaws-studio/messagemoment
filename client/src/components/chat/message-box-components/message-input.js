@@ -77,7 +77,6 @@ const MessageInput = ({
           }
           onKeyDown={handleKeyDown}
           type={KeyboardType}
-          className="input-mono"
           draggable={false}
         />
         <Image
