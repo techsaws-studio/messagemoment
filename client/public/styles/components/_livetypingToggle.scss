@@ -1,0 +1,64 @@
+.typing-switch-container {
+  width: 106px;
+  height: 46px;
+  border-radius: 6px;
+  display: flex;
+  gap: 10px;
+  background-color: #f7f7f7;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  &.active {
+    background-color: #ededfe;
+  }
+  &.black-bg {
+    background-color: #151515;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .typing-switch-container {
+    width: 46px;
+    height: 46px;
+
+    .menu-icons {
+      width: 46px;
+      height: 46px;
+    }
+  }
+  .keyboard-switch {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .typing-switch-container {
+    width: 42px;
+    height: 42px;
+    .menu-icons {
+      width: 42px;
+      height: 42px;
+    }
+  }
+}
+@media screen and (max-width: 370px) {
+  .typing-switch-container {
+    width: 40px;
+    height: 40px;
+    .menu-icons {
+      width: 40px;
+      height: 40px;
+    }
+  }
+}
+@media screen and (max-width: 350px) {
+  .typing-switch-container {
+    width: 36px;
+    height: 36px;
+    .menu-icons {
+      width: 36px;
+      height: 36px;
+    }
+  }
+}

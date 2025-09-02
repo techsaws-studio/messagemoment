@@ -1,0 +1,45 @@
+.custom-tooltip {
+  background: #111;
+  color: #fff;
+  padding: 16px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  position: relative;
+  display: inline-block;
+  z-index: 1000;
+  width: 180px;
+  height: 68px;
+  line-height: 1.5;
+  position: absolute;
+  bottom: -80px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.25s;
+  pointer-events: none;
+}
+.custom-tooltip.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.custom-tooltip-arrow {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 100%;
+  width: 0;
+  height: 0;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  border-bottom: 3px solid #111;
+  content: "";
+}
+
+@media screen and (max-width: 1000px) {
+  .custom-tooltip {
+    display: none;
+  }
+}

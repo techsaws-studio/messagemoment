@@ -7,6 +7,8 @@ import ClipboardJS from "clipboard";
 import { Tooltip } from "antd";
 import { getYear } from "date-fns";
 
+import { SessionTypeEnum } from "@/enums/session-type-enum";
+
 import { useSocket } from "@/contexts/socket-context";
 import { chatContext } from "@/contexts/chat-context";
 import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
@@ -14,6 +16,7 @@ import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
 import DisconnectBtn from "./disconnectButton";
 import ShareButton from "./shareButton";
 import Button from "../button";
+import LiveTypingToggle from "./chat-components/liveTyping-toggle";
 
 import chat_shareIcon from "@/assets/icons/chat/chat_mobile_icon/share.svg";
 import project_mode_on from "@/assets/icons/chat/project_mode_on.svg";
@@ -31,8 +34,7 @@ import close_menu from "@/assets/icons/chat/chat_mobile_icon/close_menu.svg";
 import grey_logo from "@/assets/icons/chat/grey_logo.png";
 import heartIcon from "@/assets/icons/heart_white.svg";
 import MMLogo from "@/assets/icons/chat/mmLogo";
-import { SessionTypeEnum } from "@/enums/session-type-enum";
-import LiveTypingToogleSwitch from "./live-typing-toogle-switch";
+import menuProjectModeOn from "@/assets/icons/chat/menu-projectMode.svg";
 
 export const ChatHeader = () => {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -190,11 +192,26 @@ export const ChatHeader = () => {
           </div>
 
           <div id={"flex-chat-row"}>
-            <div className="chat-m-timerClock">
-              <p className={`small ${isExpiryTimeExist && "hasactive"}`}>
-                {expiryTime ? expiryTime : "30"}
-              </p>
-            </div>
+            <LiveTypingToggle isMobileMenu={true} setOpenMenu={setOpenMenu} />
+            {isProjectModeOn ? (
+              <Image
+                src={menuProjectModeOn}
+                draggable={false}
+                id="projectmode"
+                className="menu-projectModeImg"
+                alt="project_mode_on"
+                onClick={() => {
+                  setOpenMenu(false);
+                  setShowProjectModeTooltip(true);
+                }}
+              />
+            ) : (
+              <div className="chat-m-timerClock">
+                <p className={`small ${isExpiryTimeExist && "hasactive"}`}>
+                  {expiryTime ? expiryTime : "30"}
+                </p>
+              </div>
+            )}
 
             <div id="chat-vt-divider-m" />
 
@@ -338,6 +355,7 @@ export const ChatHeader = () => {
           <div id="flex-row">
             {isMobileView ? (
               <>
+                <LiveTypingToggle />
                 <div>
                   <Image
                     src={project_mode_on}
@@ -351,6 +369,7 @@ export const ChatHeader = () => {
               </>
             ) : (
               <>
+                <LiveTypingToggle />
                 <Tooltip
                   placement="leftBottom"
                   overlayClassName="projectMode-tooltip"
@@ -374,6 +393,7 @@ export const ChatHeader = () => {
           <div className="timer-cont">
             {isMobileView ? (
               <>
+                <LiveTypingToggle />
                 <div className="timer-block">
                   <p className={`small ${!isExpiryTimeExist && "hasactive"}`}>
                     {expiryTime ? expiryTime : "30"}
@@ -382,7 +402,7 @@ export const ChatHeader = () => {
               </>
             ) : (
               <>
-                <LiveTypingToogleSwitch />
+                <LiveTypingToggle />
                 <Tooltip
                   overlayClassName="copylink-tooltip"
                   title={<Image src={expiry_tooltip} alt="copy-tooltip" />}
