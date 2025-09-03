@@ -39,21 +39,18 @@ import MessagesModals from "./message-box-components/messagesModals";
 import MessageInput, { inputRef } from "./message-box-components/message-input";
 import MessageContainer from "./message-box-components/message-container";
 import ChatJoiningLoader from "./chat-joining-loader";
+import ChatVerifyingLoader from "./chat-verifying-loader";
 
 import { getDeviceFingerprint } from "@/utils/device-fingerprint";
 import { ApiRequest } from "@/utils/api-request";
+import { scrollManager } from "@/utils/scroll-utils";
 
 import sendBtn from "@/assets/icons/chat/sendBtn.svg";
 import sendBtnGrey from "@/assets/icons/chat/send_grey.svg";
-import ChatVerifyingLoader from "./chat-verifying-loader";
 
 export const messageContainerRef = createRef(null);
 
-const MessageBox = ({
-  isSessionExpired = false,
-  isSessionLocked = false,
-  sessionStatus = null,
-}) => {
+const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
   const [input, setinput] = useState("");
   const [commandlist, setCommandsList] = useState(listcommands);
   const [selectedCommands, setSelectedCommands] = useState("");
@@ -457,37 +454,6 @@ const MessageBox = ({
     }
   };
 
-  const scrollToBottom = useCallback(() => {
-    if (messageContainerRef.current) {
-      const container = messageContainerRef.current;
-      const isSafari = /^((?!chrome|android).)*safari/i.test(
-        navigator.userAgent
-      );
-      const isFirefox = /Firefox/.test(navigator.userAgent);
-      const isMac = /Mac|macOS/.test(
-        navigator.platform || navigator.userAgentData?.platform || ""
-      );
-
-      if (
-        isSafari ||
-        (isMac && (isFirefox || /Chrome/.test(navigator.userAgent)))
-      ) {
-        container.scrollTop = container.scrollHeight;
-
-        requestAnimationFrame(() => {
-          container.scrollTop = container.scrollHeight;
-        });
-      } else {
-        setTimeout(() => {
-          container.scrollTo({
-            top: container.scrollHeight,
-            behavior: "smooth",
-          });
-        }, 20);
-      }
-    }
-  }, []);
-
   const openFilePopup = () => {
     fileInputRef.current.click();
     if (showAttachment) {
@@ -757,7 +723,7 @@ const MessageBox = ({
           });
           setinput("");
           resetTextareaHeight();
-          requestAnimationFrame(() => scrollToBottom());
+          scrollManager.forceScrollToBottom();
         }
       } else {
         setSelectedCommands("");
@@ -833,7 +799,6 @@ const MessageBox = ({
       if (verifySecurityCode()) {
         if (input.trim() !== "" && !input.startsWith("/")) {
           handleClickSendBtn();
-          requestAnimationFrame(() => scrollToBottom());
         } else {
           if (input.startsWith("/")) {
             // timer command handleer
@@ -971,8 +936,6 @@ const MessageBox = ({
         ]);
 
         setinput("");
-        scrollToBottom();
-
         setTimeout(async () => {
           try {
             const response = await ApiRequest(
@@ -1066,7 +1029,6 @@ const MessageBox = ({
           },
         ]);
         setinput("");
-        scrollToBottom();
         return false;
       }
     } else {
@@ -1111,7 +1073,6 @@ const MessageBox = ({
       setRemoveUserName(hasFindUser.name);
       setShowCommands(false);
       setinput("");
-      scrollToBottom();
     }
   };
 
@@ -1128,7 +1089,6 @@ const MessageBox = ({
     ]);
     setShowCommands(false);
     setinput("");
-    scrollToBottom();
   };
 
   const AskBeforeChatMsgClear = () => {
@@ -1144,7 +1104,6 @@ const MessageBox = ({
     ]);
     setShowCommands(false);
     setinput("");
-    scrollToBottom();
   };
 
   const handleProjectAskMode = () => {
@@ -1156,7 +1115,6 @@ const MessageBox = ({
     ]);
     setShowCommands(false);
     setinput("");
-    scrollToBottom();
   };
 
   const handleProjectModeExistQuestion = () => {
@@ -1201,7 +1159,7 @@ const MessageBox = ({
     setHandlerName(finalUsername);
     setAskHandlerName(false);
     setinput("");
-    scrollToBottom();
+    scrollManager.scrollToBottom();
   };
 
   const handleRemoveUserCommand = () => {
@@ -1240,7 +1198,6 @@ const MessageBox = ({
     setinput("");
     setAskRemoveUser(false);
     setShowCommands(false);
-    scrollToBottom();
   };
 
   const handleLockChatCommand = () => {
@@ -1320,7 +1277,6 @@ const MessageBox = ({
           },
         ]);
         setShowCommands(false);
-        scrollToBottom();
       }
     } else {
       setinput("");
@@ -1343,7 +1299,6 @@ const MessageBox = ({
         ]);
       }
       setShowCommands(false);
-      scrollToBottom();
     }
   };
 
@@ -1364,7 +1319,6 @@ const MessageBox = ({
       ]);
       setShowAttachment(false);
       setinput("");
-      scrollToBottom();
     }
   };
 
@@ -1573,6 +1527,11 @@ const MessageBox = ({
       return msg;
     });
   };
+
+  useEffect(() => {
+    scrollManager.init();
+    return () => scrollManager.destroy();
+  }, []);
 
   useEffect(() => {
     if (!sessionData?.code || isSessionExpiredRealTime) {
@@ -1807,37 +1766,6 @@ const MessageBox = ({
       setKeyboardType("text");
     }
   }, [sessionData, isVerifiedCode]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [chatMessage]);
-
-  useEffect(() => {
-    const isMac = /Mac|macOS/.test(
-      navigator.platform || navigator.userAgentData?.platform || ""
-    );
-    const isChrome =
-      /Chrome/.test(navigator.userAgent) && !/Edge/.test(navigator.userAgent);
-
-    if (isMac && isChrome) {
-      const handleVisibilityChange = () => {
-        if (!document.hidden) {
-          setTimeout(() => {
-            scrollToBottom();
-          }, 100);
-        }
-      };
-
-      document.addEventListener("visibilitychange", handleVisibilityChange);
-
-      return () => {
-        document.removeEventListener(
-          "visibilitychange",
-          handleVisibilityChange
-        );
-      };
-    }
-  }, [scrollToBottom]);
 
   useEffect(() => {
     if (!handlerName || !userlist.length) {
@@ -2085,6 +2013,8 @@ const MessageBox = ({
         }
         return newList;
       });
+
+      scrollManager.forceScrollToBottom();
     };
 
     const handleHistoricalMessages = (data) => {
@@ -2238,6 +2168,8 @@ const MessageBox = ({
       if (data.isProjectModeOn) {
         setIsProjectModeOn(true);
       }
+
+      scrollManager.forceScrollToBottom();
     };
 
     const handleUserList = (data) => {
@@ -2256,6 +2188,12 @@ const MessageBox = ({
     };
 
     const handleReceiveMessage = (data) => {
+      const resetTextareaHeight = () => {
+        if (inputRef.current) {
+          inputRef.current.style.height = "40px";
+        }
+      };
+
       console.log("📨 Received message:", data);
 
       if (data.isSystem || data.isSystemMessage) {
@@ -2330,6 +2268,9 @@ const MessageBox = ({
           isFullyRendered: !shouldStartTyping,
         },
       ]);
+
+      scrollManager.scrollToBottom();
+      resetTextareaHeight();
     };
 
     const handleMessageTypingCompleted = (data) => {
@@ -2382,6 +2323,7 @@ const MessageBox = ({
       setExpiryTime(data.seconds);
       setIsExpiryTimeExist(true);
       hasShownExpiryTimeMessageRef.current = true;
+      scrollManager.forceScrollToBottom();
     };
 
     const handleLockStatusUpdate = (data) => {
@@ -2431,6 +2373,8 @@ const MessageBox = ({
           handlerColor: "white",
         },
       ]);
+
+      scrollManager.forceScrollToBottom();
     };
 
     const handleUserRemoved = (data) => {
@@ -2445,6 +2389,8 @@ const MessageBox = ({
           handlerColor: "white",
         },
       ]);
+
+      scrollManager.forceScrollToBottom();
     };
 
     const handleYouWereRemoved = (data) => {
@@ -2545,6 +2491,8 @@ const MessageBox = ({
 
         return newMessages;
       });
+
+      scrollManager.forceScrollToBottom();
     };
 
     const handleMessageCleared = (data) => {
@@ -2559,6 +2507,8 @@ const MessageBox = ({
           handlerColor: "white",
         },
       ]);
+
+      scrollManager.forceScrollToBottom();
     };
 
     // ============================
@@ -2598,6 +2548,8 @@ const MessageBox = ({
           },
         ];
       });
+
+      scrollManager.forceScrollToBottom();
     };
 
     const handleUserLeft = (data) => {
@@ -2617,6 +2569,8 @@ const MessageBox = ({
           handlerColor: USER_HANDERLS[data.handlerColor] || USER_HANDERLS[0],
         },
       ]);
+
+      scrollManager.forceScrollToBottom();
     };
 
     const handleSessionFull = (data) => {
@@ -2629,6 +2583,8 @@ const MessageBox = ({
           message: data?.message || "Session is full",
         },
       ]);
+
+      scrollManager.scrollToBottom();
     };
 
     const handleInfoMessage = (message) => {
@@ -2804,7 +2760,6 @@ const MessageBox = ({
         isSafari={isSafari}
         isAndroid={isAndroid}
         messageType={messageType}
-        scrollToBottom={scrollToBottom}
         isSessionLockedRealTime={isSessionLockedRealTime}
         isSessionExpiredRealTime={isSessionExpiredRealTime}
         userHasJoinedSession={userHasJoinedSession}

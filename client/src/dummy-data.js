@@ -770,14 +770,3 @@ export const ShareLink = (type, sessionData, url) => {
   }
   return null;
 };
-
-export const scrollToBottom = () => {
-  if (messageContainerRef.current) {
-    setTimeout(() => {
-      messageContainerRef.current?.scrollTo({
-        top: messageContainerRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }, 20);
-  }
-};

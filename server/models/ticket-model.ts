@@ -13,21 +13,18 @@ const TicketSchema: Schema<ITicket> = new Schema(
       default: () => `TKT-${nanoid(10).toUpperCase()}`,
       index: true,
     },
-
     firstName: {
       type: String,
       required: true,
       trim: true,
       maxlength: [50, "First name cannot exceed 50 characters"],
     },
-
     lastName: {
       type: String,
       required: true,
       trim: true,
       maxlength: [50, "Last name cannot exceed 50 characters"],
     },
-
     emailAddress: {
       type: String,
       required: true,
@@ -39,26 +36,22 @@ const TicketSchema: Schema<ITicket> = new Schema(
       ],
       index: true,
     },
-
     topic: {
       type: String,
       required: true,
       enum: Object.values(TicketTopicEnum),
       index: true,
     },
-
     query: {
       type: String,
       required: true,
       trim: true,
       maxlength: [1500, "Query cannot exceed 1500 characters"],
     },
-
     userIp: {
       type: String,
       required: true,
     },
-
     userLocation: {
       longitude: { type: Number },
       latitude: { type: Number },

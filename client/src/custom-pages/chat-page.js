@@ -85,7 +85,6 @@ function ChatPage() {
       <MessageBox
         isSessionExpired={isSessionExpired}
         isSessionLocked={isSessionLocked}
-        sessionStatus={sessionStatus}
       />
     </>
   );

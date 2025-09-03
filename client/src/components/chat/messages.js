@@ -7,10 +7,11 @@ import { chatContext } from "@/contexts/chat-context";
 import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
 import { useSocket } from "@/contexts/socket-context";
 
-import { messageType, scrollToBottom, USER_HANDERLS } from "@/dummy-data";
+import { messageType, USER_HANDERLS } from "@/dummy-data";
 
 import { getMessageClass } from "./chat-messages-utils";
 import { messageContainerRef } from "./messagesBox";
+import { scrollManager } from "@/utils/scroll-utils";
 
 import aiResearchCompanionIcon from "@/assets/icons/chat/ai-research-companion.svg";
 import circulartick from "@/assets/icons/chat/circular-tick.svg";
@@ -38,10 +39,10 @@ const Message = ({
   isPermanent,
   skipExpirationCheck = false,
 }) => {
+  const [isExpired, setIsExpired] = useState(false);
   const [isFullyRendered, setIsFullyRendered] = useState(() => {
     return isOwnMessage || !messageId || !timestamp;
   });
-  const [isExpired, setIsExpired] = useState(false);
 
   const el = useRef(null);
   const { isMessageMobileView: isMobileView } = useCheckIsMobileView();
@@ -634,24 +635,7 @@ const Message = ({
   useEffect(() => {
     let typingInterval;
     let observer;
-    let userScrolled = false;
-    let scrollPauseTimeout;
     let animationFrameId;
-    const container = messageContainerRef.current;
-
-    const handleUserScroll = () => {
-      if (!userScrolled) {
-        userScrolled = true;
-      }
-      clearTimeout(scrollPauseTimeout);
-      scrollPauseTimeout = setTimeout(() => {
-        userScrolled = false;
-      }, 1500);
-    };
-
-    if (container) {
-      container.addEventListener("scroll", handleUserScroll);
-    }
 
     if (el.current) {
       const isHistoricalMessage =
@@ -660,14 +644,7 @@ const Message = ({
       if (isOwnMessage || isHistoricalMessage) {
         el.current.innerHTML = message;
         setIsFullyRendered(true);
-        if (!userScrolled) {
-          requestAnimationFrame(() => scrollToBottom());
-        }
       } else {
-        if (!userScrolled) {
-          scrollToBottom();
-        }
-
         if (!isLiveTypingActive || isFullyRendered || !messageId) {
           el.current.innerHTML = message;
           if (!isFullyRendered) {
@@ -687,7 +664,6 @@ const Message = ({
               timestamp: Date.now(),
             });
           }
-
           return;
         }
 
@@ -706,10 +682,6 @@ const Message = ({
                 timestamp: Date.now(),
               });
             }
-
-            if (!userScrolled) {
-              setTimeout(scrollToBottom, 50);
-            }
             return;
           }
 
@@ -722,7 +694,6 @@ const Message = ({
                 timestamp: Date.now(),
               });
             }
-
             return;
           }
 
@@ -732,10 +703,6 @@ const Message = ({
           if (targetIndex > currentIndex) {
             currentIndex = Math.min(targetIndex, message.length);
             el.current.innerHTML = message.substring(0, currentIndex);
-
-            if (!userScrolled && currentIndex % 15 === 0) {
-              scrollToBottom();
-            }
           }
 
           if (currentIndex < message.length) {
@@ -749,10 +716,6 @@ const Message = ({
                 timestamp: Date.now(),
               });
             }
-
-            if (!userScrolled) {
-              setTimeout(scrollToBottom, 50);
-            }
           }
         };
 
@@ -764,14 +727,11 @@ const Message = ({
       if (typingInterval) clearTimeout(typingInterval);
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
       if (observer) observer.disconnect();
-      if (container) container.removeEventListener("scroll", handleUserScroll);
-      clearTimeout(scrollPauseTimeout);
     };
   }, [
     message,
     isOwnMessage,
     isLiveTypingActive,
-    scrollToBottom,
     isFullyRendered,
     messageId,
     socket,
