@@ -1882,9 +1882,13 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
     };
 
     const handleVisibilityChange = () => {
-      if (!document.hidden && socket.disconnected && userHasJoinedSession) {
-        console.log("Tab became visible, attempting reconnection");
-        socket.connect();
+      if (!document.hidden) {
+        scrollManager.scrollToBottom(true, "auto");
+
+        if (socket.disconnected && userHasJoinedSession) {
+          console.log("Tab became visible, attempting reconnection");
+          socket.connect();
+        }
       }
     };
 

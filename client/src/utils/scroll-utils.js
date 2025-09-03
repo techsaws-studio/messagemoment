@@ -52,11 +52,11 @@ class ScrollManager {
 
   handleVisibilityChange() {
     if (!document.hidden) {
-      this.scrollToBottom(true);
+      this.scrollToBottom(true, "auto");
     }
   }
 
-  scrollToBottom(force = false) {
+  scrollToBottom(force = false, behaviorOverride = null) {
     const container = messageContainerRef.current;
     if (!container) return;
 
@@ -65,7 +65,7 @@ class ScrollManager {
       return;
     }
 
-    const behavior = document.hidden ? "auto" : "smooth";
+    const behavior = behaviorOverride || (document.hidden ? "auto" : "smooth");
 
     container.scrollTo({
       top: container.scrollHeight - container.clientHeight,
