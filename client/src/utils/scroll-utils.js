@@ -67,10 +67,14 @@ class ScrollManager {
 
     const behavior = behaviorOverride || (document.hidden ? "auto" : "smooth");
 
-    container.scrollTo({
-      top: container.scrollHeight - container.clientHeight,
-      behavior,
-    });
+    if (behavior === "smooth" && /iPad|iPhone|iPod/.test(navigator.userAgent)) {
+      container.scrollTop = container.scrollHeight - container.clientHeight;
+    } else {
+      container.scrollTo({
+        top: container.scrollHeight - container.clientHeight,
+        behavior,
+      });
+    }
   }
 
   forceScrollToBottom() {
