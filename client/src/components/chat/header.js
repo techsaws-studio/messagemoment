@@ -158,7 +158,8 @@ export const ChatHeader = () => {
     }
   }, [showCopiedNotification]);
 
-  // SOCKET INTEGRATION
+  // SOCKET INTEGRATION -- START
+
   useEffect(() => {
     if (!socket) return;
 
@@ -175,6 +176,8 @@ export const ChatHeader = () => {
       socket.off("setActiveUser");
     };
   }, []);
+
+  // SOCKET INTEGRATION -- END
 
   return (
     <div className="header-cont">

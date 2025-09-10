@@ -1,7 +1,8 @@
-import { Turnstile } from "@marsidev/react-turnstile";
 import React from "react";
 
-const CustomTurnstile = ({ setIsCfVerified}) => {
+import { Turnstile } from "@marsidev/react-turnstile";
+
+const CustomTurnstile = ({ setIsCfVerified }) => {
   return (
     <Turnstile
       siteKey={process.env.NEXT_PUBLIC_TURNSTILE_KEY}

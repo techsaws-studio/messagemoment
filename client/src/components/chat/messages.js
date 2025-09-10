@@ -10,8 +10,6 @@ import { useSocket } from "@/contexts/socket-context";
 import { messageType, USER_HANDERLS } from "@/dummy-data";
 
 import { getMessageClass } from "./chat-messages-utils";
-import { messageContainerRef } from "./messagesBox";
-import { scrollManager } from "@/utils/scroll-utils";
 
 import aiResearchCompanionIcon from "@/assets/icons/chat/ai-research-companion.svg";
 import circulartick from "@/assets/icons/chat/circular-tick.svg";

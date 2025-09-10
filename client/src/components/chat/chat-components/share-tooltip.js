@@ -1,3 +1,12 @@
+import React, { useEffect, useRef, useState } from "react";
+import ClipboardJS from "clipboard";
+import Image from "next/image";
+
+import { ShareLink } from "@/dummy-data";
+import { SessionTypeEnum } from "@/enums/session-type-enum";
+
+import { chatContext } from "@/contexts/chat-context";
+
 import chain from "@/assets/icons/chat/chain.svg";
 import crossIcon from "@/assets/icons/chat/chat_mobile_icon/cross.svg";
 import instagram from "@/assets/icons/chat/instagram.svg";
@@ -6,33 +15,17 @@ import message from "@/assets/icons/chat/messageIcon.svg";
 import messenger from "@/assets/icons/chat/messenger.svg";
 import telegram from "@/assets/icons/chat/telegram.svg";
 import whatsapp from "@/assets/icons/chat/whatsapp.svg";
-import { chatContext } from "@/contexts/chat-context";
-import { ShareLink } from "@/dummy-data";
-import { SessionTypeEnum } from "@/enums/session-type-enum";
-import ClipboardJS from "clipboard";
-import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
 
 const ShareModeTooltip = ({ isAttachment }) => {
-  const { showShareTooltip, setShareTooltip, setShowCopiedNotification ,sessionData} =
-    chatContext();
-const [initialUrl, setInitialUrl] = useState("");
+  const [initialUrl, setInitialUrl] = useState("");
 
+  const {
+    showShareTooltip,
+    setShareTooltip,
+    setShowCopiedNotification,
+    sessionData,
+  } = chatContext();
   const tooltipRef = useRef(null);
-  useEffect(() => {
-   const url=window.location.origin + window.location.pathname;
-    setInitialUrl(url);
-    const handleClickOutside = (event) => {
-      if (tooltipRef.current && !tooltipRef.current.contains(event.target)) {
-        setShareTooltip(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [setShareTooltip]);
 
   const handleCopy = (text) => {
     setShareTooltip(false);
@@ -56,6 +49,22 @@ const [initialUrl, setInitialUrl] = useState("");
       tempButton.remove();
     }
   };
+
+  useEffect(() => {
+    const url = window.location.origin + window.location.pathname;
+    setInitialUrl(url);
+    const handleClickOutside = (event) => {
+      if (tooltipRef.current && !tooltipRef.current.contains(event.target)) {
+        setShareTooltip(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [setShareTooltip]);
+
   return (
     <div
       ref={tooltipRef}

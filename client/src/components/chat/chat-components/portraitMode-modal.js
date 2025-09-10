@@ -1,9 +1,9 @@
-import portraitMode from "@/assets/icons/chat/chat_mobile_icon/portraitMode.svg";
+import React, { useEffect } from "react";
 import Image from "next/image";
-import { useEffect } from "react";
+
+import portraitMode from "@/assets/icons/chat/chat_mobile_icon/portraitMode.svg";
 
 const PortraitModeModal = () => {
-    
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {

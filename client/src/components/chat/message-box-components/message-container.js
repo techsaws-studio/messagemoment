@@ -25,14 +25,6 @@ const MessageContainer = ({
 
   const { isProjectModeOn } = chatContext();
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(Date.now());
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   const visibleMessagesWithUsernameLogic = useMemo(() => {
     const now = currentTime;
 
@@ -93,6 +85,14 @@ const MessageContainer = ({
       };
     });
   }, [chatMessage, messageType, handlerName, isProjectModeOn, currentTime]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="chat-section">

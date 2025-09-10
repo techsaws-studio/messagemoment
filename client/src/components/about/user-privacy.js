@@ -1,6 +1,7 @@
-import Image from "next/image";
-import userSecurity from "@/assets/images/userPrivacy.svg";
 import React from "react";
+import Image from "next/image";
+
+import userSecurity from "@/assets/images/userPrivacy.svg";
 
 function UserPrivacy() {
   return (

@@ -1,10 +1,12 @@
+import React, { Fragment } from "react";
+
 import { chatContext } from "@/contexts/chat-context";
-import React from "react";
 
 const ChatNotification = () => {
   const { chatScreenNotification } = chatContext();
+
   return (
-    <>
+    <Fragment>
       {chatScreenNotification?.visible && (
         <div className="chatNotification">
           <p className="medium">
@@ -14,7 +16,7 @@ const ChatNotification = () => {
           </p>
         </div>
       )}
-    </>
+    </Fragment>
   );
 };
 

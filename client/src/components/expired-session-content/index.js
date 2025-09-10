@@ -1,14 +1,17 @@
 "use client";
 
-import React, { Suspense } from "react";
+import React, { Fragment, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { getYear } from "date-fns";
+import Image from "next/image";
+
 import { useClientHydration } from "../../hooks/useClientHydration";
+
 import Button from "../button";
 import { Skeleton } from "../skeleton";
+
 import Blur from "@/assets/images/blur.png";
-import { getYear } from "date-fns";
 import ExpiredsessionImg from "@/assets/icons/expired-session.svg";
-import Image from "next/image";
 
 const SessionUrlDisplay = () => {
   const searchParams = useSearchParams();
@@ -35,9 +38,9 @@ const SessionUrlSkeleton = () => (
 function ExpiredSessionContent() {
   const isHydrated = useClientHydration();
   const currentYear = getYear(new Date());
+
   return (
-    <>
-      {/* new changes  */}
+    <Fragment>
       <div className="expired-container">
         <Image src={Blur} className="blur-img" alt="Blur" />
         <div className="card-wrapper">
@@ -72,7 +75,7 @@ function ExpiredSessionContent() {
           Copyright © {currentYear} MessageMoment. All rights reserved.
         </p>
       </div>
-    </>
+    </Fragment>
   );
 }
 

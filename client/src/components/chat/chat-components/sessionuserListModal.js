@@ -1,5 +1,6 @@
+import React, { Fragment } from "react";
 import Image from "next/image";
-import React from "react";
+
 import crossIcon from "@/assets/icons/chat/chat_mobile_icon/cross.svg";
 import downArrowTooltip from "@/assets/icons/chat/downArrow.svg";
 
@@ -12,7 +13,7 @@ const SessionUserListModal = ({
   handleSelectedCommand = (val) => {},
 }) => {
   return (
-    <>
+    <Fragment>
       <div
         className={`commands-modal ${visible ? "commands-modal-open" : ""}  
             ${isAttachment && "commands-modal-attachment"}
@@ -46,7 +47,7 @@ const SessionUserListModal = ({
           className="command-tooltip"
         />
       </div>
-    </>
+    </Fragment>
   );
 };
 

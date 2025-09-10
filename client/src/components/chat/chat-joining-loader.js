@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 
 const ChatJoiningLoader = () => {
   const [dots, setDots] = useState("");
@@ -14,7 +14,7 @@ const ChatJoiningLoader = () => {
     return () => clearInterval(interval);
   }, []);
 
-  return <>Requesting{dots}</>;
+  return <Fragment>Requesting{dots}</Fragment>;
 };
 
 export default ChatJoiningLoader;

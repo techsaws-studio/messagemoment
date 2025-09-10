@@ -1,5 +1,6 @@
 "use client";
-import React, { createRef, useEffect, useState } from "react";
+
+import React, { createRef, Fragment, useEffect, useState } from "react";
 import Image from "next/image";
 
 import { Faqcommandlist, Faqs } from "@/dummy-data";
@@ -22,125 +23,9 @@ function FaqHero() {
   const { isMobileView } = useCheckIsMobileView();
   const [isInitialSetValue, setIsInitialSetValue] = useState(true);
 
-  useEffect(() => {
-    setIsInitialSetValue(false);
-    if (window.location.href.includes("/faqs#project_mode")) {
-      setOpenItems([15]);
-      const yOffset = isMobileView ? -84 : -84;
-      const yPosition =
-        FaqsRef?.current?.getBoundingClientRect().top +
-        window.pageYOffset +
-        yOffset;
-      window.scrollTo({ top: yPosition, behavior: "smooth" });
-    }
-    if (window.location.href.includes("/faqs#display_name")) {
-      setOpenItems([25]);
-      const yOffset = isMobileView ? -84 : -84;
-      const yPosition =
-        FaqsDisplayNameRef?.current?.getBoundingClientRect().top +
-        window.pageYOffset +
-        yOffset;
-      window.scrollTo({ top: yPosition, behavior: "smooth" });
-    }
-  }, [isMobileView]);
-
   const stripHtmlTags = (text) => {
     return text.replace(/<\/?[^>]+(>|$)/g, "");
   };
-
-  useEffect(() => {
-    if (!isInitialSetValue) {
-      if (searchTerm === "") {
-        setFilteredFaqs(Faqs);
-        setOpenItems([]);
-      } else {
-        const searchTermLower = searchTerm.toLowerCase();
-
-        const filtered = Faqs.filter((item) => {
-          // Apply the stripHtmlTags function to remove <strong> tags and other HTML
-          const desc = item?.desc ? stripHtmlTags(item.desc).toLowerCase() : "";
-          const matchesTitle = item?.title
-            ? stripHtmlTags(item?.title).toLowerCase()
-            : "";
-          const matchesTitleSearch = matchesTitle.includes(searchTermLower);
-          const topDesc = item?.top_desc
-            ? stripHtmlTags(item.top_desc).toLowerCase()
-            : "";
-          const heading1 = item?.heading1
-            ? stripHtmlTags(item.heading1).toLowerCase()
-            : "";
-          const heading2 = item?.heading2
-            ? stripHtmlTags(item.heading2).toLowerCase()
-            : "";
-
-          const matchesDesc = desc.includes(searchTermLower);
-          const matchesTopDesc = topDesc.includes(searchTermLower);
-          const matchesHeading1 = heading1.includes(searchTermLower);
-          const matchesHeading2 = heading2.includes(searchTermLower);
-
-          // Check for matches in the points array after removing HTML tags
-          const matchesPoints = item?.points?.some((point) =>
-            stripHtmlTags(point).toLowerCase().includes(searchTermLower)
-          );
-
-          const footerDesc = item?.footer_desc
-            ? stripHtmlTags(item.footer_desc).toLowerCase()
-            : "";
-          const matchesFooterDesc = footerDesc.includes(searchTermLower);
-
-          const matchesParagraph =
-            item?.paragraph &&
-            item?.paragraph?.some(
-              (para) =>
-                stripHtmlTags(para.title)
-                  ?.toLowerCase()
-                  .includes(searchTermLower) ||
-                (para.content &&
-                  stripHtmlTags(para.content)
-                    ?.toLowerCase()
-                    .includes(searchTermLower))
-            );
-
-          const matchesParagraphSub =
-            item?.paragraphSub &&
-            item?.paragraphSub?.some(
-              (para) =>
-                stripHtmlTags(para.title)
-                  ?.toLowerCase()
-                  .includes(searchTermLower) ||
-                para.content?.some((content) =>
-                  stripHtmlTags(content)
-                    ?.toLowerCase()
-                    .includes(searchTermLower)
-                )
-            );
-
-          const matchesHeadingPoints1 = item?.headingPoints1?.some((point) =>
-            stripHtmlTags(point).toLowerCase().includes(searchTermLower)
-          );
-          const matchesHeadingPoints2 = item?.headingPoints2?.some((point) =>
-            stripHtmlTags(point).toLowerCase().includes(searchTermLower)
-          );
-
-          return (
-            matchesDesc ||
-            matchesTitleSearch ||
-            matchesTopDesc ||
-            matchesPoints ||
-            matchesFooterDesc ||
-            matchesParagraph ||
-            matchesHeading1 ||
-            matchesHeading2 ||
-            matchesHeadingPoints1 ||
-            matchesHeadingPoints2 ||
-            matchesParagraphSub
-          );
-        });
-        setFilteredFaqs(filtered);
-        setOpenItems(filtered.map((item) => item.id));
-      }
-    }
-  }, [searchTerm]);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -370,8 +255,124 @@ function FaqHero() {
     );
   };
 
+  useEffect(() => {
+    setIsInitialSetValue(false);
+    if (window.location.href.includes("/faqs#project_mode")) {
+      setOpenItems([15]);
+      const yOffset = isMobileView ? -84 : -84;
+      const yPosition =
+        FaqsRef?.current?.getBoundingClientRect().top +
+        window.pageYOffset +
+        yOffset;
+      window.scrollTo({ top: yPosition, behavior: "smooth" });
+    }
+    if (window.location.href.includes("/faqs#display_name")) {
+      setOpenItems([25]);
+      const yOffset = isMobileView ? -84 : -84;
+      const yPosition =
+        FaqsDisplayNameRef?.current?.getBoundingClientRect().top +
+        window.pageYOffset +
+        yOffset;
+      window.scrollTo({ top: yPosition, behavior: "smooth" });
+    }
+  }, [isMobileView]);
+
+  useEffect(() => {
+    if (!isInitialSetValue) {
+      if (searchTerm === "") {
+        setFilteredFaqs(Faqs);
+        setOpenItems([]);
+      } else {
+        const searchTermLower = searchTerm.toLowerCase();
+
+        const filtered = Faqs.filter((item) => {
+          // Apply the stripHtmlTags function to remove <strong> tags and other HTML
+          const desc = item?.desc ? stripHtmlTags(item.desc).toLowerCase() : "";
+          const matchesTitle = item?.title
+            ? stripHtmlTags(item?.title).toLowerCase()
+            : "";
+          const matchesTitleSearch = matchesTitle.includes(searchTermLower);
+          const topDesc = item?.top_desc
+            ? stripHtmlTags(item.top_desc).toLowerCase()
+            : "";
+          const heading1 = item?.heading1
+            ? stripHtmlTags(item.heading1).toLowerCase()
+            : "";
+          const heading2 = item?.heading2
+            ? stripHtmlTags(item.heading2).toLowerCase()
+            : "";
+
+          const matchesDesc = desc.includes(searchTermLower);
+          const matchesTopDesc = topDesc.includes(searchTermLower);
+          const matchesHeading1 = heading1.includes(searchTermLower);
+          const matchesHeading2 = heading2.includes(searchTermLower);
+
+          // Check for matches in the points array after removing HTML tags
+          const matchesPoints = item?.points?.some((point) =>
+            stripHtmlTags(point).toLowerCase().includes(searchTermLower)
+          );
+
+          const footerDesc = item?.footer_desc
+            ? stripHtmlTags(item.footer_desc).toLowerCase()
+            : "";
+          const matchesFooterDesc = footerDesc.includes(searchTermLower);
+
+          const matchesParagraph =
+            item?.paragraph &&
+            item?.paragraph?.some(
+              (para) =>
+                stripHtmlTags(para.title)
+                  ?.toLowerCase()
+                  .includes(searchTermLower) ||
+                (para.content &&
+                  stripHtmlTags(para.content)
+                    ?.toLowerCase()
+                    .includes(searchTermLower))
+            );
+
+          const matchesParagraphSub =
+            item?.paragraphSub &&
+            item?.paragraphSub?.some(
+              (para) =>
+                stripHtmlTags(para.title)
+                  ?.toLowerCase()
+                  .includes(searchTermLower) ||
+                para.content?.some((content) =>
+                  stripHtmlTags(content)
+                    ?.toLowerCase()
+                    .includes(searchTermLower)
+                )
+            );
+
+          const matchesHeadingPoints1 = item?.headingPoints1?.some((point) =>
+            stripHtmlTags(point).toLowerCase().includes(searchTermLower)
+          );
+          const matchesHeadingPoints2 = item?.headingPoints2?.some((point) =>
+            stripHtmlTags(point).toLowerCase().includes(searchTermLower)
+          );
+
+          return (
+            matchesDesc ||
+            matchesTitleSearch ||
+            matchesTopDesc ||
+            matchesPoints ||
+            matchesFooterDesc ||
+            matchesParagraph ||
+            matchesHeading1 ||
+            matchesHeading2 ||
+            matchesHeadingPoints1 ||
+            matchesHeadingPoints2 ||
+            matchesParagraphSub
+          );
+        });
+        setFilteredFaqs(filtered);
+        setOpenItems(filtered.map((item) => item.id));
+      }
+    }
+  }, [searchTerm]);
+
   return (
-    <>
+    <Fragment>
       <div className="faq-wrapper">
         <Image src={FaqIcon} className="faq-icon" alt="faq-icon" />
         <h3>How can we help you?</h3>
@@ -470,7 +471,7 @@ function FaqHero() {
           )}
         </div>
       </div>
-    </>
+    </Fragment>
   );
 }
 

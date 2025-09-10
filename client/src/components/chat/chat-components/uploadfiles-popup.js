@@ -1,15 +1,19 @@
-import cross from "@/assets/icons/chat/cross.svg";
-import uploadfile from "@/assets/icons/chat/uploadfile.svg";
-import { chatContext } from "@/contexts/chat-context";
-import { getUploadIconType } from "@/dummy-data";
+import React, { useEffect, useState } from "react";
 import { Progress } from "antd";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+
+import { getUploadIconType } from "@/dummy-data";
+
+import { chatContext } from "@/contexts/chat-context";
+
+import cross from "@/assets/icons/chat/cross.svg";
+import uploadfile from "@/assets/icons/chat/uploadfile.svg";
 
 const UploadFilePopup = () => {
+  const [percentage, setPercentage] = useState(0);
+
   const { showUploadModal, setShowUploadModal, filedata, setShowAttachment } =
     chatContext();
-  const [percentage, setPercentage] = useState(0);
 
   useEffect(() => {
     let interval;
@@ -39,7 +43,6 @@ const UploadFilePopup = () => {
     return () => clearInterval(interval);
   }, [showUploadModal]);
 
-
   return (
     <div
       className={`uploadfileContainer ${
@@ -60,7 +63,7 @@ const UploadFilePopup = () => {
       </div>
       <div className="body">
         <div className="col-1">
-          <Image src={getUploadIconType(filedata?.type)} alt="upload_icon"/>
+          <Image src={getUploadIconType(filedata?.type)} alt="upload_icon" />
           <div>
             <p className="chat-text filename">
               {filedata?.name && filedata?.name.length >= 15

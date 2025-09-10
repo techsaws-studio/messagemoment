@@ -1,6 +1,8 @@
-import Image from "next/image";
 import React, { forwardRef } from "react";
+import Image from "next/image";
+
 import QrCode from "../qrcode";
+
 import X_white from "@/assets/icons/cross_white.svg";
 
 const MobileQrScannerModal = forwardRef(

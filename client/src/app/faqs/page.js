@@ -1,17 +1,18 @@
-import FaqContactUs from "@/components/faq/faq-contact-us";
-import FaqHero from "@/components/faq/hero";
+import React, { Fragment } from "react";
+
 import Footer from "@/components/footer";
 import Header from "@/components/header";
-import React from "react";
+import FaqHero from "@/components/faq/hero";
+import FaqContactUs from "@/components/faq/faq-contact-us";
 
 function Faqs() {
   return (
-    <>
+    <Fragment>
       <Header />
       <FaqHero />
       <FaqContactUs />
       <Footer />
-    </>
+    </Fragment>
   );
 }
 

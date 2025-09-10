@@ -1,3 +1,5 @@
+import React, { Fragment } from "react";
+
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import Converse from "@/components/home/converse";
@@ -9,7 +11,7 @@ import LinkNotification from "@/components/notification/link-notification";
 
 export default function Home() {
   return (
-    <>
+    <Fragment>
       <LinkNotification />
       <Header />
       <Hero />
@@ -18,6 +20,6 @@ export default function Home() {
       <Message />
       <Sliders />
       <Footer />
-    </>
+    </Fragment>
   );
 }

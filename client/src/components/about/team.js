@@ -1,18 +1,22 @@
-'use client'
-import React from "react";
+"use client";
+
+import React, { Fragment } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+
+import Button from "../button";
+import { cloudFlareRef } from "../home/cloudflare";
+
 import team1 from "@/assets/images/teamMember1.svg";
 import team2 from "@/assets/images/teamMember2.svg";
 import team3 from "@/assets/images/teamMember3.svg";
 import team4 from "@/assets/images/teamMember4.svg";
 import teamFeatureImg from "@/assets/images/teamFeatureImg.svg";
 import message from "@/assets/icons/message.svg";
-import Image from "next/image";
-import Button from "../button";
-import { useRouter } from "next/navigation";
-import { cloudFlareRef } from "../home/cloudflare";
 
 function Team() {
   const teamsImg = [team1, team2, team3, team4];
+
   const router = useRouter();
 
   const handleTryMessageMoment = () => {
@@ -28,7 +32,7 @@ function Team() {
   };
 
   return (
-    <>
+    <Fragment>
       <div className="team container">
         <div className="team-imgs">
           {teamsImg.map((team, i) => (
@@ -80,7 +84,7 @@ function Team() {
           </div>
         </div>
       </div>
-    </>
+    </Fragment>
   );
 }
 

@@ -29,6 +29,9 @@ const CloudflareFooter = ({
     setShowLinkNotification,
   } = chatContext();
 
+  const isButtonDisabled =
+    !IsCfVerified || isLoadingGenerateLink || isRedirecting;
+
   const handleOnGenerateLink = async () => {
     if (isLoadingGenerateLink || isRedirecting) {
       return;
@@ -80,9 +83,6 @@ const CloudflareFooter = ({
       }
     }
   };
-
-  const isButtonDisabled =
-    !IsCfVerified || isLoadingGenerateLink || isRedirecting;
 
   const getButtonContent = () => {
     if (isLoadingGenerateLink) {

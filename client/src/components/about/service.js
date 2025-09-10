@@ -1,16 +1,20 @@
-'use client'
+"use client";
+
+import React, { Fragment, useRef } from "react";
+import Image from "next/image";
+
 import Insight from "@/assets/icons/insight.svg";
 import featureImg1 from "@/assets/images/featureImg1.svg";
 import featureImg2 from "@/assets/images/featureImg2.svg";
 import featureImg3 from "@/assets/images/featureImg3.svg";
-import { useRef } from "react";
-import Image from "next/image";
 
 function Service() {
   const data = [featureImg1, featureImg2, featureImg3];
+
   const imageRefs = useRef([]);
+
   return (
-    <>
+    <Fragment>
       <div className="about-service-wrapper container">
         <div className="about-service">
           <Image src={Insight} className="insight-img" />
@@ -49,7 +53,7 @@ function Service() {
           accessible only to authorized collaborators.
         </p>
       </div>
-    </>
+    </Fragment>
   );
 }
 

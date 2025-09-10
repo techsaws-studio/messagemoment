@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Image from "next/image";
 
 import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
@@ -24,9 +24,7 @@ const LiveTypingToggle = ({ isMobileMenu, setOpenMenu }) => {
     setShowNotification,
   } = chatContext();
 
-  useEffect(() => {
-    setShowTooltip(false);
-  }, [isLiveTypingActive]);
+  let iconSrc;
 
   const onMouseEnter = () => setShowTooltip(true);
   const onMouseLeave = () => setShowTooltip(false);
@@ -61,15 +59,19 @@ const LiveTypingToggle = ({ isMobileMenu, setOpenMenu }) => {
     }, 1000);
   };
 
-  let iconSrc;
   if (isMobileMenu) {
     iconSrc =
       isMobileView && isLiveTypingActive ? MenuActiveKeyboard : MenuKeyboard;
   } else {
     iconSrc = isMobileView && isLiveTypingActive ? ActiveKeyboard : keyboard;
   }
+
+  useEffect(() => {
+    setShowTooltip(false);
+  }, [isLiveTypingActive]);
+
   return (
-    <>
+    <Fragment>
       <div
         className={`typing-switch-container ${
           isMobileMenu
@@ -101,7 +103,7 @@ const LiveTypingToggle = ({ isMobileMenu, setOpenMenu }) => {
           Live Typing Effect On/Off
         </CustomTooltip>
       </div>
-    </>
+    </Fragment>
   );
 };
 

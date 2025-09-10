@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 
@@ -26,25 +26,6 @@ const ShareButton = ({ onCopyClick }) => {
   const modalRef = useRef(null);
   const buttonRef = useRef(null);
   const params = useParams();
-
-  useEffect(() => {
-    const url = window.location.origin + window.location.pathname;
-    setInitialUrl(url);
-    const handleClickOutside = (event) => {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(event.target)
-      ) {
-        setShowModal(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   const renderShareModal = () => {
     return (
@@ -108,6 +89,25 @@ const ShareButton = ({ onCopyClick }) => {
       </div>
     );
   };
+
+  useEffect(() => {
+    const url = window.location.origin + window.location.pathname;
+    setInitialUrl(url);
+    const handleClickOutside = (event) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target)
+      ) {
+        setShowModal(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div>

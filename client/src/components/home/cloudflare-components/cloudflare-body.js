@@ -1,4 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { Select, Tooltip } from "antd";
+import { isFirefox } from "react-device-detect";
+
+import { SessionTypeEnum } from "@/enums/session-type-enum";
+
+import DummySelect from "@/components/select";
+import QrCode from "../qrcode";
+
 import globe from "@/assets/icons/globe.svg";
 import lock from "@/assets/icons/secure.svg";
 import wallet from "@/assets/icons/wallet.svg";
@@ -12,30 +21,6 @@ import copyGray from "@/assets/icons/copy-grey.svg";
 import RegenerateTooltip from "@/assets/images/regTooltip.svg";
 import copy from "@/assets/icons/copy.svg";
 import reload from "@/assets/icons/reload.svg";
-import Image from "next/image";
-import DummySelect from "@/components/select";
-import { Select, Tooltip } from "antd";
-import QrCode from "../qrcode";
-import { isFirefox } from "react-device-detect";
-import { SessionTypeEnum } from "@/enums/session-type-enum";
-
-/**
- * CloudflareBody component
- * @param {Object} props
- * @param {function} handleSelectUrlTYpe - to handle select url type
- * @param {function} handleDropdownVisibleChange - to handle dropdown visible change
- * @param {function} onQrChange - to handle qr code change
- * @param {string} secureCode - to display secure code
- * @param {string} url - to display url
- * @param {boolean} isCopyVisibleTooltip - to show copy tooltip
- * @param {boolean} isQrVisibleTooltip - to show qr tooltip
- * @param {function} handleHover - to handle hover
- * @param {function} handleMouseLeave - to handle mouse leave
- * @param {function} handleCopy - to handle copy
- * @param {boolean} isVisibleTooltip - to show tooltip
- * @param {boolean} IsCfVerified - to check if cloudflare is verified
- * @param {function} handleRegenrateClick - to handle regenerate click
- */
 
 const CloudflareBody = ({
   selectOption,
@@ -57,8 +42,10 @@ const CloudflareBody = ({
   handleRegenrateClick,
 }) => {
   const [IsFireFoxBrowser, setIsFireFoxBrowser] = useState(false);
-  const dropdownRef = useRef();
   const [open, setOpen] = useState(false);
+
+  const dropdownRef = useRef();
+
   const toggleDropdown = () => {
     setOpen(!open);
   };
@@ -68,6 +55,7 @@ const CloudflareBody = ({
       setOpen(false);
     }
   };
+
   useEffect(() => {
     setIsFireFoxBrowser(isFirefox);
     document.addEventListener("mousedown", handleClickOutside);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import Image from "next/image";
 
 import ProjectModeTooltip from "../chat-components/projectMode-tooltip";
@@ -28,7 +28,7 @@ const CommandModal = ({
   }
 
   return (
-    <>
+    <Fragment>
       <div
         className={`commands-modal ${
           showCommands ? "commands-modal-open" : ""
@@ -118,7 +118,7 @@ const CommandModal = ({
         key={`ShareModeTooltip`}
         isAttachment={showAttachment}
       />
-    </>
+    </Fragment>
   );
 };
 

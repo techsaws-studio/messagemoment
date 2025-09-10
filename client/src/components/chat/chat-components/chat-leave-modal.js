@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 import { chatContext } from "@/contexts/chat-context";
 import { useSocket } from "@/contexts/socket-context";

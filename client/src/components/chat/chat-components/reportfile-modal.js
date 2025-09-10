@@ -1,27 +1,28 @@
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
+
+import { reason_options } from "@/dummy-data";
+
+import { chatContext } from "@/contexts/chat-context";
+
+import Button from "@/components/button";
+
 import CrossDark from "@/assets/icons/cross_darkgray.svg";
 import policeshield from "@/assets/icons/chat/police-shield.svg";
 import circle from "@/assets/icons/chat/circle.svg";
 import radioSelected from "@/assets/icons/chat/radio-selected.svg";
 import tick from "@/assets/icons/chat/tick.svg";
-import Image from "next/image";
-import Button from "@/components/button";
 import Dropdown from "@/assets/icons/dropdown.svg";
 import dropDownIcon from "@/assets/icons/dropdown_Icon.svg";
-import { reason_options } from "@/dummy-data";
-import { chatContext } from "@/contexts/chat-context";
 
 const ReportFileModal = () => {
-  const { setShowReportfileModal, showReportfileModal } = chatContext();
-
-  // states
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedOption, setSelectedOption] = useState(undefined);
   const [submitReport, setSubmitReport] = useState(false);
-
-  // modal vars
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setisClosing] = useState(false);
+
+  const { setShowReportfileModal, showReportfileModal } = chatContext();
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -37,15 +38,11 @@ const ReportFileModal = () => {
       setSubmitReport(false);
     }, 280);
   };
-  useEffect(() => {
-    if (showReportfileModal) {
-      setIsVisible(true);
-    }
-  }, [showReportfileModal]);
+
   const renderReportSubmittedView = () => {
     return (
       <div className="report-submit-cont">
-        <Image src={tick} alt="tick"/>
+        <Image src={tick} alt="tick" />
         <p className="heading">
           Your reports help us maintain the integrity of our community and
           ensure that everyone can enjoy a positive experience.
@@ -58,13 +55,19 @@ const ReportFileModal = () => {
     );
   };
 
+  useEffect(() => {
+    if (showReportfileModal) {
+      setIsVisible(true);
+    }
+  }, [showReportfileModal]);
+
   return (
     <div className={`report-file-modal ${isVisible && "open-fade "}`}>
       {/* report Container */}
 
       <div className={`reportfileContainer ${isClosing && "fade-out"}`}>
         <div className="header">
-          <Image src={policeshield} className="cooki-img"alt="policeshield" />
+          <Image src={policeshield} className="cooki-img" alt="policeshield" />
           <h4>Report a FileMoment.com File</h4>
           <Image
             src={CrossDark}
@@ -93,7 +96,10 @@ const ReportFileModal = () => {
                   <div className="expand-area" onClick={toggleExpand}>
                     <div className="flex-row">
                       <p className="title">Select a reason</p>
-                      <Image src={isExpanded ? dropDownIcon : Dropdown} alt="dropDownIcon" />
+                      <Image
+                        src={isExpanded ? dropDownIcon : Dropdown}
+                        alt="dropDownIcon"
+                      />
                     </div>
 
                     <p className="paragraph">
@@ -107,9 +113,12 @@ const ReportFileModal = () => {
                 <>
                   <div className="selected-option" onClick={toggleExpand}>
                     <div className="flex-row">
-                      <Image src={radioSelected} alt="radioSelected"/>
+                      <Image src={radioSelected} alt="radioSelected" />
                       <p className="heading">{selectedOption?.title}</p>
-                      <Image src={isExpanded ? dropDownIcon : Dropdown} alt="dropDownIcon" />
+                      <Image
+                        src={isExpanded ? dropDownIcon : Dropdown}
+                        alt="dropDownIcon"
+                      />
                     </div>
 
                     <p

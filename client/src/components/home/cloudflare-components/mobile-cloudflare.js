@@ -4,6 +4,8 @@ import React, { forwardRef, useState } from "react";
 import Image from "next/image";
 import { Spin } from "antd";
 
+import { SessionTypeEnum } from "@/enums/session-type-enum";
+
 import { chatContext } from "@/contexts/chat-context";
 
 import CustomTurnstile from "@/components/custom-turnstile";
@@ -21,7 +23,6 @@ import qrcodeGray from "@/assets/icons/qrcode-grey.svg";
 import qrcode from "@/assets/icons/qrcode.svg";
 import copyGray from "@/assets/icons/copy-grey.svg";
 import copy from "@/assets/icons/copy.svg";
-import { SessionTypeEnum } from "@/enums/session-type-enum";
 
 const MobileCloudFlare = forwardRef(
   (
@@ -52,6 +53,9 @@ const MobileCloudFlare = forwardRef(
       isLoadingGenerateLink,
       setShowLinkNotification,
     } = chatContext();
+
+    const isButtonDisabled =
+      !IsCfVerified || isLoadingGenerateLink || isRedirecting;
 
     const handleOnGenerateLink = async () => {
       if (isLoadingGenerateLink || isRedirecting) {
@@ -104,9 +108,6 @@ const MobileCloudFlare = forwardRef(
         }
       }
     };
-
-    const isButtonDisabled =
-      !IsCfVerified || isLoadingGenerateLink || isRedirecting;
 
     const getButtonContent = () => {
       if (isLoadingGenerateLink) {

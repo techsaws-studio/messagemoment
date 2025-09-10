@@ -1,12 +1,14 @@
-import { Tooltip } from "antd";
 import React from "react";
-import leave_tooltip from "@/assets/icons/chat/leave_tooltip.svg";
+import { Tooltip } from "antd";
 import Image from "next/image";
+
 import { chatContext } from "@/contexts/chat-context";
 
+import leave_tooltip from "@/assets/icons/chat/leave_tooltip.svg";
+
 const DisconnectBtn = () => {
-  // context
   const { setShowChatLeaveModal } = chatContext();
+
   return (
     <Tooltip
       overlayClassName="copylink-tooltip"

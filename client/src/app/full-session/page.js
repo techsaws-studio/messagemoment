@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 
 import SessionHeader from "@/components/session-header";
 import Session from "@/components/session/session";
@@ -8,12 +8,12 @@ import FullSessionImg from "@/assets/icons/full-session.svg";
 
 function FullSession() {
   return (
-    <>
+    <Fragment>
       <SessionHeader />
       <Session key={`full-session`} imgName={FullSessionImg}>
-        <FullSessionContent/>
+        <FullSessionContent />
       </Session>
-    </>
+    </Fragment>
   );
 }
 

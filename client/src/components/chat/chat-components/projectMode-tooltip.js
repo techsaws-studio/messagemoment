@@ -11,9 +11,11 @@ const ProjectModeTooltip = ({ isAttachment }) => {
   const { showProjectModeTooltip, setShowProjectModeTooltip } = chatContext();
   const tooltipRef = useRef(null);
   const { isMobileView } = useCheckIsMobileView();
+
   const onClickReadMore = () => {
     window.open("/faqs#project_mode", "_blank");
   };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (tooltipRef.current && !tooltipRef.current.contains(event.target)) {
@@ -30,6 +32,7 @@ const ProjectModeTooltip = ({ isAttachment }) => {
   useEffect(() => {
     if (!isMobileView) setShowProjectModeTooltip(false);
   }, [isMobileView]);
+
   return (
     <div
       ref={tooltipRef}

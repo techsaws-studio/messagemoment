@@ -1,6 +1,8 @@
 import React from "react";
-import solutionTeamImg from "@/assets/images/solutionTeamImg.svg";
 import Image from "next/image";
+
+import solutionTeamImg from "@/assets/images/solutionTeamImg.svg";
+
 function SolutionSearch() {
   return (
     <div className="solution-search container">

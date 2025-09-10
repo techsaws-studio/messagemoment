@@ -1,8 +1,11 @@
 import React from "react";
-import messageSend from "@/assets/icons/messageSend.svg";
 import Image from "next/image";
+
 import Button from "../button";
-const ContactUsSuccessModal = ({onPressOk}) => {
+
+import messageSend from "@/assets/icons/messageSend.svg";
+
+const ContactUsSuccessModal = ({ onPressOk }) => {
   return (
     <div className="contact-modal">
       <div className="blur-view2" />

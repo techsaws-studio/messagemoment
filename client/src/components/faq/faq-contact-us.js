@@ -1,8 +1,11 @@
-'use client'
-import Image from "next/image";
+"use client";
+
 import React from "react";
-import Contactus from "@/assets/icons/contactUs.svg";
+import Image from "next/image";
+
 import Button from "../button";
+
+import Contactus from "@/assets/icons/contactUs.svg";
 
 function FaqContactUs() {
   return (

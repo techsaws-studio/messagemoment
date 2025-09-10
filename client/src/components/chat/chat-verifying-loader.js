@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 
 const ChatVerifyingLoader = () => {
   const [dots, setDots] = useState("");
@@ -14,7 +14,7 @@ const ChatVerifyingLoader = () => {
     return () => clearInterval(interval);
   }, []);
 
-  return <>Verifying{dots}</>;
+  return <Fragment>Verifying{dots}</Fragment>;
 };
 
 export default ChatVerifyingLoader;
