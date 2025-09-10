@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 import { SessionTypeEnum } from "@/enums/session-type-enum";
@@ -59,7 +59,7 @@ const Message = ({
 
   const renderAdertisment = () => {
     return (
-      <>
+      <Fragment>
         <p
           className={
             type == messageType.ADVERTISEMENT
@@ -80,13 +80,13 @@ const Message = ({
           </a>{" "}
           now and book your trip!
         </p>
-      </>
+      </Fragment>
     );
   };
 
   const renderMessageMoment = () => {
     return (
-      <>
+      <Fragment>
         <p className={"chat-text handlertext"}></p>
         <div
           className="chat-text msg_txt"
@@ -96,14 +96,14 @@ const Message = ({
         >
           {(sessionData?.type == SessionTypeEnum.SECURE ||
             sessionData?.type == SessionTypeEnum.WALLET) && (
-            <>
+            <Fragment>
               Thank you!
               <div id="dot-line">
                 <p>.</p>
                 <p>.</p>
                 <p>.</p>{" "}
               </div>
-            </>
+            </Fragment>
           )}
           {">"} Please enter your Display Name to proceed:
           <br />
@@ -123,13 +123,13 @@ const Message = ({
             service.
           </span>
         </div>
-      </>
+      </Fragment>
     );
   };
 
   const renderMessageMomentAlert = () => {
     return (
-      <>
+      <Fragment>
         <p
           className={"chat-text handlertext"}
           style={{ color: handlerColor ? handlerColor : "#494AF8" }}
@@ -137,13 +137,13 @@ const Message = ({
           {handlerName}
         </p>
         <p className="chat-text msg_txt">{message}</p>
-      </>
+      </Fragment>
     );
   };
 
   const renderMessageMomentAlertRemoveUser = () => {
     return (
-      <>
+      <Fragment>
         <p
           className={"chat-text handlertext"}
           style={{ color: handlerColor ? handlerColor : "#494AF8" }}
@@ -156,13 +156,13 @@ const Message = ({
           session. Are you sure you want to proceed? Type 'y' for Yes, 'n' for
           No.
         </p>
-      </>
+      </Fragment>
     );
   };
 
   const renderAIResearchCompanionResponse = () => {
     return (
-      <>
+      <Fragment>
         <p className={"chat-text handlertext"} style={{ color: "#494AF8" }}>
           [MessageMoment.com]
         </p>
@@ -176,13 +176,13 @@ const Message = ({
           />{" "}
           <span ref={el}></span>
         </p>
-      </>
+      </Fragment>
     );
   };
 
   const renderAIResearchCompanionInput = () => {
     return (
-      <>
+      <Fragment>
         <p className={"chat-text handlertext"} style={{ color: handlerColor }}>
           {handlerName}
         </p>{" "}
@@ -190,56 +190,56 @@ const Message = ({
           <span style={{ color: "#494AF8" }}>[MM]</span> {message}
           {/* <p className="chat-text msg_txt">[MM]</p> {message} */}
         </p>
-      </>
+      </Fragment>
     );
   };
 
   const renderMessageMomentError = () => {
     return (
-      <>
+      <Fragment>
         {isMobileView ? (
-          <>
+          <Fragment>
             <div className="alert-flex">
               <Image src={alert} alt="dsk-icon" />
               <p className={`chat-text err-txt`}>[MessageMoment.com]</p>
             </div>
-          </>
+          </Fragment>
         ) : (
-          <>
+          <Fragment>
             <Image src={alert} alt="dsk-icon" />
             <p className={`chat-text err-txt`}>[MessageMoment.com]</p>
-          </>
+          </Fragment>
         )}
         <p className="chat-text msg_txt">{message}</p>
-      </>
+      </Fragment>
     );
   };
 
   const renderMMAlert = () => {
     return (
-      <>
+      <Fragment>
         {isMobileView ? (
-          <>
+          <Fragment>
             <div className="alert-flex">
               <Image src={blue_alert} alt="blue_alert" />
               <p className={`chat-text success-txt`}>[MessageMoment.com]</p>
             </div>
             <p className="chat-text msg_txt">{message}</p>
-          </>
+          </Fragment>
         ) : (
-          <>
+          <Fragment>
             <Image src={blue_alert} alt="blue_alert" />
             <p className={`chat-text success-txt`}>[MessageMoment.com]</p>
             <p className="chat-text msg_txt">{message}</p>
-          </>
+          </Fragment>
         )}
-      </>
+      </Fragment>
     );
   };
 
   const renderMMGreetings = () => {
     return (
-      <>
+      <Fragment>
         <p className={"chat-text handlertext"}>{handlerName}</p>{" "}
         <p
           className="chat-text msg_txt "
@@ -255,13 +255,13 @@ const Message = ({
             <Image src={pin} alt="pin" />
           </span>
         </p>
-      </>
+      </Fragment>
     );
   };
 
   const renderSecruityCodePrompt = () => {
     return (
-      <>
+      <Fragment>
         <p className={"chat-text handlertext"}>{handlerName}</p>
         <div className="chat-text msg_txt">
           <Image src={lock_grey} alt="lock_grey" className="padlock" /> This
@@ -273,7 +273,7 @@ const Message = ({
           </div>
           {">"} Please enter the Security Code you received with your chat link:
         </div>
-      </>
+      </Fragment>
     );
   };
 
@@ -285,12 +285,12 @@ const Message = ({
       !(isSessionLockedRealTime || isSessionExpiredRealTime);
 
     return (
-      <>
+      <Fragment>
         <p className={"chat-text handlertext"}></p>
         <div className="chat-text msg_txt">
           This chat session is being protected using{" "}
           {isWalletExist ? (
-            <>
+            <Fragment>
               <a
                 href="https://phantom.app/"
                 target="_blank"
@@ -299,13 +299,13 @@ const Message = ({
                 Phantom Wallet
               </a>
               .
-            </>
+            </Fragment>
           ) : (
-            <>Phantom Wallet.</>
+            <Fragment>Phantom Wallet.</Fragment>
           )}
           <div style={{ marginTop: "10px" }}>
             {isWalletExist ? (
-              <>
+              <Fragment>
                 To proceed, please verify your identity by clicking{" "}
                 {shouldShowClickableLink ? (
                   <a
@@ -315,12 +315,12 @@ const Message = ({
                     here
                   </a>
                 ) : (
-                  <>here</>
+                  <Fragment>here</Fragment>
                 )}
                 .
-              </>
+              </Fragment>
             ) : (
-              <>
+              <Fragment>
                 To proceed,
                 <a
                   href="https://phantom.app/"
@@ -331,17 +331,17 @@ const Message = ({
                   please install and connect to Phantom Wallet to authenticate
                 </a>
                 .
-              </>
+              </Fragment>
             )}
           </div>
         </div>
-      </>
+      </Fragment>
     );
   };
 
   const renderAskToSetTimer = () => {
     return (
-      <>
+      <Fragment>
         <p className={"chat-text handlertext"}>[MessageMoment.com]</p>
         <div className="chat-text msg_txt">
           <p className="chat-text msg_txt">
@@ -362,13 +362,13 @@ const Message = ({
           </div>
           <span>{">"} Otherwise proceed by typing your first message.</span>
         </div>
-      </>
+      </Fragment>
     );
   };
 
   const renderProjectMode = () => {
     return (
-      <>
+      <Fragment>
         <p className={"chat-text handlertext"}>[MessageMoment.com]</p>
         <div className="chat-text msg_txt">
           <p className="chat-text msg_txt">
@@ -399,13 +399,13 @@ const Message = ({
             </ul>
           </span>
         </div>
-      </>
+      </Fragment>
     );
   };
 
   const renderProjectModeEntry = () => {
     return (
-      <>
+      <Fragment>
         <p className={"chat-text handlertext"}>[MessageMoment.com]</p>
         <div className="chat-text msg_txt">
           <p className="chat-text msg_txt mb-10">
@@ -425,13 +425,13 @@ const Message = ({
             <span id="blut-txt">/clear</span> command.
           </p>
         </div>
-      </>
+      </Fragment>
     );
   };
 
   const renderAttachmentMessage = () => {
     return (
-      <>
+      <Fragment>
         <p
           className={"chat-text handlertext"}
           style={{ color: USER_HANDERLS[3] }}
@@ -455,7 +455,7 @@ const Message = ({
             </a>
           </p>
           {isMobileView ? (
-            <>
+            <Fragment>
               <div id="attachment-file_m">
                 {/*  */}
                 <div
@@ -515,9 +515,9 @@ const Message = ({
                   </div>
                 </div>
               </div>
-            </>
+            </Fragment>
           ) : (
-            <>
+            <Fragment>
               <div id="attachment-file">
                 {/*  */}
                 <div id="row-flex" className="file-name">
@@ -538,7 +538,7 @@ const Message = ({
                   <p className="chat-text msg_txt">Download</p>
                 </div>
               </div>
-            </>
+            </Fragment>
           )}
 
           <div id="row-flex" style={{ alignItems: isMobileView && "baseline" }}>
@@ -585,7 +585,7 @@ const Message = ({
             )}
           </div>
         </div>
-      </>
+      </Fragment>
     );
   };
 
@@ -616,7 +616,7 @@ const Message = ({
     return renderMap[type] ? (
       renderMap[type]()
     ) : (
-      <>
+      <Fragment>
         <p className="chat-text handlertext" style={{ color: handlerColor }}>
           {handlerName}
         </p>
@@ -626,7 +626,7 @@ const Message = ({
           ref={el}
           style={{ whiteSpace: "pre-wrap" }}
         ></p>
-      </>
+      </Fragment>
     );
   };
 

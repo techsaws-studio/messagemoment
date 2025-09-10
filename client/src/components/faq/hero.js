@@ -87,7 +87,7 @@ function FaqHero() {
 
   const renderBulletsPoints = (item) => {
     return (
-      <>
+      <Fragment>
         {item?.top_desc && (
           <p
             className="small"
@@ -117,17 +117,17 @@ function FaqHero() {
             {getHighlightedText(item?.footer_desc, searchTerm, item.id)}
           </p>
         )}
-      </>
+      </Fragment>
     );
   };
 
   const renderParagraph = (item) => {
     return (
-      <>
+      <Fragment>
         <ul className="custom-list-faq">
           {item?.paragraph.length > 0 &&
             item?.paragraph.map((val, index) => (
-              <React.Fragment
+              <Fragment
                 key={`renderParagraph-${
                   index.toString() + `${new Date().getMilliseconds()}`
                 }`}
@@ -136,16 +136,16 @@ function FaqHero() {
                 <p className="small" id="paragraph_style">
                   {getHighlightedText(val?.content, searchTerm, item.id)}
                 </p>
-              </React.Fragment>
+              </Fragment>
             ))}
         </ul>
-      </>
+      </Fragment>
     );
   };
 
   const renderMultiHeading = (item) => {
     return (
-      <>
+      <Fragment>
         {item?.top_desc && (
           <p
             className="small"
@@ -201,13 +201,13 @@ function FaqHero() {
               </li>
             ))}
         </ul>
-      </>
+      </Fragment>
     );
   };
 
   const renderListwithSubContent = (item) => {
     return (
-      <>
+      <Fragment>
         {item?.top_desc && (
           <p
             className="small"
@@ -251,7 +251,7 @@ function FaqHero() {
               </li>
             ))}
         </ul>
-      </>
+      </Fragment>
     );
   };
 
@@ -397,13 +397,13 @@ function FaqHero() {
       >
         <div className="qna-section">
           {filteredFaqs.length == 0 ? (
-            <>
+            <Fragment>
               <h3>Frequently Asked Questions</h3>
               <NoFaqFound value={searchTerm} />
               <hr className="hr" />
-            </>
+            </Fragment>
           ) : (
-            <>
+            <Fragment>
               <h3 className="faq-title">Frequently Asked Questions</h3>
               <h4>General</h4>
               <div className="accordion">
@@ -446,28 +446,28 @@ function FaqHero() {
                       }`}
                     >
                       {item?.type == "bullets" ? (
-                        <>{renderBulletsPoints(item)}</>
+                        <Fragment>{renderBulletsPoints(item)}</Fragment>
                       ) : item?.type == "paragraph" ? (
-                        <>{renderParagraph(item)}</>
+                        <Fragment>{renderParagraph(item)}</Fragment>
                       ) : item.type == "multiple-headings" ? (
                         renderMultiHeading(item)
                       ) : item.type == "list-sub-content" ? (
                         renderListwithSubContent(item)
                       ) : (
-                        <>
+                        <Fragment>
                           <p
                             className="small"
                             style={{ whiteSpace: "pre-line" }}
                           >
                             {getHighlightedText(item.desc, searchTerm, item.id)}
                           </p>
-                        </>
+                        </Fragment>
                       )}
                     </div>
                   </div>
                 ))}
               </div>
-            </>
+            </Fragment>
           )}
         </div>
       </div>

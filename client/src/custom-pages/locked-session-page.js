@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense } from "react";
+import React, { Fragment, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 import SessionHeader from "@/components/session-header";
@@ -16,11 +16,11 @@ function LockedSessionWrapper() {
 
 export default function LockedSessionPage() {
   return (
-    <>
+    <Fragment>
       <SessionHeader />
       <Suspense fallback={<PageLoader />}>
         <LockedSessionWrapper />
       </Suspense>
-    </>
+    </Fragment>
   );
 }

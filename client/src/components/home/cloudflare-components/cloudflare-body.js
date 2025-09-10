@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Select, Tooltip } from "antd";
 import { isFirefox } from "react-device-detect";
@@ -149,11 +149,11 @@ const CloudflareBody = ({
             </div>
           </div>
         ) : (
-          <>
+          <Fragment>
             {loading ? (
               <DummySelect />
             ) : (
-              <>
+              <Fragment>
                 <Select
                   defaultValue={SessionTypeEnum.STANDARD}
                   dropdownAlign={{
@@ -227,9 +227,9 @@ const CloudflareBody = ({
                     },
                   ]}
                 />
-              </>
+              </Fragment>
             )}
-          </>
+          </Fragment>
         )}
         <div
           className={`link-box ${

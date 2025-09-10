@@ -2,6 +2,7 @@
 
 import React, {
   createRef,
+  Fragment,
   useCallback,
   useEffect,
   useRef,
@@ -2746,7 +2747,7 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
   // SOCKET INTEGRATION -- END
 
   return (
-    <>
+    <Fragment>
       <MessagesModals
         fileInputRef={fileInputRef}
         handleFileChange={handleFileChange}
@@ -2795,7 +2796,7 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
         setSelectedColor={setSelectedColor}
         setShowCommands={setShowCommands}
       />
-    </>
+    </Fragment>
   );
 };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import { Spin } from "antd";
 
 import { chatContext } from "@/contexts/chat-context";
@@ -97,7 +97,7 @@ const CloudflareFooter = ({
   };
 
   return (
-    <>
+    <Fragment>
       <div className="gen-btn">
         <CustomTurnstile
           setIsCfVerified={setIsCfVerified}
@@ -128,7 +128,7 @@ const CloudflareFooter = ({
         , and that you and everybody you share the chat link with is above 16
         years of age.
       </p>
-    </>
+    </Fragment>
   );
 };
 

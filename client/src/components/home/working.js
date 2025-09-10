@@ -1,21 +1,25 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+
+import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
+
 import msg from "../../assets/images/work.png";
 import genLink from "../../assets/icons/genLink.svg";
 import share from "../../assets/icons/share.svg";
 import expiry from "../../assets/icons/timer.svg";
 import session from "../../assets/icons/endSession.svg";
-import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
 
 const Working = () => {
   const [hoveredCard, setHoveredCard] = useState(0);
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+
   const scrollContainerRef = useRef(null);
   const scrollBarRef = useRef(null);
   const cardRefs = useRef([]);
-  const [isVisible, setIsVisible] = useState(false);
-  const {isWorkingMobileView}=useCheckIsMobileView()
+  const { isWorkingMobileView } = useCheckIsMobileView();
 
   useEffect(() => {
     setIsVisible(true);
@@ -24,12 +28,10 @@ const Working = () => {
         const { scrollLeft, scrollWidth, clientWidth } =
           scrollContainerRef.current;
         const maxScrollLeft = scrollWidth - clientWidth;
-        // Calculate the available width for the scroll thumb
         const customScrollTrackWidth = scrollBarRef.current.clientWidth;
         const customScrollThumbWidth = 40;
         const maxThumbMovement =
           customScrollTrackWidth - customScrollThumbWidth;
-        // Calculate the scroll thumb position based on scrollLeft and maxThumbMovement
         const newPosition = (scrollLeft / maxScrollLeft) * maxThumbMovement;
         setScrollPosition(newPosition);
       }
@@ -46,7 +48,7 @@ const Working = () => {
       }
     };
   }, []);
-  // Function to handle scrolling to a specific card
+
   const scrollToCard = (index) => {
     if (cardRefs.current[index]) {
       cardRefs.current[index].scrollIntoView({
@@ -59,7 +61,7 @@ const Working = () => {
   };
 
   return (
-    <>
+    <Fragment>
       <section className="working">
         <div className={!isWorkingMobileView && "container"}>
           <h2 className="text-white text-center header">
@@ -137,9 +139,10 @@ const Working = () => {
           </div>
         </div>
       </section>
-    </>
+    </Fragment>
   );
 };
+
 const cards = [
   {
     img: genLink,
@@ -158,4 +161,5 @@ const cards = [
     label: "End Session",
   },
 ];
+
 export default Working;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Image from "next/image";
 
 import { reason_options } from "@/dummy-data";
@@ -92,7 +92,7 @@ const ReportFileModal = () => {
             <p className="title sub-title">Welcome to our File Report Center</p>
             <div className="expand-area-wrapper">
               {!selectedOption ? (
-                <>
+                <Fragment>
                   <div className="expand-area" onClick={toggleExpand}>
                     <div className="flex-row">
                       <p className="title">Select a reason</p>
@@ -108,9 +108,9 @@ const ReportFileModal = () => {
                       the file.
                     </p>
                   </div>
-                </>
+                </Fragment>
               ) : (
-                <>
+                <Fragment>
                   <div className="selected-option" onClick={toggleExpand}>
                     <div className="flex-row">
                       <Image src={radioSelected} alt="radioSelected" />
@@ -131,7 +131,7 @@ const ReportFileModal = () => {
                       {selectedOption?.desc}
                     </p>
                   </div>
-                </>
+                </Fragment>
               )}
 
               <div className={`reportfile-content ${isExpanded && "expanded"}`}>
@@ -177,7 +177,7 @@ const ReportFileModal = () => {
               onClick={handleCloseReportModal}
             />
           ) : (
-            <>
+            <Fragment>
               <Button
                 text="Cancel"
                 width="180px"
@@ -196,7 +196,7 @@ const ReportFileModal = () => {
                 }`}
                 onClick={() => setSubmitReport(true)}
               />
-            </>
+            </Fragment>
           )}
         </div>
       </div>

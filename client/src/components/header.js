@@ -1,6 +1,15 @@
 "use client";
-import React, { useEffect, useState } from "react";
+
+import React, { Fragment, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { getYear } from "date-fns";
+
+import Button from "./button";
+import { cloudFlareRef } from "./home/cloudflare";
+
+import arrow_white from "../assets/icons/arrow_white.svg";
 import logo from "../assets/icons/logo.svg";
 import logo_white from "../assets/icons/logo_white.svg";
 import cross_white from "../assets/icons/cross_white.svg";
@@ -13,27 +22,17 @@ import Facebook_white from "../assets/icons/Facebook_white.svg";
 import youtube from "../assets/icons/Youtube.svg";
 import Youtube_white from "../assets/icons/Youtube_white.svg";
 import MenuIcon from "../assets/icons/menu-icon.svg";
-import Button from "./button";
-import { cloudFlareRef } from "./home/cloudflare";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import arrow_white from "../assets/icons/arrow_white.svg";
-import { getYear } from "date-fns";
 
-/**
- * The Header component renders the topmost part of the webpage, including the navigation bar
- * and the logo. It also contains a mobile menu which is toggled by the menu icon.
- *
- * @returns The Header component.
- */
 const Header = () => {
-  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const router = useRouter();
   const currentYear = getYear(new Date());
 
   const handleMenuToggle = () => {
     setMenuOpen(true);
   };
+
   const scrollToTop = () => {
     const currentPath = window.location.pathname;
     if (menuOpen) setMenuOpen(false);
@@ -56,13 +55,14 @@ const Header = () => {
       window.scrollTo({ top: yPosition, behavior: "smooth" });
     }
   };
+
   const handleLogoClick = () => {
     window.location.href = window.location.href;
     window.location.href = "/";
   };
 
   return (
-    <>
+    <Fragment>
       <header>
         {!menuOpen && <div className="bar"></div>}
         {/* mobile header */}
@@ -209,7 +209,7 @@ const Header = () => {
           </ul>
         </div>
       </header>
-    </>
+    </Fragment>
   );
 };
 

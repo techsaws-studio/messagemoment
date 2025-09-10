@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const useCheckIsMobileView = () => {
   const [isMobileView, setIsMobileView] = useState(false);
   const [isSmallMobileView, setIsSmallMobileView] = useState(false);
   const [isMediumScreen, setIsMediumScreen] = useState(false);
   const [isWorkingMobileView, setIsWorkingMobileView] = useState(false);
-  const [isMessageMobileView,setIsMessageMobileView]=useState(false)
+  const [isMessageMobileView, setIsMessageMobileView] = useState(false);
+
   useEffect(() => {
     const updateButtonSize = () => {
       if (window.innerWidth >= 1000 && window.innerWidth <= 1160) {
@@ -44,7 +45,7 @@ const useCheckIsMobileView = () => {
     isSmallMobileView,
     isMediumScreen,
     isWorkingMobileView,
-    isMessageMobileView
+    isMessageMobileView,
   };
 };
 

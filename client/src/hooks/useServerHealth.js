@@ -11,6 +11,7 @@ export const useServerHealth = (options = {}) => {
 
   const [isServerDown, setIsServerDown] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
+
   const intervalRef = useRef();
   const abortControllerRef = useRef();
   const consecutiveFailures = useRef(0);

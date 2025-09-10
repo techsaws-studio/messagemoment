@@ -1,7 +1,9 @@
 import React from "react";
+import Image from "next/image";
+
 import dropdownIcon from "../../src/assets/icons/dropdown.svg";
 import globe from "../../src/assets/icons/globe.svg";
-import Image from "next/image";
+
 const DummySelect = () => {
   return (
     <div>

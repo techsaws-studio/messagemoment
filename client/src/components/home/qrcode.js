@@ -1,14 +1,9 @@
-import React from "react";
-import qrCodeFrame from "@/assets/icons/qr_frame.svg";
-import Image from "next/image";
+import React, { Fragment } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import Image from "next/image";
 
-/**
- * Generates a QR code with a frame for desktop or a simple QR code for mobile.
- * @param {string} url - the url to be encoded in the QR code
- * @param {boolean} isMobileVersion - whether to render the frame or not
- * @returns {React.ReactElement} the QR code component
- */
+import qrCodeFrame from "@/assets/icons/qr_frame.svg";
+
 const QrCode = ({ url, isMobileVersion }) => {
   return (
     <div className="qr-container">
@@ -17,10 +12,10 @@ const QrCode = ({ url, isMobileVersion }) => {
           <QRCodeSVG value={url} className="qr-code" />
         </div>
       ) : (
-        <>
+        <Fragment>
           <Image draggable={false} src={qrCodeFrame} alt="qr code frame" />
           <QRCodeSVG value={url} className="qr-code" />
-        </>
+        </Fragment>
       )}
     </div>
   );

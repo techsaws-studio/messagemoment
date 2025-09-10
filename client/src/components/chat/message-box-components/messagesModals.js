@@ -13,7 +13,7 @@ const MessagesModals = ({
 }) => {
   const renderModals = () => {
     return (
-      <>
+      <Fragment>
         <ChatLeaveModal />
         <UploadFilePopup />
         <ReportFileModal />
@@ -24,7 +24,7 @@ const MessagesModals = ({
           style={{ display: "none" }}
           onChange={handleFileChange}
         />
-      </>
+      </Fragment>
     );
   };
 

@@ -1,16 +1,20 @@
 "use client";
+
+import React from "react";
 import Image from "next/image";
+import { getYear } from "date-fns";
+import Link from "next/link";
+
+import Button from "./button";
+
 import facebook from "../assets/icons/Facebook.svg";
 import Instagram from "../assets/icons/Instagram.svg";
 import logo from "../assets/icons/logo.svg";
 import upArrow from "../assets/icons/upArrow.svg";
 import x from "../assets/icons/X.svg";
 import youtube from "../assets/icons/Youtube.svg";
-import { getYear } from "date-fns";
-import Link from "next/link";
 import des from "../assets/icons/desBy.svg";
 import heartIcon from "../assets/icons/heart.svg";
-import Button from "./button";
 
 const Footer = () => {
   const currentYear = getYear(new Date());

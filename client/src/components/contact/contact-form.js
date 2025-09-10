@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Spin } from "antd";
 
@@ -150,7 +150,7 @@ function ContactForm() {
   }, []);
 
   return (
-    <>
+    <Fragment>
       {showModal && <ContactUsSuccessModal onPressOk={onPressOk} />}
 
       <div className="contact-form">
@@ -263,7 +263,7 @@ function ContactForm() {
           />
         </div>
       </div>
-    </>
+    </Fragment>
   );
 }
 

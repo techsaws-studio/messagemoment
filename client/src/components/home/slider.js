@@ -1,9 +1,11 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/navigation";
 import Image from "next/image";
+
+import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
+
 import slider1 from "../../assets/icons/slider1.svg";
 import slider2 from "../../assets/icons/slider2.svg";
 import slider3 from "../../assets/icons/slider3.svg";
@@ -13,14 +15,28 @@ import laptop from "../../assets/icons/laptop.svg";
 import tablet from "../../assets/icons/tablet.svg";
 import Tv from "../../assets/icons/television.svg";
 import Consoles from "../../assets/icons/controller.svg";
-import useCheckIsMobileView from "@/hooks/useCheckIsMobileView";
+import "swiper/css";
+import "swiper/css/navigation";
 
 const Sliders = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
+
   const { isMediumScreen } = useCheckIsMobileView();
   const scrollContainerRef = useRef(null);
   const scrollBarRef = useRef(null);
   const cardRefs = useRef([]);
+
+  const data = [slider1, slider2, slider3, slider4];
+
+  const scrollToCard = (index) => {
+    if (cardRefs.current[index]) {
+      cardRefs.current[index].scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,12 +45,10 @@ const Sliders = () => {
           scrollContainerRef.current;
         const maxScrollLeft = scrollWidth - clientWidth;
 
-        // Calculate the available width for the scroll thumb
         const customScrollTrackWidth = scrollBarRef.current.clientWidth;
         const customScrollThumbWidth = 40;
         const maxThumbMovement =
           customScrollTrackWidth - customScrollThumbWidth;
-        // Calculate the scroll thumb position based on scrollLeft and maxThumbMovement
         const newPosition = (scrollLeft / maxScrollLeft) * maxThumbMovement;
         setScrollPosition(newPosition);
       }
@@ -51,26 +65,15 @@ const Sliders = () => {
       }
     };
   }, []);
-  const data = [slider1, slider2, slider3, slider4];
-  // Function to handle scrolling to a specific card
-  const scrollToCard = (index) => {
-    if (cardRefs.current[index]) {
-      cardRefs.current[index].scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "center",
-      });
-    }
-  };
 
   return (
-    <>
+    <Fragment>
       <section className="slider">
         <div className="">
           <h2 className="text-center text-white header">
             Discover more from <br /> MessageMoment
           </h2>
-          
+
           <div className="slider-content">
             <Swiper
               slidesPerView={isMediumScreen ? 3 : 4}
@@ -149,7 +152,7 @@ const Sliders = () => {
           </p>
         </div>
       </section>
-    </>
+    </Fragment>
   );
 };
 

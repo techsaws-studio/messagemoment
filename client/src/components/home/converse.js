@@ -1,16 +1,19 @@
 "use client";
-import { chatContext } from "@/contexts/chat-context";
+
+import React, { Fragment, useRef } from "react";
 import Image from "next/image";
-import { useRef } from "react";
+
+import { SessionTypeEnum } from "@/enums/session-type-enum";
+
+import { chatContext } from "@/contexts/chat-context";
+
 import scroll_down from "../../../src/assets/icons/scroll_down.svg";
 import banner from "../../../src/assets/images/converse.png";
-import { SessionTypeEnum } from "@/enums/session-type-enum";
 
 const Converse = () => {
   const { dropdownSelected } = chatContext();
   const sectionRef = useRef(null);
 
-  // Function to handle scrolling
   const scrollToSection = () => {
     const elementPosition =
       sectionRef.current.getBoundingClientRect().top + window.scrollY;
@@ -22,7 +25,7 @@ const Converse = () => {
   };
 
   return (
-    <>
+    <Fragment>
       <section className="converse bg-layer">
         <div className="container">
           <div className="converse-content">
@@ -57,7 +60,7 @@ const Converse = () => {
           </div>
         </div>
       </section>
-    </>
+    </Fragment>
   );
 };
 

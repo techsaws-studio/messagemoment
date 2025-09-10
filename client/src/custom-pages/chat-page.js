@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
 import { chatContext } from "@/contexts/chat-context";
@@ -80,13 +80,13 @@ function ChatPage() {
   }
 
   return (
-    <>
+    <Fragment>
       <ChatHeader />
       <MessageBox
         isSessionExpired={isSessionExpired}
         isSessionLocked={isSessionLocked}
       />
-    </>
+    </Fragment>
   );
 }
 

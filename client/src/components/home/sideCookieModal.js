@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Image from "next/image";
 import { Collapse } from "antd";
 import Cookies from "js-cookie";
@@ -50,7 +50,7 @@ const ScreenModalCookie = ({
       >
         <div className="custom-switch-handle"></div>
         {cookiePreferences.analytics ? (
-          <>
+          <Fragment>
             <Image
               className="custom-switch-icon checked-icon"
               style={{
@@ -60,7 +60,7 @@ const ScreenModalCookie = ({
               src={SwitchTickIcon}
               alt="SwitchTickIcon"
             />
-          </>
+          </Fragment>
         ) : (
           <Image
             src={SwitchCrossIcon}
@@ -95,7 +95,7 @@ const ScreenModalCookie = ({
       >
         <div className="custom-switch-handle"></div>
         {cookiePreferences.advertising ? (
-          <>
+          <Fragment>
             <Image
               className="custom-switch-icon checked-icon"
               style={{
@@ -105,7 +105,7 @@ const ScreenModalCookie = ({
               src={SwitchTickIcon}
               alt="SwitchTickIcon"
             />
-          </>
+          </Fragment>
         ) : (
           <Image
             src={SwitchCrossIcon}
@@ -385,7 +385,7 @@ export default function SideCookieModal() {
   }, [cookieModal]);
 
   return (
-    <>
+    <Fragment>
       <ScreenModalCookie
         isVisible={cookieModal}
         isClosing={isClosing}
@@ -465,6 +465,6 @@ export default function SideCookieModal() {
           />
         </div>
       </div>
-    </>
+    </Fragment>
   );
 }

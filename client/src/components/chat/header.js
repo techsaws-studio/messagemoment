@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import ClipboardJS from "clipboard";
@@ -357,7 +357,7 @@ export const ChatHeader = () => {
         {isProjectModeOn ? (
           <div id="flex-row">
             {isMobileView ? (
-              <>
+              <Fragment>
                 <LiveTypingToggle />
                 <div>
                   <Image
@@ -369,9 +369,9 @@ export const ChatHeader = () => {
                     onClick={() => setShowProjectModeTooltip(true)}
                   />
                 </div>
-              </>
+              </Fragment>
             ) : (
-              <>
+              <Fragment>
                 <LiveTypingToggle />
                 <Tooltip
                   placement="leftBottom"
@@ -388,23 +388,23 @@ export const ChatHeader = () => {
                     />
                   </div>
                 </Tooltip>
-              </>
+              </Fragment>
             )}
             <div id="half-vt-divider" />
           </div>
         ) : (
           <div className="timer-cont">
             {isMobileView ? (
-              <>
+              <Fragment>
                 <LiveTypingToggle />
                 <div className="timer-block">
                   <p className={`small ${!isExpiryTimeExist && "hasactive"}`}>
                     {expiryTime ? expiryTime : "30"}
                   </p>
                 </div>
-              </>
+              </Fragment>
             ) : (
-              <>
+              <Fragment>
                 <LiveTypingToggle />
                 <Tooltip
                   overlayClassName="copylink-tooltip"
@@ -416,7 +416,7 @@ export const ChatHeader = () => {
                     </p>
                   </div>
                 </Tooltip>
-              </>
+              </Fragment>
             )}
             <div id="half-vt-divider" />
           </div>

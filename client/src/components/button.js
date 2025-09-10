@@ -1,5 +1,5 @@
+import React, { Fragment } from "react";
 import Image from "next/image";
-import React from "react";
 
 const Button = ({
   text,
@@ -17,13 +17,13 @@ const Button = ({
   loading,
   marginLeft = 0,
   icon,
-  iconClass
+  iconClass,
 }) => {
   const buttonStyle = {
     minHeight: minHeight,
     maxHeight: maxHeight,
     minWidth: minWidth,
-    maxWidth:maxWidth,
+    maxWidth: maxWidth,
     height: height,
     width: width,
     marginLeft: marginLeft,
@@ -41,17 +41,17 @@ const Button = ({
       disabled={disabled}
     >
       {loading ? (
-        <>
+        <Fragment>
           <span className="rotate-360 me-2">
             <i class="fa-solid fa-spinner"></i>
           </span>
-        </>
+        </Fragment>
       ) : (
-        <>
+        <Fragment>
           {img && <img src={img} alt="Button Image" className={imgClass} />}
           {icon && <Image src={icon} alt="icon-mm-btn" className={iconClass} />}
           <span>{text}</span>
-        </>
+        </Fragment>
       )}
     </button>
   );

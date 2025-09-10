@@ -1,12 +1,14 @@
 "use client";
 
-import { createRef, useEffect, useRef, useState } from "react";
+import React, { createRef, Fragment, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { isFirefox } from "react-device-detect";
 
-import { chatContext } from "@/contexts/chat-context";
+import { SessionTypeEnum } from "@/enums/session-type-enum";
 
 import { handleCopyText } from "@/dummy-data";
+
+import { chatContext } from "@/contexts/chat-context";
 
 import MobileQrScannerModal from "./cloudflare-components/Qr-scanner-mobile-modal";
 import CloudflareBody from "./cloudflare-components/cloudflare-body";
@@ -17,28 +19,23 @@ import MobileDropdownModal from "./cloudflare-components/mobile-dropdown-modal";
 import NotificationTooltip from "./cloudflare-components/notification-tooltip";
 
 import { ApiRequest } from "@/utils/api-request";
-import { SessionTypeEnum } from "@/enums/session-type-enum";
 
 export const cloudFlareRef = createRef(null);
 
 const Cloudflare = () => {
   const [loading, setLoading] = useState(true);
-
   const [url, setUrl] = useState("");
   const [urlType, setUrlType] = useState("");
   const [secureCode, setSecureCode] = useState("");
-
   const [open, setOpen] = useState(false);
   const [openMobileModal, setOpenMobileModal] = useState(false);
   const [openQrMobileModal, setOpenQrMobileModal] = useState(false);
-
   const [IsCfVerified, setIsCfVerified] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isVisibleTooltip, setIsVisibleTooltip] = useState(false);
   const [isCopyVisibleTooltip, setCopyIsVisibleTooltip] = useState(false);
   const [isQrVisibleTooltip, setQrIsVisibleTooltip] = useState(false);
   const [QrVisible, setQrVisisble] = useState(false);
-
   const [selectedOption, setSelectedOption] = useState(
     SessionTypeEnum.STANDARD
   );
@@ -48,7 +45,6 @@ const Cloudflare = () => {
   const buttonRef = useRef(null);
   const dropdownRef = useRef(null);
   const mobileModalRef = useRef(null);
-
   const {
     setSessionData,
     sessionData,
@@ -207,7 +203,7 @@ const Cloudflare = () => {
   }, []);
 
   return (
-    <>
+    <Fragment>
       <NotificationTooltip
         notificationtype={notificationtype}
         isVisible={isVisible}
@@ -297,7 +293,7 @@ const Cloudflare = () => {
           />
         </div>
       </section>
-    </>
+    </Fragment>
   );
 };
 

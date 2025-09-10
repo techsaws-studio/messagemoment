@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -78,7 +78,7 @@ const ChatLeaveModal = () => {
     <div className={`chatLeaveModal ${showChatLeaveModal && "open-fade"}`}>
       <div className={`chatSession-container ${isClosing && "fade-out"}`}>
         {isMobileView ? (
-          <>
+          <Fragment>
             <Image src={Blur} className="blur-img" alt="Blur" />
             <div className="chat-leave-mobile-container">
               <Image src={conversation} alt="conversation-img" />
@@ -112,9 +112,9 @@ const ChatLeaveModal = () => {
                 />
               </div>
             </div>
-          </>
+          </Fragment>
         ) : (
-          <>
+          <Fragment>
             <Session
               key={`expired-session`}
               imgName={conversation}
@@ -151,7 +151,7 @@ const ChatLeaveModal = () => {
                 />
               </div>
             </Session>
-          </>
+          </Fragment>
         )}
       </div>
     </div>

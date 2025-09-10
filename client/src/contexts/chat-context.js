@@ -22,7 +22,7 @@ const ChatContextProvider = ({ children }) => {
   const [activeUser, setActiveUser] = useState("");
   const [isExpiryTimeExist, setIsExpiryTimeExist] = useState(false);
   const [isLiveTypingActive, setIsLiveTypingActive] = useState(true);
-
+  
   const [filedata, setFiledata] = useState({});
   const [users, setUsers] = useState([]);
   const [connectWalletFunction, setConnectWalletFunction] = useState(
