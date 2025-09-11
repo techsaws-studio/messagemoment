@@ -1,0 +1,5 @@
+{"timestamp":"2025-09-11T02:34:32.701Z","level":"INFO","operation":"INDIVIDUALLY_EXPIRED_MESSAGES","details":{"messagesDeleted":1,"cutoffTime":"2025-09-11T02:34:32.506Z"},"environment":"development"}
+{"timestamp":"2025-09-11T02:34:32.891Z","level":"INFO","operation":"EXPIRED_SESSION_MESSAGES","details":{"expiredSessionsFound":1,"messagesDeleted":0,"sessionIds":["v0C2dIZdL606bN"]},"environment":"development"}
+{"timestamp":"2025-09-11T02:34:32.892Z","level":"INFO","operation":"SESSION_BASED_CLEANUP_STATISTICS","details":{"statistics":{"expiredSessionMessages":0,"expiredMessages":1,"totalRemoved":1},"totalRecords":2,"executionTimeMs":386,"executionTimeSec":0},"environment":"development"}
+{"timestamp":"2025-09-11T04:17:49.909Z","level":"INFO","operation":"SPECIFIC_SESSION_CLEANUP","details":{"sessionId":"Zauy1Zdcxf8Sct","messagesDeleted":5},"environment":"development"}
+{"timestamp":"2025-09-11T06:23:27.258Z","level":"INFO","operation":"SPECIFIC_SESSION_CLEANUP","details":{"sessionId":"DRHDuwzyzdHOcu","messagesDeleted":75},"environment":"development"}
