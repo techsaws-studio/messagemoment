@@ -41,6 +41,11 @@ const Message = ({
   const [isFullyRendered, setIsFullyRendered] = useState(() => {
     return isOwnMessage || !messageId || !timestamp;
   });
+  const [typingState, setTypingState] = useState({
+    isTyping: false,
+    currentIndex: 0,
+    startTime: null,
+  });
 
   const el = useRef(null);
   const { isMessageMobileView: isMobileView } = useCheckIsMobileView();
@@ -642,12 +647,14 @@ const Message = ({
       if (isOwnMessage || isHistoricalMessage) {
         el.current.innerHTML = message;
         setIsFullyRendered(true);
+        setTypingState({ isTyping: false, currentIndex: 0, startTime: null });
       } else {
         if (!isLiveTypingActive || isFullyRendered || !messageId) {
           el.current.innerHTML = message;
           if (!isFullyRendered) {
             setIsFullyRendered(true);
           }
+          setTypingState({ isTyping: false, currentIndex: 0, startTime: null });
 
           if (
             !isLiveTypingActive &&
@@ -665,14 +672,22 @@ const Message = ({
           return;
         }
 
-        let currentIndex = 0;
-        let startTime = performance.now();
+        let currentIndex = typingState.isTyping ? typingState.currentIndex : 0;
+        let startTime = typingState.startTime || performance.now();
+
+        setTypingState({ isTyping: true, currentIndex, startTime });
+
         const typeSpeed = 30;
 
         const typeMessage = (currentTime) => {
           if (!isLiveTypingActive) {
             el.current.innerHTML = message;
             setIsFullyRendered(true);
+            setTypingState({
+              isTyping: false,
+              currentIndex: 0,
+              startTime: null,
+            });
 
             if (socket && sessionId && messageId && !isOwnMessage) {
               socket.emit("messageTypingComplete", {
@@ -685,6 +700,11 @@ const Message = ({
 
           if (!el.current || currentIndex >= message.length) {
             setIsFullyRendered(true);
+            setTypingState({
+              isTyping: false,
+              currentIndex: 0,
+              startTime: null,
+            });
 
             if (socket && sessionId && messageId && !isOwnMessage) {
               socket.emit("messageTypingComplete", {
@@ -701,12 +721,19 @@ const Message = ({
           if (targetIndex > currentIndex) {
             currentIndex = Math.min(targetIndex, message.length);
             el.current.innerHTML = message.substring(0, currentIndex);
+
+            setTypingState((prev) => ({ ...prev, currentIndex }));
           }
 
           if (currentIndex < message.length) {
             animationFrameId = requestAnimationFrame(typeMessage);
           } else {
             setIsFullyRendered(true);
+            setTypingState({
+              isTyping: false,
+              currentIndex: 0,
+              startTime: null,
+            });
 
             if (socket && sessionId && messageId && !isOwnMessage) {
               socket.emit("messageTypingComplete", {
@@ -716,7 +743,6 @@ const Message = ({
             }
           }
         };
-
         animationFrameId = requestAnimationFrame(typeMessage);
       }
     }

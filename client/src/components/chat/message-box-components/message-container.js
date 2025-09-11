@@ -134,7 +134,9 @@ const MessageContainer = ({
         >
           {visibleMessagesWithUsernameLogic.map((item, i) => (
             <Message
-              key={`chat-index-${i.toString()}`}
+              key={
+                item.messageId || item.tempId || `chat-index-${i.toString()}`
+              }
               type={item?.type}
               userNameColor={item?.userNameColor}
               handlerName={

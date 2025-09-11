@@ -1462,7 +1462,7 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
         return msg;
       }
 
-      if (!msg.isFullyRendered || msg.isLiveTyping) {
+      if (msg.isLiveTyping && !msg.isFullyRendered && !msg.isOwnMessage) {
         return {
           ...msg,
           expiresAt: null,
@@ -1757,6 +1757,10 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
         const filteredMessages = messagesWithUpdatedExpiration.filter(
           (msg, index) => {
             if (isMessageIndependent(msg)) {
+              return true;
+            }
+
+            if (msg.isLiveTyping && !msg.isFullyRendered && !msg.isOwnMessage) {
               return true;
             }
 
