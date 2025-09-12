@@ -87,8 +87,6 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
   const [removeUserList, setRemoveUserList] = useState([]);
   const [pendingJoinData, setPendingJoinData] = useState(null);
   const [isAwaitingUnlock, setIsAwaitingUnlock] = useState(false);
-  const [messageExpirationQueue, setMessageExpirationQueue] = useState([]);
-  const [isProcessingExpiration, setIsProcessingExpiration] = useState(false);
 
   const {
     setShowUploadModal,
