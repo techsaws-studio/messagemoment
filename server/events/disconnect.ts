@@ -2,6 +2,8 @@ import { Socket, Server } from "socket.io";
 
 import { SocketUserInfo } from "../interfaces/events-interface.js";
 
+import SessionModel from "models/session-model.js";
+
 import { LeaveSessionService } from "../services/leave-session-service.js";
 import { FetchSessionService } from "../services/fetch-session-service.js";
 
@@ -167,12 +169,23 @@ const executeUserRemoval = async (
 
     await UpdateUserList(io, sessionId);
 
-    // Notify users that the temporary disconnect became permanent
     io.to(sessionId).emit("userPermanentlyLeft", {
       username,
       message: `${username} has left the session`,
       wasTemporary: true,
     });
+
+    const updatedSession = await SessionModel.findOne({ sessionId });
+    if (updatedSession && updatedSession.participantCount <= 0) {
+      await SessionModel.updateOne(
+        { sessionId },
+        { sessionExpired: true },
+        { writeConcern: { w: "majority", j: true } }
+      );
+      console.info(
+        `Session ${sessionId} expired immediately after grace period removal`
+      );
+    }
 
     console.info(
       `Successfully removed ${username} from session ${sessionId} after grace period`
@@ -181,7 +194,6 @@ const executeUserRemoval = async (
     console.error(`Error during delayed user removal for ${username}:`, error);
   }
 };
-
 // CANCEL GRACE PERIOD (user reconnected)
 const cancelGracePeriod = (sessionId: string, username: string): boolean => {
   const gracePeriodKey = `${sessionId}:${username.toLowerCase()}`;

@@ -90,6 +90,13 @@ export const ValidationSessionFunction = CatchAsyncErrors(
       const sessionData = await RedisDatabase.get(sessionId);
       const session = await FetchSessionService(sessionId);
 
+      console.log(`Session validation for ${sessionId}:`, {
+        exists: !!session,
+        expired: session?.sessionExpired,
+        participantCount: session?.participantCount,
+        timestamp: new Date().toISOString(),
+      });
+
       // Case 1: Session exists in Redis → Allow access
       if (sessionData) {
         console.log(`✅ Session found in Redis: ${sessionId}`);
