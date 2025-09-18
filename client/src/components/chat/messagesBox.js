@@ -88,6 +88,10 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
   const [removeUserList, setRemoveUserList] = useState([]);
   const [pendingJoinData, setPendingJoinData] = useState(null);
   const [isAwaitingUnlock, setIsAwaitingUnlock] = useState(false);
+  const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
+  const [pendingExpirationMessages, setPendingExpirationMessages] = useState(
+    new Set()
+  );
 
   const {
     setShowUploadModal,
@@ -110,6 +114,11 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
     isLiveTypingActive,
     setIsExpiryTimeExist,
     expiryTime,
+
+    setShowNewMessageTooltip,
+    setExpiryNewMessageTooltip,
+    setNumberOfMessages,
+    numberOfMessages,
   } = chatContext();
   const fileInputRef = useRef(null);
   const commandModalRef = useRef();
@@ -401,6 +410,23 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
       ]);
     }
   }, [sessionData?.code, getSessionLockedMessage]);
+
+  const handleUnreadMessageUpdate = useCallback(
+    (count) => {
+      setNumberOfMessages(count);
+      setShowNewMessageTooltip(count > 0);
+
+      if (count === 0) {
+        setExpiryNewMessageTooltip(false);
+        setPendingExpirationMessages(new Set());
+      }
+    },
+    [setNumberOfMessages, setShowNewMessageTooltip, setExpiryNewMessageTooltip]
+  );
+
+  const handleScrollStateChange = useCallback((isScrolledUp) => {
+    setHasUnreadMessages(isScrolledUp);
+  }, []);
 
   const handlePhantomConnection = async () => {
     if (!isMobileView) {
@@ -1485,8 +1511,65 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
 
   useEffect(() => {
     scrollManager.init();
-    return () => scrollManager.destroy();
-  }, []);
+    scrollManager.setCallbacks(
+      handleUnreadMessageUpdate,
+      handleScrollStateChange
+    );
+
+    return () => {
+      scrollManager.destroy();
+    };
+  }, [handleUnreadMessageUpdate, handleScrollStateChange]);
+
+  useEffect(() => {
+    if (!hasUnreadMessages || numberOfMessages === 0) {
+      setShowNewMessageTooltip(false);
+      setExpiryNewMessageTooltip(false);
+      return;
+    }
+
+    const checkExpiringMessages = () => {
+      const now = Date.now();
+      const expiringThreshold = 10000;
+      let hasExpiringMessages = false;
+
+      setChatMessages((prevMessages) => {
+        const newExpiringSet = new Set();
+
+        prevMessages.forEach((msg) => {
+          if (msg.expiresAt && !msg.isPermanent && !isProjectModeOn) {
+            const timeUntilExpiration = msg.expiresAt - now;
+            if (
+              timeUntilExpiration <= expiringThreshold &&
+              timeUntilExpiration > 0
+            ) {
+              newExpiringSet.add(
+                msg.messageId || `${msg.timestamp}-${msg.handlerName}`
+              );
+              hasExpiringMessages = true;
+            }
+          }
+        });
+
+        if (hasExpiringMessages !== pendingExpirationMessages.size > 0) {
+          setPendingExpirationMessages(newExpiringSet);
+          setExpiryNewMessageTooltip(hasExpiringMessages);
+        }
+
+        return prevMessages;
+      });
+    };
+
+    const interval = setInterval(checkExpiringMessages, 1000);
+    return () => clearInterval(interval);
+  }, [
+    hasUnreadMessages,
+    numberOfMessages,
+    isProjectModeOn,
+    pendingExpirationMessages.size,
+    setShowNewMessageTooltip,
+    setExpiryNewMessageTooltip,
+  ]);
 
   useEffect(() => {
     if (!sessionData?.code || isSessionExpiredRealTime) {
@@ -1749,7 +1832,6 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
       setChatMessages((prevMessages) => {
         const messagesWithUpdatedExpiration =
           calculateChronologicalExpiration(prevMessages);
-
         const now = Date.now();
         let hasChanges = false;
 
@@ -1776,6 +1858,9 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
           const removedCount =
             messagesWithUpdatedExpiration.length - filteredMessages.length;
           console.log(`Messages expired: ${removedCount}`);
+
+          scrollManager.forceResetTooltip();
+          scrollManager.checkForMessageDisappearance();
         }
 
         return hasChanges ? filteredMessages : messagesWithUpdatedExpiration;
@@ -2223,6 +2308,10 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
           isFullyRendered: !shouldStartTyping,
         },
       ]);
+
+      if (data.sender !== handlerName) {
+        scrollManager.incrementUnreadMessages();
+      }
 
       scrollManager.scrollToBottom();
       resetTextareaHeight();

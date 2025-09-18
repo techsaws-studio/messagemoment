@@ -95,7 +95,7 @@ const MessageContainer = ({
   }, []);
 
   return (
-    <div className="chat-section">
+    <div className="chat-section" style={{ zIndex: "30" }}>
       <div
         className={
           showAttachment ? "message-cont-withAttachment" : "message-cont"
