@@ -22,7 +22,7 @@ const ChatContextProvider = ({ children }) => {
   const [activeUser, setActiveUser] = useState("");
   const [isExpiryTimeExist, setIsExpiryTimeExist] = useState(false);
   const [isLiveTypingActive, setIsLiveTypingActive] = useState(true);
-  
+
   const [filedata, setFiledata] = useState({});
   const [users, setUsers] = useState([]);
   const [connectWalletFunction, setConnectWalletFunction] = useState(
@@ -49,6 +49,10 @@ const ChatContextProvider = ({ children }) => {
     visible: false,
     message: "Server currently unavailable. Please try again later!",
   });
+
+  const [showNewMessageTooltip, setShowNewMessageTooltip] = useState(false);
+  const [expiryNewMessageTooltip, setExpiryNewMessageTooltip] = useState(false);
+  const [numberOfMessages, setNumberOfMessages] = useState(0);
 
   const data = {
     setShowNotification,
@@ -120,6 +124,13 @@ const ChatContextProvider = ({ children }) => {
 
     isLiveTypingActive,
     setIsLiveTypingActive,
+
+    showNewMessageTooltip,
+    setShowNewMessageTooltip,
+    expiryNewMessageTooltip,
+    setExpiryNewMessageTooltip,
+    numberOfMessages,
+    setNumberOfMessages,
   };
 
   return <ChatContext.Provider value={data}>{children}</ChatContext.Provider>;

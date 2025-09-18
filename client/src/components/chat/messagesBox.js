@@ -48,6 +48,7 @@ import { scrollManager } from "@/utils/scroll-utils";
 
 import sendBtn from "@/assets/icons/chat/sendBtn.svg";
 import sendBtnGrey from "@/assets/icons/chat/send_grey.svg";
+import NewMessageTooltip from "./chat-components/new-message-tooltip/new-message-tooltip";
 
 export const messageContainerRef = createRef(null);
 
@@ -2715,6 +2716,8 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
         isLandscape={isLandscape}
         isMobileView={isMobileView}
       />
+
+      <NewMessageTooltip />
 
       <MessageContainer
         chatMessage={chatMessage}

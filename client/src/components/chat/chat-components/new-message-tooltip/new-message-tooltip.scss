@@ -1,0 +1,51 @@
+.new-message-badge {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px) scale(0.95);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 2rem;
+  border-radius: 9999px;
+  background-color: rgba(73, 74, 248, 0.1);
+  border: 2px solid #494af8;
+  font-weight: 500;
+  text-transform: capitalize;
+  color: #494af8;
+
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+
+  opacity: 0;
+  transform: translateY(10px) scale(0.95);
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.badge-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.badge-hidden {
+  opacity: 0;
+  transform: translateX(-50%) translateY(10px) scale(0.95);
+  pointer-events: none;
+}
+
+.badge-expiry {
+  animation: pulseBorder 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseBorder {
+  0%,
+  100% {
+    border-color: rgba(73, 74, 248, 0.4);
+  }
+  50% {
+    border-color: rgba(73, 74, 248, 1);
+  }
+}
