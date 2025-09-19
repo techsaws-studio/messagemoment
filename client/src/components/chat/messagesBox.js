@@ -1530,7 +1530,10 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
 
     const checkExpiringMessages = () => {
       const now = Date.now();
-      const expiringThreshold = 10000;
+      
+      const currentExpiryTime = expiryTime || 30;
+      const expiringThreshold = currentExpiryTime <= 13 ? 0 : 10000;
+
       let hasExpiringMessages = false;
 
       setChatMessages((prevMessages) => {
