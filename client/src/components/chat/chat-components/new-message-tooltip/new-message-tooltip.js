@@ -29,19 +29,21 @@ function NewMessageTooltip() {
     setNumberOfMessages(0);
   };
 
-  let label = "New Message";
-  if (numberOfMessages > 0) {
-    label = `${numberOfMessages} New Message${
-      numberOfMessages !== 1 ? "s" : ""
-    }`;
-  }
+  const getMessageText = () => {
+    if (numberOfMessages > 0) {
+      return `${numberOfMessages} NEW MESSAGE${
+        numberOfMessages !== 1 ? "S" : ""
+      } BELOW`;
+    }
+    return "NEW MESSAGE BELOW";
+  };
 
   const badgeClass = `
     new-message-badge
     ${expiryNewMessageTooltip ? "badge-expiry" : ""}
     ${showNewMessageTooltip ? "badge-visible" : "badge-hidden"}
   `.trim();
-  
+
   return (
     <div
       className={badgeClass}
@@ -56,7 +58,7 @@ function NewMessageTooltip() {
       }}
       style={{ cursor: "pointer" }}
     >
-      <ArrowDownOutlined /> {label}
+      [ {getMessageText()} <ArrowDownOutlined className="t-up" /> ]
     </div>
   );
 }
