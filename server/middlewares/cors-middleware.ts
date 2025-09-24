@@ -10,7 +10,11 @@ const GetAllowedOrigins = (): string[] => {
     return ["*"];
   }
 
-  return ["https://messagemoment.com", "https://www.messagemoment.com"];
+  return [
+    "https://messagemoment-delta.vercel.app",
+    "https://messagemoment.com",
+    "https://www.messagemoment.com",
+  ];
 };
 
 export const CorsOptions: cors.CorsOptions = {

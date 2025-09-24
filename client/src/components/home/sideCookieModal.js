@@ -325,9 +325,6 @@ export default function SideCookieModal() {
       sameSite: "Lax",
       secure: window.location.protocol === "https:",
       path: "/",
-      ...(process.env.NODE_ENV === "production" && {
-        domain: window.location.hostname,
-      }),
     };
 
     Cookies.set(

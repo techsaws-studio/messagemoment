@@ -2,13 +2,11 @@ export const ApiRequest = async (endpoint, method = "GET", body) => {
   try {
     const fullUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`;
 
-    if (process.env.NODE_ENV === "development") {
-      console.log(`🌐 API Request: ${method} ${fullUrl}`);
-    }
+    console.log(`🌐 API Request: ${method} ${fullUrl}`);
 
     const response = await fetch(fullUrl, {
       method,
-      // credentials: "include",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
@@ -37,9 +35,7 @@ export const ApiRequest = async (endpoint, method = "GET", body) => {
       throw error;
     }
 
-    if (process.env.NODE_ENV === "development") {
-      console.log(`✅ API Success: ${method} ${endpoint}`);
-    }
+    console.log(`✅ API Success: ${method} ${endpoint}`);
 
     return data;
   } catch (error) {
