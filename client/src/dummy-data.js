@@ -541,7 +541,7 @@ export const isPhantomExist = () => {
   let isWalletExist = false;
   if (window.solana && window.solana.isPhantom) {
     try {
-      isWalletExist = true;
+      isWalletExist = true; 
     } catch (error) {
       console.log("Error connecting to Phantom wallet:", error);
     }
