@@ -1832,46 +1832,84 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
   }, [userlist, handlerName]);
 
   useEffect(() => {
-    const cleanupInterval = setInterval(() => {
-      setChatMessages((prevMessages) => {
-        const messagesWithUpdatedExpiration =
-          calculateChronologicalExpiration(prevMessages);
-        const now = Date.now();
-        let hasChanges = false;
+    let intervalId;
+    let animationId;
+    let lastCleanup = Date.now();
+    const CLEANUP_INTERVAL = 500;
 
-        const filteredMessages = messagesWithUpdatedExpiration.filter(
-          (msg, index) => {
-            if (isMessageIndependent(msg)) {
+    const performCleanup = () => {
+      const now = Date.now();
+
+      if (now - lastCleanup >= CLEANUP_INTERVAL) {
+        lastCleanup = now;
+
+        setChatMessages((prevMessages) => {
+          const messagesWithUpdatedExpiration =
+            calculateChronologicalExpiration(prevMessages);
+          let hasChanges = false;
+
+          const filteredMessages = messagesWithUpdatedExpiration.filter(
+            (msg, index) => {
+              if (isMessageIndependent(msg)) {
+                return true;
+              }
+
+              if (
+                msg.isLiveTyping &&
+                !msg.isFullyRendered &&
+                !msg.isOwnMessage
+              ) {
+                return true;
+              }
+
+              if (msg.expiresAt && now >= msg.expiresAt) {
+                hasChanges = true;
+                return false;
+              }
+
               return true;
             }
+          );
 
-            if (msg.isLiveTyping && !msg.isFullyRendered && !msg.isOwnMessage) {
-              return true;
-            }
+          if (hasChanges) {
+            const removedCount =
+              messagesWithUpdatedExpiration.length - filteredMessages.length;
+            console.log(`Messages expired: ${removedCount}`);
 
-            if (msg.expiresAt && now >= msg.expiresAt) {
-              hasChanges = true;
-              return false;
-            }
-
-            return true;
+            scrollManager.forceResetTooltip();
+            scrollManager.checkForMessageDisappearance();
           }
-        );
 
-        if (hasChanges) {
-          const removedCount =
-            messagesWithUpdatedExpiration.length - filteredMessages.length;
-          console.log(`Messages expired: ${removedCount}`);
+          return hasChanges ? filteredMessages : messagesWithUpdatedExpiration;
+        });
+      }
+    };
 
-          scrollManager.forceResetTooltip();
-          scrollManager.checkForMessageDisappearance();
-        }
+    intervalId = setInterval(performCleanup, CLEANUP_INTERVAL);
 
-        return hasChanges ? filteredMessages : messagesWithUpdatedExpiration;
-      });
-    }, 500);
+    const animationCleanup = () => {
+      performCleanup();
+      animationId = requestAnimationFrame(animationCleanup);
+    };
+    animationId = requestAnimationFrame(animationCleanup);
 
-    return () => clearInterval(cleanupInterval);
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        performCleanup();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [isProjectModeOn, messageType, expiryTime, isLiveTypingActive]);
 
   // SOCKET INTEGRATION -- START
@@ -2301,9 +2339,11 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
           handlerName: data.sender,
           handlerColor: userColor,
           timestamp: data.timestamp,
-          messageId: `${data.timestamp}-${data.sender}-${Math.random()
-            .toString(36)
-            .substr(2, 9)}`,
+          messageId:
+            data.messageId ||
+            `${data.timestamp}-${data.sender}-${Math.random()
+              .toString(36)
+              .substr(2, 9)}`,
           expiresAt: messageExpiresAt,
           isPermanent: data.isPermanent || isProjectModeOn,
           timerValue: data.timerValue || expiryTime,
@@ -2571,6 +2611,23 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
       scrollManager.forceScrollToBottom();
     };
 
+    const handleMessageExpired = (data) => {
+      console.log("🕒 Server-driven message expiration:", data.messageId);
+
+      setChatMessages((prevMessages) => {
+        const filteredMessages = prevMessages.filter(
+          (msg) => msg.messageId !== data.messageId
+        );
+
+        if (filteredMessages.length !== prevMessages.length) {
+          scrollManager.forceResetTooltip();
+          scrollManager.checkForMessageDisappearance();
+        }
+
+        return filteredMessages;
+      });
+    };
+
     // ============================
     // NOTIFICATION EVENT HANDLERS
     // ============================
@@ -2747,6 +2804,7 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
     socket.on("youWereRemoved", handleYouWereRemoved);
     socket.on("projectModeUpdate", handleProjectModeUpdate);
     socket.on("messageCleared", handleMessageCleared);
+    socket.on("messageExpired", handleMessageExpired);
 
     // NOTIFICATION EVENTS
     socket.on("userJoined", handleUserJoined);
@@ -2782,6 +2840,7 @@ const MessageBox = ({ isSessionExpired = false, isSessionLocked = false }) => {
       socket.off("youWereRemoved", handleYouWereRemoved);
       socket.off("projectModeUpdate", handleProjectModeUpdate);
       socket.off("messageCleared", handleMessageCleared);
+      socket.off("messageExpired", handleMessageExpired);
 
       // NOTIFICATION EVENTS CLEANUP
       socket.off("userJoined", handleUserJoined);

@@ -87,11 +87,45 @@ const MessageContainer = ({
   }, [chatMessage, messageType, handlerName, isProjectModeOn, currentTime]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(Date.now());
-    }, 1000);
+    let intervalId;
+    let animationId;
+    let lastUpdate = Date.now();
+    const UPDATE_INTERVAL = 1000;
 
-    return () => clearInterval(interval);
+    const updateTime = () => {
+      const now = Date.now();
+
+      if (now - lastUpdate >= UPDATE_INTERVAL) {
+        lastUpdate = now;
+        setCurrentTime(now);
+      }
+    };
+
+    intervalId = setInterval(updateTime, UPDATE_INTERVAL);
+
+    const animationUpdate = () => {
+      updateTime();
+      animationId = requestAnimationFrame(animationUpdate);
+    };
+    animationId = requestAnimationFrame(animationUpdate);
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        updateTime();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
   return (

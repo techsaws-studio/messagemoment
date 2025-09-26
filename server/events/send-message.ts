@@ -97,12 +97,36 @@ const SendMessage = (io: Server, socket: Socket): void => {
       const isSystemMessage = username === "[MessageMoment.com]";
       const isAIMessage = username === "[AI_RESEARCH_COMPANION]";
 
+      const messageId = `${timestamp}-${username}-${Math.random()
+        .toString(36)
+        .substr(2, 9)}`;
+
+      if (!isSystemMessage && !isAIMessage && !session.isProjectModeOn) {
+        const expirationTime = session.sessionTimer * 1000;
+
+        setTimeout(() => {
+          const expirationData = {
+            messageId,
+            timestamp: Date.now(),
+            sessionId,
+          };
+
+          io.to(sessionId).emit("messageExpired", expirationData);
+
+          PublishToRedisChannel(
+            `messageExpired:${sessionId}`,
+            JSON.stringify(expirationData)
+          );
+        }, expirationTime);
+      }
+
       try {
         await new MessageModel({
           sessionId,
           username,
           message: message.trim(),
           timestamp,
+          messageId,
           displayExpiresAt,
           isSystemMessage,
           isAIMessage,
@@ -111,7 +135,7 @@ const SendMessage = (io: Server, socket: Socket): void => {
             session.isProjectModeOn || isSystemMessage || isAIMessage,
         }).save();
         console.log(
-          `Message saved to MongoDB: sessionId=${sessionId}, username=${username}, message=${message}, isPermanent=${
+          `Message saved to MongoDB: sessionId=${sessionId}, username=${username}, message=${message}, messageId=${messageId}, isPermanent=${
             session.isProjectModeOn || isSystemMessage || isAIMessage
           }`
         );
@@ -125,6 +149,7 @@ const SendMessage = (io: Server, socket: Socket): void => {
         sender: username,
         message: message.trim(),
         timestamp,
+        messageId,
         isSystem: isSystemMessage,
         isAI: isAIMessage,
         isPermanent: session.isProjectModeOn,

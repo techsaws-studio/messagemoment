@@ -212,6 +212,7 @@ const JoinRoom = (io: Server, socket: Socket): void => {
             messages: messages.map((msg) => ({
               sender: msg.username,
               message: msg.message,
+              messageId: `historical-${msg.timestamp}-${msg.sender}`,
               timestamp: msg.timestamp,
               isSystem: msg.isSystemMessage || false,
               isAI: msg.isAIMessage || false,
@@ -220,7 +221,7 @@ const JoinRoom = (io: Server, socket: Socket): void => {
                 : null,
               isPermanent: msg.isPermanent || false,
               timerValue: msg.timerValue || session.sessionTimer,
-              
+
               assignedColor: msg.assignedColor,
             })),
             timerSeconds: session.sessionTimer,
